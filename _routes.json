@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "include": [
+    "/api/*",
+    "/recipes*",
+    "/board*",
+    "/startup*",
+    "/private*"
+  ],
+  "exclude": []
+}

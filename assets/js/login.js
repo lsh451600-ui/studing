@@ -1,5 +1,19 @@
 const byId = id => document.getElementById(id);
 const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('login-status');
+const params = new URLSearchParams(location.search);
+const SESSION_CACHE_KEY = 'member-session-v1';
+const SESSION_CACHE_MS = 120000;
+const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/startup', '/startup.html', '/private', '/private.html']);
+const protectedNext = (() => {
+  let next = params.get('next');
+  try { next ||= sessionStorage.getItem('member-login-next'); } catch {}
+  if (!next) return null;
+  try {
+    const target = new URL(next, location.origin);
+    return target.origin === location.origin && protectedPaths.has(target.pathname) ? target.pathname + target.search + target.hash : null;
+  } catch { return null; }
+})();
+if (params.has('login_required') && protectedNext) { try { sessionStorage.setItem('member-login-next', protectedNext); } catch {} }
 const errorDialog = document.createElement('dialog');
 errorDialog.id = 'auth-error-dialog'; errorDialog.className = 'auth-error-dialog';
 errorDialog.setAttribute('role', 'alertdialog');
@@ -60,8 +74,26 @@ function showUser(user) {
   byId('member-status').closest('.member-controls').dataset.state = user ? 'authenticated' : 'anonymous';
   byId('logout-button').textContent = '로그아웃';
 }
-async function checkSession() {
-  const data = await api('/api/session'); showUser(data.authenticated ? data.user : null);
+function readSessionCache() {
+  try {
+    const entry = JSON.parse(sessionStorage.getItem(SESSION_CACHE_KEY) || 'null');
+    if (entry && Date.now() - entry.savedAt < SESSION_CACHE_MS && entry.data) return entry.data;
+  } catch {}
+  return null;
+}
+function writeSessionCache(data) {
+  try { sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data })); } catch {}
+}
+function clearSessionCache() {
+  try { sessionStorage.removeItem(SESSION_CACHE_KEY); } catch {}
+}
+async function checkSession({ force = false } = {}) {
+  let data = force ? null : readSessionCache();
+  if (!data) {
+    data = await api('/api/session');
+    writeSessionCache(data);
+  }
+  showUser(data.authenticated ? data.user : null);
   if (data.authenticated && data.profileUnavailable) {
     byId('member-feedback').textContent = '회원 정보를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.';
   }
@@ -81,7 +113,7 @@ async function openLogin(event) {
     if (data.authenticated) { dialog.close(); return; }
     byId('login-submit').disabled = !data.available;
     status.textContent = data.available ? '' : '로그인을 준비 중입니다. 잠시 후 다시 방문해 주세요.';
-  } catch (error) { status.textContent = ''; showAuthError(error.message); }
+  } catch (error) { status.textContent = error.message; byId('login-submit').disabled = true; }
 }
 byId('login-open').addEventListener('click', openLogin);
 byId('menu-account-action').addEventListener('click', () => {
@@ -105,7 +137,10 @@ form.addEventListener('submit', async event => {
     const data = await api('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier: byId('login-identifier').value, password: byId('login-password').value }) });
     if (!data.authenticated || !data.user) throw new Error('로그인 결과를 확인하지 못했습니다.');
+    writeSessionCache({ available: true, authenticated: true, user: data.user });
+    try { sessionStorage.removeItem('member-login-next'); } catch {}
     showUser(data.user); form.reset(); dialog.close(); byId('member-feedback').textContent = '';
+    if (protectedNext) { location.assign(protectedNext); return; }
   } catch (error) { status.textContent = ''; showAuthError(error.message); }
   finally {
     byId('login-password').value = ''; pending = false;
@@ -115,22 +150,35 @@ form.addEventListener('submit', async event => {
 byId('logout-button').addEventListener('click', async () => {
   byId('logout-button').disabled = true;
   byId('logout-button').textContent = '로그아웃 중…';
-  try { await api('/api/logout', { method: 'POST' }); showUser(null); byId('member-feedback').textContent = ''; }
+  try { await api('/api/logout', { method: 'POST' }); clearSessionCache(); writeSessionCache({ available: true, authenticated: false, user: null }); try { sessionStorage.removeItem('member-login-next'); } catch {} showUser(null); byId('member-feedback').textContent = ''; }
   catch (error) { showAuthError(error.message); }
   finally { byId('logout-button').disabled = false; byId('logout-button').textContent = '로그아웃'; }
 });
 window.addEventListener('member-authenticated', event => {
+  writeSessionCache({ available: true, authenticated: true, user: event.detail });
   showUser(event.detail); byId('member-feedback').textContent = '';
 });
-checkSession().catch(() => {
+const initialSession = checkSession({ force: params.has('auth') || params.has('login_required') }).catch(() => {
+  clearSessionCache();
   byId('member-status').hidden = false;
-  byId('member-status').textContent = '로그인 상태 확인 필요';
+  byId('member-status').textContent = '로그인 상태 확인 지연';
   byId('menu-account-status').textContent = '로그인 상태를 확인하지 못했습니다.';
   byId('menu-account-status').dataset.state = 'unknown';
-  byId('logout-button').hidden = false;
-  showAuthError('로그인 상태를 확인하지 못했습니다. 새로고침하거나 로그아웃 후 다시 시도해 주세요.');
+  byId('logout-button').hidden = true;
+  byId('login-open').hidden = false;
+  byId('signup-open').hidden = false;
+  byId('member-feedback').textContent = '로그인 확인이 잠시 지연되고 있습니다. 다시 시도해 주세요.';
+  return null;
 });
-const params = new URLSearchParams(location.search);
+if (params.has('login_required')) {
+  initialSession.then(data => {
+    if (data?.authenticated && protectedNext) { try { sessionStorage.removeItem('member-login-next'); } catch {} location.replace(protectedNext); return; }
+    if (data?.available) openLogin();
+    else if (data) byId('member-feedback').textContent = '로그인 서비스를 준비 중입니다. 잠시 후 다시 시도해 주세요.';
+  });
+} else if (params.has('auth') && protectedNext) {
+  initialSession.then(data => { if (data?.authenticated) { try { sessionStorage.removeItem('member-login-next'); } catch {} location.replace(protectedNext); } });
+}
 if (params.has('auth')) {
   const messages = {
     kakao_linked: '기존 회원 계정에 카카오가 연결되었습니다. 다음부터 카카오로 로그인할 수 있습니다.',
@@ -209,7 +257,7 @@ byId('profile-form').addEventListener('submit', async event => {
     const data = await api('/api/member-profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
     showUser(data.user); byId('profile-dialog').close(); form.reset();
     byId('member-feedback').textContent = '';
-    await checkSession();
+    await checkSession({ force: true });
   } catch (error) { byId('profile-status').textContent = error.message; }
   finally { byId('profile-submit').disabled = false; byId('profile-logout').disabled = false; }
 });
