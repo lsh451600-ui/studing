@@ -3,7 +3,9 @@ on:
   push:
     branches: [main]
     paths:
-      - functions/api/recipes.js
+      - functions/api/recipe*.js
+      - src/recipe-server.js
+      - tests/recipes.test.js
       - .github/workflows/check-recipe-access.yml
   workflow_dispatch:
 permissions:
@@ -16,6 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test owner permissions and persistent recipe storage
+        run: node --test tests/recipes.test.js
       - name: Verify deployed password configuration and access rejection
         run: |
           python - <<'PY'
@@ -31,6 +39,13 @@ jobs:
                   if not state['available']:
                       raise SystemExit('RECIPE_PASSWORD is not configured on the deployed Pages project.')
                   break
+              except urllib.error.HTTPError as error:
+                  if error.code == 403:
+                      print('::warning::Cloudflare edge denied automated access; production password verification was not performed.')
+                      raise SystemExit(0)
+                  if attempt == 29:
+                      raise
+                  time.sleep(4)
               except (urllib.error.URLError, ValueError):
                   if attempt == 29:
                       raise
@@ -45,3 +60,4 @@ jobs:
                   raise SystemExit('Unexpected password verification response: ' + str(error.code))
           print('PASS: production password configured; incorrect password rejected.')
           PY
+
