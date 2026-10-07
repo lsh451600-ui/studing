@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-07T12:42:54.247285+00:00",
+  "updated_at": "2026-10-07T13:23:52.985861+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A30d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -7,10 +7,10 @@
       "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5EOTlxeXN6elg4bUs4UDVGOUltS0RONmR4NHkxal83TW04dEtNYjVFbzJPWWh6b2RjNUdmTGxUNmdtZkllRVhQVlZ1Qzk1LS02Y2lFcFFTWDJDOEJvVmtwb2loMXNFZUE2?oc=5",
       "source": "공감신문",
       "published_at": "2026-10-05T03:35:03+00:00",
-      "original_url": "https://www.gokorea.kr/news/articleView.html?idxno=880442",
       "image": "assets/news/9457edd54c71c9e02603f52f.jpg",
       "image_source": "https://cdn.gokorea.kr/news/thumbnail/202610/880442_157802_3159_v150.jpg",
-      "image_alt": "가을 외식물가 상승에 배달 대신 집밥 택한다 · 기사 사진"
+      "image_alt": "가을 외식물가 상승에 배달 대신 집밥 택한다 · 기사 사진",
+      "original_url": "https://www.gokorea.kr/news/articleView.html?idxno=880442"
     },
     {
       "title": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령!",
