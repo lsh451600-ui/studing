@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 KST = timezone(timedelta(hours=9))
-QUERY = '외식 (트렌드 OR 소비 OR 가성비 OR 혼밥 OR 메뉴) -아카데미 -교육 -모집 when:30d'
+QUERY = '외식 (트렌드 OR 소비 OR 가성비 OR 혼밥 OR 물가 OR 시장) -아카데미 -교육 -모집 when:30d'
 FEED = 'https://news.google.com/rss/search?' + urllib.parse.urlencode(
     {'q': QUERY, 'hl': 'ko', 'gl': 'KR', 'ceid': 'KR:ko'})
 
@@ -37,7 +37,9 @@ def collect(xml, now):
             continue
         if not any(word in title for word in ('외식', '레스토랑', '식당', '프랜차이즈', '음식점')):
             continue
-        if any(word in title for word in ('아카데미', '교육 모집', '무료 교육', '무료교육', '맞춤형 교육')):
+        if any(word in title for word in ('아카데미', '교육 모집', '무료 교육', '무료교육', '맞춤형 교육', '룰렛', '카지노', '슬롯', '시어머니', '며느리')):
+            continue
+        if not any(word in title for word in ('트렌드', '소비', '물가', '시장', '열풍', '확산', '변화', '증가', '감소', '성장', '가성비', '혼밥', '식재료', '산업')):
             continue
         suffix = ' - ' + source
         if title.endswith(suffix):
