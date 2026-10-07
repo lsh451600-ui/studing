@@ -88,6 +88,13 @@ if (params.has('auth')) {
     kakao_flow_expired: '로그인 요청이 만료되었거나 다른 창에서 변경되었습니다. 로그인 버튼을 눌러 다시 시작해 주세요. (KAKAO-01)',
     kakao_cancelled: '카카오 로그인이 취소되었습니다. 원하시면 다시 로그인해 주세요.',
     kakao_config_required: '카카오 로그인 설정 확인이 필요합니다. (KAKAO-02)',
+    kakao_key_invalid: '카카오 REST API 키 설정을 확인해야 합니다. (KOE101)',
+    kakao_key_changed: '로그인 도중 카카오 앱 키가 변경되었습니다. 로그인 버튼에서 다시 시작해 주세요. (KOE114)',
+    kakao_redirect_mismatch: '카카오 인증 요청과 처리 주소가 일치하지 않습니다. (KOE303)',
+    kakao_code_expired: '카카오 인증 코드가 만료되었거나 이미 사용되었습니다. 로그인 버튼에서 다시 시작해 주세요. (KOE320)',
+    kakao_rate_limited: '카카오 로그인 요청이 많습니다. 잠시 후 다시 시도해 주세요. (KOE237)',
+    kakao_platform_invalid: '카카오 앱의 웹 플랫폼 설정을 확인해야 합니다. (KOE009)',
+    kakao_ip_restricted: '카카오 앱의 요청 IP 제한 설정을 확인해야 합니다. (KOE127)',
     kakao_token_failed: '카카오 인증 연결을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요. (KAKAO-03)',
     kakao_secret_invalid: '카카오 로그인 설정 확인이 필요합니다. (KAKAO-04)',
     kakao_oidc_required: '카카오 계정 인증 설정 확인이 필요합니다. (KAKAO-05)',
@@ -101,6 +108,11 @@ if (params.has('auth')) {
     kakao_provider_failed: '카카오에서 로그인 요청을 처리하지 못했습니다. (KAKAO-13)',
   };
   byId('member-feedback').textContent = messages[params.get('auth')] || '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';
+  const detail = params.get('detail') || '';
+  if (params.get('auth') === 'kakao_token_failed' && /^(KOE[0-9]{3}|HTTP[0-9]{3})$/.test(detail)) {
+    byId('member-feedback').textContent += ' [' + detail + ']';
+  }
+  params.delete('detail');
   params.delete('auth'); history.replaceState(null, '', location.pathname + (params.size ? '?' + params : '') + location.hash);
 }
 

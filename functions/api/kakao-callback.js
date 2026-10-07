@@ -11,11 +11,16 @@ export function classifyKakaoSessionError(data = {}) {
   if (code.includes('database') || message.includes('database') || message.includes('saving new user') || code === 'unexpected_failure' || code === 'server_error') return 'kakao_member_setup';
   return 'kakao_supabase_failed';
 }
+export function classifyKakaoTokenError(data = {}) {
+  return ({ KOE010: 'kakao_secret_invalid', KOE101: 'kakao_key_invalid', KOE114: 'kakao_key_changed',
+    KOE303: 'kakao_redirect_mismatch', KOE320: 'kakao_code_expired', KOE237: 'kakao_rate_limited',
+    KOE009: 'kakao_platform_invalid', KOE127: 'kakao_ip_restricted' })[data.error_code] || 'kakao_token_failed';
+}
 export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return new Response(null, { status: 405 });
   const headers = new Headers({ 'Cache-Control': 'no-store, private', 'Referrer-Policy': 'no-referrer' });
   headers.append('Set-Cookie', clearOAuth('kakao'));
-  let outcome = 'kakao_flow_expired';
+  let outcome = 'kakao_flow_expired', detail = ''; 
   try {
     const url = new URL(request.url), flow = readFlow(request, 'kakao'), code = url.searchParams.get('code');
     if (!settings(env).ready || !kakaoReady(env)) outcome = 'kakao_config_required';
@@ -27,7 +32,13 @@ export async function onRequest({ request, env }) {
         body: new URLSearchParams({ grant_type: 'authorization_code', client_id: env.KAKAO_REST_API_KEY,
           client_secret: env.KAKAO_CLIENT_SECRET, redirect_uri: url.origin + '/api/kakao-callback', code }),
         signal: AbortSignal.timeout(15000), redirect: 'error' });
-      const token = await response.json();
+      let token;
+      try { token = await response.json(); }
+      catch { token = {}; detail = 'HTTP' + response.status; }
+      if (!response.ok) {
+        outcome = classifyKakaoTokenError(token);
+        detail = /^KOE[0-9]{3}$/.test(token.error_code || '') ? token.error_code : 'HTTP' + response.status;
+      }
       if (response.ok && typeof token.id_token === 'string' && token.id_token && typeof token.access_token === 'string' && token.access_token) {
         outcome = 'kakao_supabase_failed';
         const result = await upstream(env, '/auth/v1/token?grant_type=id_token', { method: 'POST',
@@ -41,9 +52,9 @@ export async function onRequest({ request, env }) {
           }
         } else outcome = classifyKakaoSessionError(result.data);
       } else if (response.ok && !token.id_token) outcome = 'kakao_oidc_required';
-      else if (token.error_code === 'KOE010') outcome = 'kakao_secret_invalid';
+
     }
   } catch { /* Preserve the last safe stage; never expose or log credentials. */ }
-  headers.set('Location', '/?auth=' + outcome);
+  headers.set('Location', '/?auth=' + outcome + (outcome === 'kakao_token_failed' && detail ? '&detail=' + detail : ''));
   return new Response(null, { status: 303, headers });
 }
