@@ -2,19 +2,25 @@ import { upstream } from './member-auth.js';
 export async function providers(env) {
   const result = await upstream(env, '/auth/v1/settings');
   if (!result.ok) throw new Error('providers_unavailable');
-  return { google: result.data.external?.google === true, kakao: result.data.external?.kakao === true };
+  return { google: result.data.external?.google === true, kakao: result.data.external?.kakao === true && kakaoReady(env) };
 }
-const name = '__Host-member-oauth';
-export const clearOAuth = () => `${name}=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0`;
+export function kakaoReady(env) {
+  return typeof env.KAKAO_REST_API_KEY === 'string' && /^[A-Za-z0-9_-]{8,256}$/.test(env.KAKAO_REST_API_KEY)
+    && typeof env.KAKAO_CLIENT_SECRET === 'string' && /^[A-Za-z0-9_-]{8,256}$/.test(env.KAKAO_CLIENT_SECRET);
+}
+const cookieName = kind => kind === 'kakao' ? '__Host-member-kakao' : '__Host-member-oauth';
+export const clearOAuth = (kind = 'google') => `${cookieName(kind)}=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0`;
 const base64url = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-export async function createFlow() {
+export async function createFlow(kind = 'google') {
+  const name = cookieName(kind);
   const verifier = base64url(crypto.getRandomValues(new Uint8Array(48)));
   const nonce = base64url(crypto.getRandomValues(new Uint8Array(32)));
   const challenge = base64url(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
   const value = encodeURIComponent(JSON.stringify({ verifier, nonce, expires: Date.now() + 600000 }));
-  return { nonce, challenge, cookie: `${name}=${value}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=600` };
+  return { nonce, challenge, verifier, cookie: `${name}=${value}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=600` };
 }
-export function readFlow(request) {
+export function readFlow(request, kind = 'google') {
+  const name = cookieName(kind);
   try {
     const value = (request.headers.get('Cookie') || '').split(';').map(x => x.trim()).find(x => x.startsWith(name + '='));
     const flow = JSON.parse(decodeURIComponent(value.slice(name.length + 1)));
@@ -26,4 +32,9 @@ export async function memberProfile(env, session) {
   const result = await upstream(env, '/rest/v1/member_profiles?select=username,phone&id=eq.' + encodeURIComponent(session.user.id), { token: session.access });
   if (!result.ok || !Array.isArray(result.data)) throw new Error('profile_unavailable');
   return result.data[0] || null;
+}
+
+export async function kakaoNonce(verifier) {
+  const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
 }

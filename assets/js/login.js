@@ -71,7 +71,7 @@ window.addEventListener('member-authenticated', event => {
 checkSession().catch(() => { byId('member-feedback').textContent = '로그인 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.'; });
 const params = new URLSearchParams(location.search);
 if (params.has('auth')) {
-  byId('member-feedback').textContent = ({ confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.', social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.' })[params.get('auth')] || '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';
+  byId('member-feedback').textContent = ({ confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.', social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.', kakao_oidc_required: '카카오 로그인 연결을 준비 중입니다. 잠시 후 다시 시도해 주세요.' })[params.get('auth')] || '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';
   params.delete('auth'); history.replaceState(null, '', location.pathname + (params.size ? '?' + params : '') + location.hash);
 }
 

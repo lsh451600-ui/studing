@@ -40,21 +40,14 @@ https://wwqdmhjmfdndwxyfajfq.supabase.co/auth/v1/callback
 
 ## 4. 카카오 연결
 
-1. Kakao Developers에서 애플리케이션을 만들고 웹 플랫폼/사이트 도메인에 `https://studing.pages.dev`를 등록합니다.
-2. 카카오 로그인을 활성화하고 Redirect URI에 다음을 등록합니다.
-```
-https://wwqdmhjmfdndwxyfajfq.supabase.co/auth/v1/callback
-```
-3. 카카오 앱의 REST API 키와 카카오 로그인 Client Secret을 확인합니다.
-4. Supabase Authentication → Sign In / Providers → Kakao에서 Kakao 로그인을 켜고 Client ID에 REST API 키, Client Secret에 카카오의 Client Secret을 입력합니다.
-5. 카카오 동의항목에서 이메일 제공을 설정합니다. 이메일 권한을 받을 수 없는 경우 Supabase Kakao 설정에서 ‘Allow users without an email’을 켤 수 있습니다. 홈페이지는 전화번호를 카카오에서 가져오지 않고 첫 로그인 후 직접 입력받습니다.
-6. 개발/테스트 제한이 있는 앱은 허용된 계정으로 먼저 확인하고 일반 사용자 공개에 필요한 카카오 설정을 완료합니다.
-
-공식 안내: https://supabase.com/docs/guides/auth/social-login/auth-kakao
+카카오 이메일 제공 권한이 없어도 로그인하도록 OpenID Connect 방식으로 변경했습니다.
+**[이메일 권한 없는 카카오 로그인 설정](KAKAO-NOEMAIL-SETUP.md)**을 따라주세요.
+카카오 OpenID Connect ON, 홈페이지 콜백 URI 추가, Cloudflare 카카오 환경 변수 2개, Supabase 이메일 없는 로그인 허용이 필요합니다.
+기존 Supabase 콜백 방식의 카카오 이메일 동의 설정 대신 새 안내를 사용합니다.
 
 ## 5. 실제 확인
 
-홈페이지를 새로고침한 뒤 로그인 창을 열면 Supabase 제공자 설정을 조회해 연결된 버튼만 활성화합니다. 로그인 제공자 설정 변경만으로 버튼이 활성화되며 코드 재배포는 필요 없습니다.
+홈페이지를 새로고침한 뒤 로그인 창을 열면 Supabase 제공자 설정을 조회해 연결된 버튼만 활성화합니다. 구글은 제공자 설정을 저장하면 활성화됩니다. 카카오는 새 안내의 Cloudflare 환경 변수를 저장한 후 재배포해야 합니다.
 
 구글·카카오 각각: 로그인 버튼 → 계정 선택 및 동의 → 첫 방문이면 아이디·전화번호 입력 → 가입 완료 → 새로고침 → 로그아웃 → 재로그인을 확인하세요. 기존 이메일 회원의 로그인도 확인하세요. 레시피 작성 권한은 기존 별도 관리자 인증을 계속 사용합니다.
 

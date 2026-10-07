@@ -7,6 +7,7 @@ on:
       - 'src/member-auth.js'
       - 'src/social-auth.js'
       - 'tests/social-auth.test.js'
+      - 'tests/kakao-auth.test.js'
       - 'tests/signup.test.js'
       - '.github/workflows/check-member-auth.yml'
   workflow_dispatch:
@@ -20,4 +21,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/signup.test.js tests/social-auth.test.js
+      - run: node --test tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js
