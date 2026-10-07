@@ -53,6 +53,8 @@ const { chromium } = require('playwright');
           await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
           await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'anonymous');
           assert.equal(await page.locator('#visitor-counter').count(), 0);
+          assert.equal(await page.getByRole('link', { name: /첫\s?페이지로 돌아가기/ }).count(), 0);
+          assert.equal(await page.locator('header .brand').getAttribute('href'), '/');
           assert.equal((await page.locator('#menu-open').textContent()).trim(), '');
           assert.equal((await page.locator('#menu-close').textContent()).trim(), '×');
           const expandedHeight = await page.locator('header').evaluate(el => el.getBoundingClientRect().height);
