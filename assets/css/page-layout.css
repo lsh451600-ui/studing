@@ -71,3 +71,30 @@ button,.cta,.video-watch{min-height:44px}
 @media(max-width:800px){.inquiry-field input,.inquiry-field textarea{font-size:16px}}
 .visitor-counter{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:29;display:flex;gap:7px;align-items:center;max-width:calc(100vw - 155px);padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--muted);font-size:10px;line-height:1.6;box-shadow:0 3px 16px #0001;pointer-events:none;flex-wrap:wrap}.visitor-counter b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}.video-start{position:absolute;inset:0;display:grid;align-content:center;justify-items:center;gap:13px;width:100%;height:100%;padding:20px;border:0;background:#101c2e;color:#fff;font:inherit;cursor:pointer;text-align:center;isolation:isolate}.video-start img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}.video-start:before{content:'';position:absolute;inset:0;background:#06162b66;z-index:-1}.video-start .video-play-mark{width:64px;height:46px}.video-start>span:last-child{font-size:12px;font-weight:600;text-shadow:0 1px 5px #000}.video-start:hover .video-play-mark{background:#f04740}.video-player{width:100%;max-width:100%;min-width:0;min-height:200px}
 @media(max-width:540px){.visitor-counter{left:calc(12px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));font-size:9px;padding:7px 9px;gap:5px}}
+
+/* Compact masthead: one row on tablets, two short rows on phones. */
+@media(max-width:1100px){
+  header{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:0;padding:12px 0}
+  header .menu-trigger{width:44px;height:44px;min-height:44px;padding:0;justify-content:center;position:relative}
+  header .menu-trigger>span{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  header .brand{min-width:0;gap:8px;justify-self:start}
+  header .brand .mark{width:32px;height:32px;flex-shrink:0;font-size:14px}
+  header .brand strong{display:block;font-size:14px;line-height:1.4;white-space:nowrap;letter-spacing:-.4px}
+  header .brand small{display:none}
+  header>nav{grid-column:auto;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;width:auto;min-width:0;margin:0;padding:0;border:0;gap:10px}
+  header>nav>a{flex:none;min-height:44px;padding:0;font-size:11px;white-space:nowrap}
+  header .member-controls{display:flex;flex-wrap:nowrap;justify-content:flex-end;align-items:center;gap:6px;width:auto;min-width:0;margin:0;padding:0;border:0}
+  header .member-status,header .member-controls[data-state="authenticated"] .member-status{display:block;flex:0 1 auto;flex-basis:auto;min-width:0;max-width:120px;padding:5px 7px;border-radius:999px;font-size:11px;font-weight:400;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  header .member-controls[data-state="authenticated"] .member-status:before{display:inline-block;width:5px;height:5px;margin-right:5px;vertical-align:2px}
+  header .member-controls button{flex:none;min-height:44px;padding:6px 9px;font-size:11px;line-height:1.4;border-radius:8px}
+}
+@media(max-width:699px){
+  header{grid-template-columns:44px minmax(0,1fr);gap:2px 10px;padding:8px 0}
+  header>nav{grid-column:1/-1;justify-content:space-between;gap:8px;width:100%}
+  header .brand strong{font-size:14px}
+  header .member-controls{flex:1;gap:5px}
+  header .member-status,header .member-controls[data-state="authenticated"] .member-status{max-width:clamp(62px,22vw,110px);font-size:10px;padding:4px 6px}
+  header .member-controls button{padding:6px 8px;font-size:10px}
+  .hero{padding:20px 0 24px;gap:22px}
+  .hero .eyebrow{font-size:8px;line-height:1.5;letter-spacing:1px}
+}

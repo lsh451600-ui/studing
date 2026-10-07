@@ -115,10 +115,18 @@ const { chromium } = require('playwright');
           await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'authenticated' && !document.querySelector('#login-dialog').open);
           assert.equal(await page.locator('#member-feedback').textContent(), '');
           assert.ok(!(await page.locator('#kakao-link-button').isVisible()));
-          assert.equal(await page.locator('#member-status').textContent(), '로그인 중 · 테스트회원님');
+          assert.equal(await page.locator('#member-status').textContent(), '테스트회원님');
           assert.ok(await page.locator('#logout-button').isVisible());
           assert.ok(!(await page.locator('#login-open').isVisible()));
           assert.ok(!(await page.locator('#signup-open').isVisible()));
+          if (width <= 768) {
+            const headerBox = await page.locator('header').boundingBox();
+            assert.ok(headerBox.height <= (width < 700 ? 110 : 82), 'mobile header stays compact');
+            assert.ok(await page.locator('#member-status').evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= 11), 'member ID uses compact text');
+            await page.evaluate(() => window.dispatchEvent(new CustomEvent('member-authenticated', { detail: { id: 'member', username: 'abcdefghijklmnopqrst', kakaoLinked: true } })));
+            assert.ok(await page.locator('#member-status').evaluate(el => getComputedStyle(el).whiteSpace === 'nowrap' && getComputedStyle(el).textOverflow === 'ellipsis'), 'long member ID stays on one line');
+            assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'long member ID does not overflow');
+          }
           const logout = await page.locator('#logout-button').boundingBox();
           assert.ok(logout.x >= 0 && logout.x + logout.width <= width, 'logout must fit viewport');
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'linked account page must fit viewport');

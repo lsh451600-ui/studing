@@ -43,11 +43,14 @@ function showUser(user) {
   currentUser = user || null;
   linkButton.hidden = !user || Boolean(user.kakaoLinked);
   linkButton.disabled = false;
-  linkButton.textContent = '카카오 계정 연결';
+  linkButton.textContent = '카카오 연결';
+  linkButton.setAttribute('aria-label', '카카오 계정 연결');
   if (!user && byId('profile-dialog').open) byId('profile-dialog').close();
   byId('login-open').hidden = Boolean(user); byId('signup-open').hidden = Boolean(user);
   byId('member-status').hidden = !user; byId('logout-button').hidden = !user;
-  byId('member-status').textContent = user ? '로그인 중 · ' + user.username + '님' : '';
+  byId('member-status').textContent = user ? user.username + '님' : '';
+  byId('member-status').title = user ? '로그인 중 · ' + user.username + '님' : '';
+  byId('member-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '회원 상태');
   byId('member-status').closest('.member-controls').dataset.state = user ? 'authenticated' : 'anonymous';
   byId('logout-button').textContent = '로그아웃';
 }
