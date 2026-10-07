@@ -178,6 +178,7 @@ header.is-compact .brand small{display:none}
 
 /* Official site identity */
 header .brand img{width:min(180px,28vw);height:auto;max-height:none}
+@media(max-width:1100px){header .brand img{max-height:48px}header.is-compact .brand img{max-height:42px}}
 @media(max-width:800px){header .brand img{width:min(155px,32vw)}}
 @media(max-width:480px){header .brand img{width:min(132px,38vw)}}
 header.is-compact .brand img{width:min(150px,26vw)}
