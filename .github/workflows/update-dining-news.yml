@@ -1,0 +1,35 @@
+name: Update dining trend news
+on:
+  schedule:
+    # 00:00 UTC = 09:00 Asia/Seoul. GitHub may queue scheduled runs.
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/update_news.py
+      - .github/workflows/update-dining-news.yml
+permissions:
+  contents: write
+concurrency:
+  group: dining-news-update
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Collect Google News and update homepage
+        run: python scripts/update_news.py
+      - name: Commit updated articles
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html news.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Update dining trend articles from Google News'
+          git push origin HEAD:main
