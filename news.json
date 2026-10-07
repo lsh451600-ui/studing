@@ -1,25 +1,7 @@
 {
-  "updated_at": "2026-10-07T06:41:41.296661+00:00",
-  "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%A9%94%EB%89%B4%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A30d&hl=ko&gl=KR&ceid=KR%3Ako",
+  "updated_at": "2026-10-07T06:42:19.649757+00:00",
+  "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A30d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
-    {
-      "title": "고가네보리밥, 지역 방문객 가족 외식 위한 한식 메뉴 구성",
-      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5uQTFUb0FRTkRGN1pmRG5YVU94Y2RwR2VxQ2xzWElFX1hWLUVwM0g0a09NOXFaMW5mWmNLcmZNTWk4S2pHT0xHQ1dEdFBtTTNGT2JOOHBmYWI3TmItVTRVUlh3RXNJZw?oc=5",
-      "source": "이로운넷",
-      "published_at": "2026-10-06T07:26:10+00:00"
-    },
-    {
-      "title": "와일드가 모든 심벌을 대신하나요? 저녁 외식메뉴 룰렛 규칙 확인",
-      "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQeENQV2RNTjJydE1lRU9WZjBzSzF3UTJsamVqdllpQWQzV2VLRFlZdXZvWHVRQnpndkhzTVE5OUxNTXNablVCbHhXeVBoeEJqZVNDeXNNOGt2ajRoLVk1WkJEaVRGa0FCcG5nWkhuRk9VUUVOUnV0eTVEZ2NwWEE5eWczLUI?oc=5",
-      "source": "Calgary Roughnecks",
-      "published_at": "2026-10-06T07:16:24+00:00"
-    },
-    {
-      "title": "김치는 파스타로, 고추장은 연어에…K-식재료, 미국 외식 메뉴로 확장",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBOdm5uX1NSSERqODFRclU4YmlZbnNCRzZmcW5VVk5UWHlzLTMtNjBfbkpVWC01Rkl5N2lBMEd1cGNKZHZHWEhjOUpucUlFT0xiaVJLODdpOHlidk14YWc3aVRicTBfSXU1TndiOQ?oc=5",
-      "source": "푸드아이콘",
-      "published_at": "2026-10-06T05:35:00+00:00"
-    },
     {
       "title": "가을 외식물가 상승에 배달 대신 집밥 택한다",
       "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBGSDZZb2Jpd04wSDBfamRzV19PTTFIUTFPTUpkeGhSRngtWUN0emxEczVOR0UwVEx2eTFDcVhsdVhLVDdXajRRYjRQeGdqcWhOSDhveHlpeVhzUGltVmZnNHBEdElBeFE?oc=5",
@@ -27,34 +9,52 @@
       "published_at": "2026-10-05T03:35:03+00:00"
     },
     {
-      "title": "테마 소개 페이지에 담을 저녁 외식메뉴 룰렛 배경 이야기",
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1wMzNsaUp3dG9FR3JnZUVDb3pPV2FPV2xMcWpwaUx5UzItWnJaUk02T0xsYkw2NDY4d2cwNmxHZ0RpTUpoZEppeTFab3ZscW1xbnFjUTBqckRGLUZKX0VzWFRaUUdRR1RyTmhBM21xRQ?oc=5",
-      "source": "Calgary Roughnecks",
-      "published_at": "2026-10-04T22:19:58+00:00"
-    },
-    {
-      "title": "[심층분석] '법의 테두리'로 들어온 펫푸드…외식산업과 손잡다",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE54WmNnMS1zcC1LYU1xVG9RZURzMENRUTNXelhpN20tOUZPTWQ5ZUpIVUdNYl9TX0VsbDU5eEZIdXRldlYzVkEyYVNuS1ZtN3otcGUyaXVaQnhVUFVLR09LeEVHWktOR0hvMk9z?oc=5",
-      "source": "더바이어",
-      "published_at": "2026-10-04T20:00:00+00:00"
-    },
-    {
       "title": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령!",
-      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9ucGIzdnRpT1VBZXZyN25zTGdGcVdGQkYwb1UyZG1JeHBZc3Zkejg2aGg3SnozazltOFhRVE1xNmJxalZzeGh0MGdpX3dDRHNtTjNB?oc=5",
-      "source": "네이트",
-      "published_at": "2026-10-04T10:36:00+00:00"
+      "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1wUTh3VUdfenp1d2x1ZEp1Rml4by1Kb2gxUktuOUU4OWtkLTgzY2I2WHNEXzVVZ1lnT09sYW1NY2QxRldIcGVGYWhQRXVkQWtpazdxV3RBVTFxbktFWFE?oc=5",
+      "source": "YTN",
+      "published_at": "2026-10-04T10:25:00+00:00"
     },
     {
-      "title": "\"애미야, 오늘 밤은…\" 시어머니 고른 외식 메뉴에 '깜짝' 놀란 며느리",
-      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1PSC16MUd1ZkI4QmJnSmI3VkU4TXF5WHZ0YUY4WmZ3V3RLWWVQSGFta1A5UXJvZHZQRGlkVnJLVU1Vc2tQZU41Z3hVeWZUczhqbFVz?oc=5",
-      "source": "네이트",
-      "published_at": "2026-10-02T23:01:00+00:00"
+      "title": "교촌치킨, 중국 장쑤성 우시에 신규 매장 ‘우시점’ 오픈... 중국 시장 공략 박차",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1pamNkckp0Y01SZ2VKczZ3LWN1OGdsZ1NQYV9sYUxUaWFzUkZkakF0RWRSbHRtTWxrME1EdTFXcVg3OGRWV21aLUJrRTdkNmEyckYyLWRqSE5KUm9RRUlvbGwteS10ckY3eWQtUw?oc=5",
+      "source": "식품외식경제",
+      "published_at": "2026-10-02T08:37:10+00:00"
     },
     {
-      "title": "다시 열어볼 만한 저녁 외식메뉴 룰렛 도움말 항목",
-      "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxNZ0l2LWhSbVNRQmhWcGFUb2hnYjhtNHl2UXFfWGhHVUpzazFXcllsZDVtcF9VcnFSWXFmbmR1aEZna090QTNxN0dsbkRsTm8wZjBibDJEN096NXNqM0pyeFltejNoMkw2cFRtMU5QSm9TLXdFQndvRWdfSjc0VmhYUlJ3VE8taFBvY1UyYnFfRGxlQWREdm50WWZENjh4SXFDRllnbEU0c1VvSlFKX3VPU001ajF5aW52Y1RHNHdXVmFuS00xMVZ2Yms4ZFhuRVhMR1MyUzlqQ3NCQ0V2VmxXdHFjRUc5Z1ZO?oc=5",
-      "source": "Calgary Roughnecks",
-      "published_at": "2026-10-02T12:51:01+00:00"
+      "title": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력”",
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42VTVTTXM0RWJBMkExVFNfeDgxU3VVWGNPbVRTTmd2WWdoS1RiVGFaTUcyaXRTR3FjT255YmF1UVJfTTRkX0F5UEpmbXFvc0Ezcm5EOXdmaWFrT2hXNzFIRjZBT0FOOVI3OFgxYmlB?oc=5",
+      "source": "식품저널 foodnews",
+      "published_at": "2026-10-02T02:31:09+00:00"
+    },
+    {
+      "title": "제주 물가 2.7%로 둔화… 외식 제외 개인서비스는 4.2%",
+      "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE5mWlJ0V1hhZ2R4VHlYUkRONldMWmdkcnR3ajVwYnpGRXFVWm9hR2hFYzNHY3FyTnZLUUZjSGZyWlg4Vm9WVmZxbENwVllFWGdlOGprYw?oc=5",
+      "source": "Daum",
+      "published_at": "2026-10-02T00:04:35+00:00"
+    },
+    {
+      "title": "농산물값 내렸지만 고기·외식은 올라…9월 먹거리 물가 ‘온도차’",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBHbkNPN1piWDI0OTdsblZLUUp6WXZhNzJreXJxWXJtUDRyOHd3dHhIQXMwRmkzSGVUQklaWS1FbktlNW1SOGxjN1FXZDNjVEF1MXVQVDJiNkdGeU9aYlp5SEZOcHV1OWpWSWxKeg?oc=5",
+      "source": "푸드아이콘",
+      "published_at": "2026-10-01T23:40:00+00:00"
+    },
+    {
+      "title": "대전, 소비생활만족도 전국 1위…식품·외식 만족도 가장 높아",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9PRy1tWHFzcUUxWkd6OG5zem0zT2Z5R1R4cF9LNnc4WDQ2OUhCSzRPZkZKemlValF5dXZ5djBZLUxXTzFZUkRfc2xDOWhqOW83T0phZG55bFBzV0NvdE1UdmZZV2dIeHVqazZB?oc=5",
+      "source": "프레시안",
+      "published_at": "2026-09-30T08:20:29+00:00"
+    },
+    {
+      "title": "대전시민 소비생활 만족도 전국 1위… 식품·외식 분야 만족도 높아",
+      "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE9yTnJGRnkwVUpqc1FQVUROTEVKMXFkQ1BkR1pycEw0TFdBZXJfMjFUcFpVZUN5ODBPRk56LUVNNXNMd0UzSkdGdWRjWjEycEE?oc=5",
+      "source": "Daum",
+      "published_at": "2026-09-30T07:56:58+00:00"
+    },
+    {
+      "title": "\"대전, 소비생활만족도 전국 1위…식품·외식 만족도 높아\"",
+      "url": "https://news.google.com/rss/articles/CBMiRkFVX3lxTE1jcDYtbXlsSXVCbl9kNVBUejM5al8zdHRMMjJxZUtiYWQwYWdsTFBhenluU0tHOTBaYTJpXzUxZGVjLTBhYXc?oc=5",
+      "source": "Daum",
+      "published_at": "2026-09-30T03:03:31+00:00"
     }
   ]
 }
