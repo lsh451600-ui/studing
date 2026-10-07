@@ -23,6 +23,10 @@ on:
       - 'tests/recipe-board-ui.cjs'
       - 'tests/recipe-access.test.js'
       - 'src/recipe-server.js'
+      - 'src/private-server.js'
+      - 'assets/js/private.js'
+      - 'tests/private.test.js'
+      - 'tests/private-board-ui.cjs'
       - 'assets/js/trend-video.js'
       - 'assets/js/trend-news.js'
       - 'tests/visit-news.test.js'
@@ -44,7 +48,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
 
   browser:
     runs-on: ubuntu-latest
@@ -62,4 +66,5 @@ jobs:
         run: |
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/recipe-board-ui.cjs
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/private-board-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/board-ui.cjs

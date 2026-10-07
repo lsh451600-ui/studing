@@ -41,6 +41,10 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   currentUser = user || null;
+  byId('menu-account-status').textContent = user ? user.username + '님 · 로그인 중' : '로그인하지 않았습니다.';
+  byId('menu-account-status').title = user ? user.username + '님' : '';
+  byId('menu-account-action').hidden = false;
+  byId('menu-account-action').textContent = user ? '로그아웃' : '로그인';
   linkButton.hidden = !user || Boolean(user.kakaoLinked);
   linkButton.disabled = false;
   linkButton.textContent = '카카오 연결';
@@ -78,6 +82,11 @@ async function openLogin(event) {
   } catch (error) { status.textContent = ''; showAuthError(error.message); }
 }
 byId('login-open').addEventListener('click', openLogin);
+byId('menu-account-action').addEventListener('click', () => {
+  byId('site-menu').close();
+  if (currentUser) byId('logout-button').click();
+  else byId('login-open').click();
+});
 byId('signup-to-login').addEventListener('click', openLogin);
 byId('login-close').addEventListener('click', () => dialog.close());
 dialog.addEventListener('cancel', event => { if (pending) event.preventDefault(); });
@@ -114,6 +123,7 @@ window.addEventListener('member-authenticated', event => {
 checkSession().catch(() => {
   byId('member-status').hidden = false;
   byId('member-status').textContent = '로그인 상태 확인 필요';
+  byId('menu-account-status').textContent = '로그인 상태를 확인하지 못했습니다.';
   byId('logout-button').hidden = false;
   showAuthError('로그인 상태를 확인하지 못했습니다. 새로고침하거나 로그아웃 후 다시 시도해 주세요.');
 });

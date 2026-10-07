@@ -149,3 +149,10 @@ header.is-compact .brand small{display:none}
 }
 @media(max-width:480px){header.is-compact .brand strong{font-size:11px}}
 @media(prefers-reduced-motion:reduce){header,header .brand .mark,header .brand strong{transition:none}}
+
+/* Account information and a small contact link inside the drawer. */
+.menu-account{margin:0 0 16px;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.menu-account-label{font-size:10px;color:var(--muted)}
+.menu-account p{margin:6px 0 8px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.menu-account button{min-height:36px;padding:6px 12px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--ink);font:inherit;font-size:11px}
+.site-menu .menu-footer .menu-inquiry{justify-self:end;gap:10px;width:auto;min-height:36px;padding:6px 10px;font-size:11px}

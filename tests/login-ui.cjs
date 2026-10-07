@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
   const root = process.cwd();
   const server = createServer(async (req, res) => {
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    const name = pathname === '/' ? 'index.html' : pathname === '/about' ? 'about.html' : pathname === '/recipes' ? 'recipes.html' : pathname === '/board' ? 'board.html' : pathname.slice(1);
+    const name = pathname === '/' ? 'index.html' : pathname === '/about' ? 'about.html' : pathname === '/recipes' ? 'recipes.html' : pathname === '/board' ? 'board.html' : pathname === '/private' ? 'private.html' : pathname === '/inquiry' ? 'inquiry.html' : pathname.slice(1);
     const path = resolve(root, name);
     if (!path.startsWith(root + '/')) { res.writeHead(403).end(); return; }
     try {
@@ -21,7 +21,7 @@ const { chromium } = require('playwright');
   let browser;
   try {
     browser = await chromium.launch({ headless: true });
-    for (const path of ['/', '/about', '/recipes', '/board']) {
+    for (const path of ['/', '/about', '/recipes', '/board', '/private', '/inquiry']) {
       for (const width of [320, 360, 390, 430, 768, 1280]) {
         for (const theme of ['light', 'dark']) {
           const context = await browser.newContext({ viewport: { width, height: 900 } });
@@ -67,9 +67,14 @@ const { chromium } = require('playwright');
           await page.waitForFunction(() => !document.querySelector('header').classList.contains('is-compact'));
           await page.locator('#menu-open').click();
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'true');
+          assert.equal(await page.locator('#menu-account-status').textContent(), '로그인하지 않았습니다.');
+          if (path === '/') {
+            assert.equal(await page.locator('.cta[href="#trends"]').count(), 0);
+            assert.equal(await page.locator('#partnership').count(), 0);
+          }
           const menuBox = await page.locator('#site-menu').boundingBox();
           assert.ok(menuBox.x >= 0 && menuBox.x + menuBox.width <= width, 'menu must fit viewport');
-          assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/', '/about', '/#trends', '/recipes', '/board']);
+          assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/about', '/#trends', '/recipes', '/board', '/private']);
           await page.keyboard.press('Escape');
           await page.waitForFunction(() => !document.querySelector('#site-menu').open && document.querySelector('#menu-open').getAttribute('aria-expanded') === 'false' && document.activeElement === document.querySelector('#menu-open'));
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'false');
@@ -161,7 +166,9 @@ const { chromium } = require('playwright');
           await page.waitForFunction(() => !document.querySelector('#kakao-link-button').hidden);
           await page.locator('#menu-open').click();
           assert.ok(await page.locator('#kakao-link-button').isVisible());
-          assert.equal(await page.locator('#site-menu .menu-footer a').getAttribute('href'), '/#partnership');
+          assert.equal(await page.locator('#menu-account-status').textContent(), state.user.username + '님 · 로그인 중');
+          assert.equal(await page.locator('#menu-account-action').textContent(), '로그아웃');
+          assert.equal(await page.locator('#site-menu .menu-footer a').getAttribute('href'), '/inquiry');
           const linkBox = await page.locator('#kakao-link-button').boundingBox();
           assert.ok(linkBox.x >= 0 && linkBox.x + linkBox.width <= width && linkBox.height >= 44, 'Kakao link must fit viewport and touch target');
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'unlinked account page must fit viewport');
