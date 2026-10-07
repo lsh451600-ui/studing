@@ -68,9 +68,17 @@ const { chromium } = require('playwright');
           await page.locator('#menu-open').click();
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'true');
           assert.equal(await page.locator('#menu-account-status').textContent(), '로그인하지 않았습니다.');
+          assert.equal(await page.locator('#menu-title').count(), 0);
+          assert.equal(await page.locator('.menu-heading #menu-account-status').count(), 1);
+          assert.ok(await page.locator('#menu-account-status').evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= 11));
+          const accountBox = await page.locator('#menu-account-status').boundingBox();
+          const closeBox = await page.locator('#menu-close').boundingBox();
+          assert.ok(Math.abs(accountBox.y + accountBox.height / 2 - closeBox.y - closeBox.height / 2) <= 2, 'account information shares the close-button row');
           if (path === '/') {
             assert.equal(await page.locator('.cta[href="#trends"]').count(), 0);
             assert.equal(await page.locator('#partnership').count(), 0);
+            assert.ok(!(await page.locator('.ribbon').textContent()).includes('IN FOCUS'));
+            assert.ok(await page.locator('.ribbon').evaluate(el => getComputedStyle(el).borderTopStyle === 'solid' && parseFloat(getComputedStyle(el).borderTopWidth) >= 1));
           }
           const menuBox = await page.locator('#site-menu').boundingBox();
           assert.ok(menuBox.x >= 0 && menuBox.x + menuBox.width <= width, 'menu must fit viewport');
