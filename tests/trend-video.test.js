@@ -25,7 +25,9 @@ function database(saved = {}) {
       }
       throw new Error('Unexpected query');
     }, async run() {
-      if (sql.includes('SET payload')) Object.assign(row, { payload: args[0], fetched_at: args[1], retry_after: 0, lease_until: 0 });
+      if (sql.includes('SET payload')) Object.assign(row, sql.includes('fetched_at = 0')
+        ? { payload: args[0], fetched_at: 0, retry_after: args[1], lease_until: 0 }
+        : { payload: args[0], fetched_at: args[1], retry_after: 0, lease_until: 0 });
       if (sql.includes('SET retry_after')) Object.assign(row, { retry_after: args[0], lease_until: 0 });
       return { success: true };
     } };
@@ -91,4 +93,88 @@ test('expired stale cache is withheld during refresh failure', async t => {
   const result = await (await onRequest({ request, env: { MEMBERS_DB: db, YOUTUBE_API_KEY: secret } })).json();
   assert.equal(result.available, false);
   assert.equal(result.video, undefined);
+});
+function edgeCache(t) {
+  const entries = new Map(), keys = [], writes = [];
+  const cache = {
+    async match(key) { keys.push(key.url); const item = entries.get(key.url); return item && item.expires > Date.now() ? item.response.clone() : undefined; },
+    async put(key, response) {
+      const seconds = Number(response.headers.get('Cache-Control').match(/max-age=(\d+)/)[1]);
+      writes.push(seconds); entries.set(key.url, { response: response.clone(), expires: Date.now() + seconds * 1000 });
+    }
+  };
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'caches');
+  Object.defineProperty(globalThis, 'caches', { configurable: true, value: { default: cache } });
+  t.after(() => { if (descriptor) Object.defineProperty(globalThis, 'caches', descriptor); else delete globalThis.caches; });
+  return { entries, keys, writes, cache };
+}
+test('missing D1 uses edge cache and isolates key fingerprints without leaking keys', async t => {
+  const edge = edgeCache(t), calls = mockYoutube(t, [video('bbbbbbbbbbb', 500)]);
+  const first = await onRequest({ request, env: { YOUTUBE_API_KEY: secret } });
+  const second = await onRequest({ request, env: { YOUTUBE_API_KEY: secret } });
+  assert.equal((await first.json()).available, true);
+  assert.equal((await second.json()).video.id, 'bbbbbbbbbbb');
+  assert.equal(calls.length, 2);
+  const different = await onRequest({ request, env: { YOUTUBE_API_KEY: 'different-private-key' } });
+  assert.equal((await different.json()).available, true);
+  assert.equal(calls.length, 4);
+  assert.equal(new Set(edge.keys).size, 2);
+  assert.deepEqual(edge.writes, [1800, 1800]);
+  assert.ok(edge.keys.every(key => !key.includes(secret) && !key.includes('different-private-key')));
+});
+test('edge failures cache a safe reason for five minutes and retry after expiry', async t => {
+  const edge = edgeCache(t); let calls = 0;
+  t.mock.method(globalThis, 'fetch', async () => { calls++; return Response.json({ error: { message: secret, errors: [{ reason: 'quotaExceeded' }] } }, { status: 403 }); });
+  for (let i = 0; i < 2; i++) {
+    const response = await onRequest({ request, env: { YOUTUBE_API_KEY: secret } });
+    assert.deepEqual(await response.json(), { available: false, reason: 'quota_exceeded' });
+  }
+  assert.equal(calls, 1); assert.deepEqual(edge.writes, [300]);
+  for (const item of edge.entries.values()) item.expires = 0;
+  assert.equal((await (await onRequest({ request, env: { YOUTUBE_API_KEY: secret } })).json()).reason, 'quota_exceeded');
+  assert.equal(calls, 2);
+});
+test('broken D1 falls back to an edge-cached successful lookup', async t => {
+  edgeCache(t); const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500)]);
+  const db = { prepare() { throw new Error('D1 unavailable'); } };
+  const result = await (await onRequest({ request, env: { MEMBERS_DB: db, YOUTUBE_API_KEY: secret } })).json();
+  assert.equal(result.video.id, 'bbbbbbbbbbb'); assert.equal(calls.length, 2);
+});
+test('classified provider failures persist safely across D1 cooldown requests', async t => {
+  const cases = [
+    ['keyInvalid', 'api_key_invalid', 'errors'], ['API_KEY_INVALID', 'api_key_invalid', 'details'],
+    ['accessNotConfigured', 'api_not_enabled', 'errors'], ['SERVICE_DISABLED', 'api_not_enabled', 'details'],
+    ['ipRefererBlocked', 'api_key_restricted', 'errors'], ['API_KEY_HTTP_REFERRER_BLOCKED', 'api_key_restricted', 'details'],
+    ['quotaExceeded', 'quota_exceeded', 'errors']
+  ];
+  let calls = 0, current;
+  t.mock.method(globalThis, 'fetch', async () => {
+    calls++; return Response.json({ error: { message: secret, [current[2]]: [{ reason: current[0], metadata: { apiKey: secret } }] } }, { status: 403 });
+  });
+  for (const item of cases) {
+    current = item; const db = database(), env = { MEMBERS_DB: db, YOUTUBE_API_KEY: secret }, before = calls;
+    for (let i = 0; i < 2; i++) {
+      const response = await onRequest({ request, env }); const text = await response.text();
+      assert.deepEqual(JSON.parse(text), { available: false, reason: item[1] }); assert.ok(!text.includes(secret));
+    }
+    assert.equal(calls, before + 1);
+    assert.deepEqual(JSON.parse(db.row.payload), { failure: item[1] });
+    assert.ok(!db.row.payload.includes(secret)); assert.equal(db.row.fetched_at, 0);
+  }
+});
+test('edge requests in flight share a lookup and return independently readable responses', async t => {
+  edgeCache(t); let calls = 0;
+  t.mock.method(globalThis, 'fetch', async url => {
+    calls++; await new Promise(resolve => setTimeout(resolve, 10));
+    return Response.json(url.pathname.endsWith('/search') ? { items: [{ id: { videoId: 'bbbbbbbbbbb' } }] } : { items: [video('bbbbbbbbbbb', 500)] });
+  });
+  const results = await Promise.all(Array.from({ length: 5 }, async () => (await onRequest({ request, env: { YOUTUBE_API_KEY: secret } })).json()));
+  assert.ok(results.every(result => result.video.id === 'bbbbbbbbbbb')); assert.equal(calls, 2);
+});
+test('edge cache outages do not discard a successfully fetched video', async t => {
+  const edge = edgeCache(t); mockYoutube(t, [video('bbbbbbbbbbb', 500)]);
+  edge.cache.match = async () => { throw new Error('cache read failure'); };
+  edge.cache.put = async () => { throw new Error('cache write failure'); };
+  const result = await (await onRequest({ request, env: { YOUTUBE_API_KEY: secret } })).json();
+  assert.equal(result.available, true); assert.equal(result.video.id, 'bbbbbbbbbbb');
 });

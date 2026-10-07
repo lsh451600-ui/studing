@@ -17,3 +17,19 @@
 
 공식 문서: https://developers.google.com/youtube/v3/getting-started
 검색 기준: https://developers.google.com/youtube/v3/docs/search/list
+
+D1이 없거나 연결에 실패하면 Cloudflare 지역별 캐시로 영상 조회를 계속합니다. 이 경우 조회 결과는 30분, 실패 사유는 5분 캐시됩니다. 전 지역의 API 사용량을 함께 제한하려면 MEMBERS_DB를 연결합니다.
+
+오류 안내:
+- YT-01: Production 환경에 YOUTUBE_API_KEY 등록 후 재배포.
+- YT-02: API 키 값이 잘못됨. 앞뒤 공백을 제외한 실제 키인지 확인.
+- YT-03: 해당 키가 속한 구글 프로젝트에서 YouTube Data API v3 활성화.
+- YT-04: 키의 애플리케이션 제한사항을 없음으로, API 제한사항을 YouTube Data API v3로 설정. 서버 호출이므로 HTTP 리퍼러 제한은 사용하지 않음.
+- YT-05: 일일 API 할당량 확인.
+- YT-06: 구글에서 요청 거부. 활성화와 키 제한 설정 확인.
+- YT-07/08: 유튜브 연결 시간 초과/연결 실패.
+- YT-09: 최근 30일 조건에 맞는 공개 영상 없음.
+- YT-10: Cloudflare 캐시 연결 실패.
+- YT-11: 구글에서 기타 오류 응답 반환.
+
+/api/trend-video는 키나 구글 원문 오류를 노출하지 않고 고정된 reason 값만 제공합니다.
