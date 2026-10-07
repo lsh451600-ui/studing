@@ -269,6 +269,27 @@ test('browser error UI maps only known reasons and never echoes provider message
     await new Promise(resolve => setImmediate(resolve));
     assert.ok(nodes.get('video-status').textContent.includes(expected));
     assert.ok(![...nodes.values()].some(node => node.textContent.includes(secret)));
-    assert.equal(calls[0].url, '/api/trend-video'); assert.equal(calls[0].options.cache, 'no-store');
+    assert.equal(calls[0].url, '/api/trend-video?visit=1'); assert.equal(calls[0].options.cache, 'no-store');
   }
+});
+
+test('visit mode queries fresh on every request with a server cutoff and no-store headers', async t => {
+  let calls = 0;
+  t.mock.method(globalThis, 'fetch', async input => {
+    calls++; const url = new URL(input);
+    if (url.pathname.endsWith('/search')) {
+      assert.ok(url.searchParams.has('publishedBefore'));
+      assert.ok(Date.parse(url.searchParams.get('publishedBefore')) <= Date.now());
+      return Response.json({ items: [{ id: { videoId: 'bbbbbbbbbbb' } }] });
+    }
+    return Response.json({ items: [video('bbbbbbbbbbb', 500)] });
+  });
+  for (let i = 0; i < 2; i++) {
+    const response = await onRequest({ request: new Request('https://example.test/api/trend-video?visit=1'), env: { YOUTUBE_API_KEY: secret } });
+    const data = await response.json();
+    assert.equal(response.headers.get('Cache-Control'), 'no-store, private');
+    assert.equal(data.available, true); assert.equal(data.stale, false);
+    assert.ok(Date.parse(data.checkedAt) >= Date.parse(data.requestedAt));
+  }
+  assert.equal(calls, 4);
 });

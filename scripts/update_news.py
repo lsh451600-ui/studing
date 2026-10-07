@@ -166,7 +166,7 @@ def render(articles, now):
 <p class="desc"><time datetime="{escape(article['published_at'])}">{published:%Y.%m.%d %H:%M}</time> · 한국 시간</p>
 <div class="read"><span>기사 원문 읽기</span><span aria-hidden="true">↗</span></div></a>''')
     return '''<section id="trends"><div class="section-head"><div><small>DINING TREND NEWS</small><h2>외식의 다음 장면</h2></div><span>GOOGLE NEWS · 발행일 최신순</span></div>''' + f'''
-<p style="font-size:12px;color:var(--muted);line-height:1.9">최근 30일 외식 트렌드 최신 6개 · 매일 오전 9시 수집 예정 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 카드를 누르면 기사 원문으로 이동합니다.</p>
+<p id="news-status" data-collected="{now.astimezone(KST):%Y.%m.%d %H:%M}" style="font-size:12px;color:var(--muted);line-height:1.9;white-space:pre-line" role="status">최근 30일 외식 트렌드 최신 6개 · 접속할 때 최신 조회 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 카드를 누르면 기사 원문으로 이동합니다.</p>
 <style>.news-photo{{height:200px;border-radius:10px;overflow:hidden;background:var(--surface)}}.news-photo img{{width:100%;height:100%;display:block;object-fit:cover}}.news-photo-empty{{display:grid;place-items:center;color:var(--muted);font-size:12px}}</style>
 <div class="cards">{''.join(cards)}</div></section>'''
 
@@ -184,6 +184,7 @@ def update(xml, now):
     page.write_text(changed, encoding='utf-8')
     (ROOT / 'news.json').write_text(json.dumps({'updated_at': now.isoformat(),
         'source': FEED, 'articles': articles}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    (ROOT / 'src/news-snapshot.js').write_text('export const snapshot = ' + (ROOT / 'news.json').read_text().strip() + ';\n', encoding='utf-8')
     print(f'Updated {len(articles)} articles, images: {sum(bool(a.get("image")) for a in articles)}, newest: {articles[0]["published_at"]}')
 
 

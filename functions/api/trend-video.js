@@ -55,7 +55,7 @@ async function youtube(key, resource, parameters) {
 }
 export async function selectVideo(key, now = Date.now()) {
   const found = await youtube(key, 'search', { part: 'snippet', type: 'video', q: QUERY,
-    order: 'viewCount', publishedAfter: new Date(now - 30 * 86400000).toISOString(),
+    order: 'viewCount', publishedAfter: new Date(now - 30 * 86400000).toISOString(), publishedBefore: new Date(now).toISOString(),
     regionCode: 'KR', relevanceLanguage: 'ko', safeSearch: 'moderate', videoEmbeddable: 'true', maxResults: '25' });
   const ids = [...new Set((found.items || []).map(item => item?.id?.videoId).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
   if (!ids.length) return null;
@@ -101,6 +101,15 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return reply({ available: false }, 405);
   if (!env.YOUTUBE_API_KEY?.trim()) return reply({ available: false, reason: 'setup_required' });
   env = { ...env, YOUTUBE_API_KEY: env.YOUTUBE_API_KEY.trim() };
+  if (new URL(request.url).searchParams.get('visit') === '1') {
+    const now = Date.now(), requestedAt = new Date(now).toISOString();
+    let data;
+    try {
+      const video = await selectVideo(env.YOUTUBE_API_KEY, now);
+      data = video ? { available: true, video, requestedAt, checkedAt: new Date().toISOString(), stale: false } : { available: false, reason: 'no_video', requestedAt };
+    } catch (error) { data = { available: false, reason: safeReason(error), requestedAt }; }
+    const response = reply(data); response.headers.set('Cache-Control', 'no-store, private'); return response;
+  }
   const fallback = async () => {
     try { return await edgeResponse(request, env); }
     catch { return reply({ available: false, reason: 'storage_unavailable' }, 503); }

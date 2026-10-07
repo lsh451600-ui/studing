@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { collect, onRequest } from '../functions/api/trend-news.js';
+const now = Date.parse('2026-10-07T15:01:00Z');
+const item = (title, time, id) => `<item><title>${title} - 테스트신문</title><link>https://news.google.com/rss/articles/${id}</link><source>테스트신문</source><pubDate>${new Date(time).toUTCString()}</pubDate></item>`;
+test('access cutoff excludes future and old articles, sorts, deduplicates and limits to six', () => {
+  const xml = '<rss><channel>' + [
+    item('외식 시장 미래 기사', now + 1000, 'future'), item('외식 시장 오래된 기사', now - 31 * 86400000, 'old'),
+    item('외식 무료교육 시장', now - 1000, 'spam'), item('외식 시장 변화 0', now - 500, 'duplicate'),
+    ...Array.from({ length: 8 }, (_, i) => item('외식 시장 변화 ' + i, now - (8 - i) * 1000, i))
+  ].join('') + '</channel></rss>';
+  const articles = collect(xml, now);
+  assert.equal(articles.length, 6); assert.equal(articles[0].title, '외식 시장 변화 0');
+  assert.equal(new Set(articles.map(a => a.title)).size, 6);
+  assert.ok(articles.every((a, i) => !i || Date.parse(articles[i - 1].published_at) >= Date.parse(a.published_at)));
+  assert.ok(!articles.some(a => /미래|오래된|무료교육/.test(a.title)));
+});
+test('every visit queries the feed without cache and reports actual request and collection times', async t => {
+  let calls = 0;
+  t.mock.method(globalThis, 'fetch', async (input, options) => {
+    calls++; assert.equal(new URL(input).host, 'news.google.com'); assert.equal(options.cache, 'no-store');
+    return new Response('<rss><channel>' + item('외식 시장 변화', Date.now() - 1000, 'today') + '</channel></rss>');
+  });
+  for (let i = 0; i < 2; i++) {
+    const response = await onRequest({ request: new Request('https://example.test/api/trend-news') });
+    assert.equal(response.headers.get('Cache-Control'), 'no-store, private');
+    const data = await response.json(); assert.equal(data.stale, false); assert.equal(data.articles.length, 1);
+    assert.ok(Date.parse(data.checkedAt) >= Date.parse(data.requestedAt));
+  }
+  assert.equal(calls, 2);
+});
+test('outages are labeled stale and never relabel old collection times as current', async t => {
+  t.mock.method(globalThis, 'fetch', async () => { throw new Error('offline'); });
+  const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
+  assert.equal(data.stale, true); assert.equal(data.reason, 'news_unavailable');
+  assert.notEqual(data.checkedAt, data.requestedAt);
+});

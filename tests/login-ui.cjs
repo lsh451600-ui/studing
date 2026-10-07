@@ -32,7 +32,8 @@ const { chromium } = require('playwright');
             const url = new URL(route.request().url());
             if (url.origin !== origin) return route.abort();
             if (url.pathname === '/api/visitors') return route.fulfill({ json: { available: true, today: 12, total: 345 } });
-            if (url.pathname === '/api/trend-video') return route.fulfill({ json: trend });
+            if (url.pathname === '/api/trend-video') { assert.equal(url.searchParams.get('visit'), '1'); return route.fulfill({ json: trend }); }
+            if (url.pathname === '/api/trend-news') return route.fulfill({ json: { available: true, requestedAt: '2026-10-07T15:01:00Z', checkedAt: '2026-10-07T15:01:01Z', stale: false, articles: Array.from({ length: 6 }, (_, i) => ({ title: '외식 시장 변화 ' + i, source: '테스트신문', url: 'https://news.google.com/rss/articles/test' + i, published_at: '2026-10-07T14:00:00Z' })) } });
             if (url.pathname === '/api/session') return route.fulfill({ json: state });
             if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: { google: true, kakao: true } } });
             if (url.pathname === '/api/login') {
@@ -64,6 +65,10 @@ const { chromium } = require('playwright');
           assert.equal(await page.locator('#menu-open').evaluate(el => document.activeElement === el), true);
           if (path === '/') {
             await page.waitForSelector('#video-start');
+            await page.waitForFunction(() => document.querySelector('#news-status').textContent.includes('접속 기준:'));
+            assert.equal(await page.locator('#trends .card').count(), 6);
+            const newsStatus = await page.locator('#news-status').textContent();
+            assert.ok(newsStatus.includes('2026. 10. 08.') && newsStatus.includes('00:01:00'), 'visit timestamp rolls over to the Korean calendar day');
             assert.equal(await page.locator('#video-player iframe').count(), 0);
             await page.locator('#video-start').click();
             await page.waitForSelector('#video-player iframe');

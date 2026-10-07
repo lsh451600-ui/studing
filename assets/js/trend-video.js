@@ -21,10 +21,10 @@ const errors = {
   youtube_internal_error: '영상 정보 처리 중 오류가 발생했습니다. (YT-14)',
   youtube_unavailable: '유튜브에서 영상 정보를 가져오지 못했습니다. (YT-11)'
 };
-const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', second: '2-digit', hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 async function update() {
   try {
-    const response = await fetch('/api/trend-video', { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(30000) });
+    const response = await fetch('/api/trend-video?visit=1', { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(30000) });
     const data = await response.json();
     if (!response.ok && !data.reason) throw new Error('unavailable');
     if (!data.available || !/^[A-Za-z0-9_-]{11}$/.test(data.video?.id || '')) {
@@ -53,7 +53,7 @@ async function update() {
     }
     title.textContent = video.title;
     meta.textContent = video.channel + ' · 조회수 ' + new Intl.NumberFormat('ko-KR').format(video.views) + '회';
-    status.textContent = '최근 30일 · 관련 검색 결과 조회수순 · 30분 갱신\n' + date(data.checkedAt) + ' 확인 (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
+    status.textContent = '최근 30일 · 관련 검색 결과 조회수순 · 접속할 때 조회\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
     watch.href = 'https://www.youtube.com/watch?v=' + video.id;
   } catch {
     if (!currentId) document.getElementById('video-loading').textContent = '영상을 불러오지 못했습니다.';
@@ -61,4 +61,4 @@ async function update() {
   }
 }
 update();
-setInterval(() => { if (!document.hidden) update(); }, 30 * 60 * 1000);
+globalThis.window?.addEventListener('pageshow', event => { if (event.persisted) update(); });
