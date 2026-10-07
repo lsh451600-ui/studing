@@ -24,7 +24,7 @@ function request(path, { method = 'GET', data, cookie = '', origin = 'https://st
   if (method !== 'GET') { headers.Origin = origin; headers['Content-Type'] = 'application/json'; }
   return new Request('https://studing.pages.dev' + path, { method, headers, ...(data === undefined ? {} : { body: JSON.stringify(data) }) });
 }
-const cookieOf = response => response.headers.getSetCookie().map(c => c.split(';')[0]).join('; ');
+const cookieOf = response => response.headers.getSetCookie().filter(c => !c.includes('Max-Age=0')).map(c => c.split(';')[0]).join('; ');
 async function loginViewer(env) {
   const response = await enter({ env, request: request('/api/recipes', { method: 'POST', data: { password: env.RECIPE_PASSWORD } }) });
   assert.equal(response.status, 200); return cookieOf(response);
