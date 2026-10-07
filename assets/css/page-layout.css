@@ -182,5 +182,14 @@ header .brand img{width:min(180px,28vw);height:auto;max-height:none}
 @media(max-width:480px){header .brand img{width:min(132px,38vw)}}
 header.is-compact .brand img{width:min(150px,26vw)}
 @media(max-width:800px){header.is-compact .brand img{width:min(140px,30vw)}}
+/* Keep the homepage masthead slightly more compact than interior pages. */
+.home-page header .brand img{width:min(160px,25vw)}
+@media(max-width:800px){.home-page header .brand img{width:min(145px,30vw)}}
+@media(max-width:480px){.home-page header .brand img{width:min(112px,33vw)}}
+.home-page header.is-compact .brand img{width:min(136px,23vw)}
+@media(max-width:800px){.home-page header.is-compact .brand img{width:min(118px,25vw)}}
 .footer-brand{display:inline-flex;align-items:center;gap:8px}
 .footer-brand img{display:block;width:110px;max-width:30vw;height:auto}
+
+.site-logo{position:relative;display:inline-block;line-height:0}.site-logo .logo-lighten{position:absolute;inset:0;display:none;filter:brightness(0) invert(1)}:root[data-theme="dark"] .site-logo .logo-lighten{display:block}.site-logo .logo-title{clip-path:inset(30% 33% 43% 47%)}.site-logo .logo-subtitle{clip-path:inset(55% 6% 28% 53%)}.site-logo .logo-tagline{clip-path:inset(70% 13% 17% 59%)}
+.footer-brand .site-logo{width:110px;max-width:30vw}
