@@ -54,3 +54,25 @@ Save를 누릅니다. 기존 소셜 회원 SQL (`20261007100000_social_members.s
 공식 참고:
 - https://supabase.com/docs/guides/auth/social-login/auth-kakao (Using Kakao Login JS SDK의 ID Token 흐름)
 - https://developers.kakao.com/docs/ko/kakaologin/rest-api
+
+## 오류 코드 확인
+
+콜백 실패 시 비밀 값이나 원본 서버 오류 대신 아래 고정 코드만 표시합니다.
+
+| 화면 코드 | 확인할 설정/단계 |
+| --- | --- |
+| KAKAO-01 | 쿠키/요청 만료. 홈페이지의 로그인 버튼에서 새로 시작 |
+| KAKAO-02 | Cloudflare 카카오/Supabase 환경 변수 |
+| KAKAO-03 | 카카오 인가 코드 교환. Client Secret/리다이렉트 URI/코드 만료 |
+| KAKAO-04 | 카카오 Client Secret 및 활성화 상태 |
+| KAKAO-05 | 카카오 OpenID Connect 활성화 |
+| KAKAO-06 | Supabase Kakao의 Allow users without an email |
+| KAKAO-07 | Supabase Kakao 제공자 활성화 |
+| KAKAO-08 | Supabase Client ID와 Cloudflare REST API 키의 앱 일치 |
+| KAKAO-09 | nonce 검증. 새 로그인으로 재시도, 검증 해제 금지 |
+| KAKAO-10 | Supabase 사용자 저장/서버 오류. 소셜 프로필 SQL 및 Auth 로그 확인 |
+| KAKAO-11 | Supabase ID Token 교환 실패. Supabase Auth 로그 확인 |
+| KAKAO-12 | 발급된 Supabase 세션의 사용자 확인 실패 |
+| KAKAO-13 | 카카오 인가 요청 거부 |
+
+이 분류는 실패 단계를 좁혀 주며 상세 원인이 확정되었다는 뜻은 아닙니다. Supabase Auth 로그를 공유할 때 토큰이나 Secret은 가립니다.

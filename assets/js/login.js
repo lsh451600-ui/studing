@@ -82,7 +82,25 @@ checkSession().catch(() => {
 });
 const params = new URLSearchParams(location.search);
 if (params.has('auth')) {
-  byId('member-feedback').textContent = ({ confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.', social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.', kakao_oidc_required: '카카오 로그인 연결을 준비 중입니다. 잠시 후 다시 시도해 주세요.' })[params.get('auth')] || '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';
+  const messages = {
+    confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.',
+    social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.',
+    kakao_flow_expired: '로그인 요청이 만료되었거나 다른 창에서 변경되었습니다. 로그인 버튼을 눌러 다시 시작해 주세요. (KAKAO-01)',
+    kakao_cancelled: '카카오 로그인이 취소되었습니다. 원하시면 다시 로그인해 주세요.',
+    kakao_config_required: '카카오 로그인 설정 확인이 필요합니다. (KAKAO-02)',
+    kakao_token_failed: '카카오 인증 연결을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요. (KAKAO-03)',
+    kakao_secret_invalid: '카카오 로그인 설정 확인이 필요합니다. (KAKAO-04)',
+    kakao_oidc_required: '카카오 계정 인증 설정 확인이 필요합니다. (KAKAO-05)',
+    kakao_email_required: '이메일 없는 카카오 계정의 로그인 허용 설정이 필요합니다. (KAKAO-06)',
+    kakao_provider_disabled: '카카오 로그인 연결이 아직 활성화되지 않았습니다. (KAKAO-07)',
+    kakao_app_mismatch: '카카오 앱 연결 설정이 일치하지 않습니다. (KAKAO-08)',
+    kakao_nonce_failed: '카카오 인증 요청을 확인하지 못했습니다. 로그인 버튼을 눌러 다시 시작해 주세요. (KAKAO-09)',
+    kakao_member_setup: '카카오 회원 정보를 저장하지 못했습니다. 회원가입 설정 확인이 필요합니다. (KAKAO-10)',
+    kakao_supabase_failed: '카카오 인증 후 회원 로그인 연결에 실패했습니다. (KAKAO-11)',
+    kakao_session_failed: '카카오 로그인 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요. (KAKAO-12)',
+    kakao_provider_failed: '카카오에서 로그인 요청을 처리하지 못했습니다. (KAKAO-13)',
+  };
+  byId('member-feedback').textContent = messages[params.get('auth')] || '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';
   params.delete('auth'); history.replaceState(null, '', location.pathname + (params.size ? '?' + params : '') + location.hash);
 }
 
