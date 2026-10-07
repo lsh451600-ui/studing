@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
   const root = process.cwd();
   const server = createServer(async (req, res) => {
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    const name = pathname === '/' ? 'index.html' : pathname === '/about' ? 'about.html' : pathname === '/recipes' ? 'recipes.html' : pathname.slice(1);
+    const name = pathname === '/' ? 'index.html' : pathname === '/about' ? 'about.html' : pathname === '/recipes' ? 'recipes.html' : pathname === '/board' ? 'board.html' : pathname.slice(1);
     const path = resolve(root, name);
     if (!path.startsWith(root + '/')) { res.writeHead(403).end(); return; }
     try {
