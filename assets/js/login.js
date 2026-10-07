@@ -10,17 +10,23 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   currentUser = user || null;
+  if (!user && byId('profile-dialog').open) byId('profile-dialog').close();
   byId('login-open').hidden = Boolean(user); byId('signup-open').hidden = Boolean(user);
   byId('member-status').hidden = !user; byId('logout-button').hidden = !user;
   byId('member-status').textContent = user ? user.username + '님' : '';
 }
 async function checkSession() {
   const data = await api('/api/session'); showUser(data.authenticated ? data.user : null);
+  if (data.authenticated && data.needsProfile && !byId('profile-dialog').open) {
+    if (dialog.open) dialog.close();
+    byId('profile-dialog').showModal();
+  }
   return data;
 }
 async function openLogin(event) {
   opener = event?.currentTarget || byId('login-open');
   const signup = byId('signup-dialog'); if (signup.open) signup.close();
+  loadProviders();
   dialog.showModal(); status.textContent = '로그인 가능 여부를 확인하고 있습니다.'; byId('login-submit').disabled = true;
   try {
     const data = await checkSession();
@@ -65,6 +71,41 @@ window.addEventListener('member-authenticated', event => {
 checkSession().catch(() => { byId('member-feedback').textContent = '로그인 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.'; });
 const params = new URLSearchParams(location.search);
 if (params.has('auth')) {
-  byId('member-feedback').textContent = params.get('auth') === 'confirmed' ? '이메일 인증이 완료되었습니다.' : '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';
+  byId('member-feedback').textContent = ({ confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.', social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.' })[params.get('auth')] || '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';
   params.delete('auth'); history.replaceState(null, '', location.pathname + (params.size ? '?' + params : '') + location.hash);
 }
+
+async function loadProviders() {
+  document.querySelectorAll('[data-social]').forEach(button => { button.disabled = true; });
+  byId('social-status').textContent = '간편 로그인 연결을 확인하고 있습니다.';
+  try {
+    const data = await api('/api/oauth');
+    document.querySelectorAll('[data-social]').forEach(button => {
+      const ready = data.providers?.[button.dataset.social] === true;
+      button.disabled = !ready;
+      button.textContent = (button.dataset.social === 'google' ? '구글' : '카카오') + (ready ? '로 계속하기' : ' 로그인 · 연결 준비 중');
+    });
+    byId('social-status').textContent = '';
+  } catch { byId('social-status').textContent = '간편 로그인 연결을 확인하지 못했습니다.'; }
+}
+document.querySelectorAll('[data-social]').forEach(button => button.addEventListener('click', async () => {
+  document.querySelectorAll('[data-social]').forEach(b => { b.disabled = true; });
+  byId('social-status').textContent = '로그인 화면으로 이동하고 있습니다.';
+  try {
+    const data = await api('/api/oauth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: button.dataset.social }) });
+    location.assign(data.url);
+  } catch (error) { await loadProviders(); byId('social-status').textContent = error.message; }
+}));
+byId('profile-dialog').addEventListener('cancel', event => event.preventDefault());
+byId('profile-logout').addEventListener('click', () => byId('logout-button').click());
+byId('profile-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const form = event.currentTarget; if (!form.reportValidity()) return;
+  byId('profile-submit').disabled = true; byId('profile-logout').disabled = true;
+  try {
+    const data = await api('/api/member-profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
+    showUser(data.user); byId('profile-dialog').close(); form.reset();
+    byId('member-feedback').textContent = data.message;
+  } catch (error) { byId('profile-status').textContent = error.message; }
+  finally { byId('profile-submit').disabled = false; byId('profile-logout').disabled = false; }
+});

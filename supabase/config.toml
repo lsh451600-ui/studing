@@ -2,7 +2,7 @@ project_id = "studing-membership"
 
 [auth]
 site_url = "https://studing.pages.dev"
-additional_redirect_urls = ["https://studing.pages.dev/api/auth-confirm"]
+additional_redirect_urls = ["https://studing.pages.dev/api/auth-confirm", "https://studing.pages.dev/api/oauth-callback**"]
 minimum_password_length = 12
 
 [auth.email]
