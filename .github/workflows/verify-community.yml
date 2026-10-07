@@ -32,15 +32,16 @@ jobs:
             await pause(5000);
           }
           if (!deployed) throw new Error('Deployment not confirmed');
+          await pause(20000);
           let cookie = '', available = true;
           for (let i = 0; i < 2; i++) {
-            const response = await fetch('https://studing.pages.dev/api/visitors', { method: 'POST', headers: { Origin: 'https://studing.pages.dev', Cookie: cookie }, signal: AbortSignal.timeout(20000) });
+            const response = await fetch('https://studing.pages.dev/api/visitors?verify=' + process.env.COMMIT_SHA, { method: 'POST', headers: { Origin: 'https://studing.pages.dev', Cookie: cookie }, signal: AbortSignal.timeout(20000) });
             const data = await response.json();
             console.log('visitors', JSON.stringify({ status: response.status, available: data.available, reason: data.reason, today: data.today, total: data.total }));
             available = available && response.ok && data.available;
             cookie = response.headers.getSetCookie().map(c => c.split(';')[0]).join('; ');
           }
-          const board = await fetch('https://studing.pages.dev/api/board-posts', { signal: AbortSignal.timeout(20000) });
+          const board = await fetch('https://studing.pages.dev/api/board-posts?verify=' + process.env.COMMIT_SHA, { signal: AbortSignal.timeout(20000) });
           const data = await board.json();
           console.log('board', JSON.stringify({ status: board.status, reason: data.reason, posts: data.posts?.length }));
           if (!available || !board.ok) throw new Error('Storage is not ready; see safe diagnostics above');
