@@ -28,10 +28,10 @@ export async function onRequest({ request, env }) {
     else if (flow && url.searchParams.get('state') === flow.nonce && code && code.length <= 1024) {
       outcome = 'kakao_token_failed';
       const response = await fetch('https://kauth.kakao.com/oauth/token', { method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8', Accept: 'application/json' },
         body: new URLSearchParams({ grant_type: 'authorization_code', client_id: env.KAKAO_REST_API_KEY,
-          client_secret: env.KAKAO_CLIENT_SECRET, redirect_uri: url.origin + '/api/kakao-callback', code }),
-        signal: AbortSignal.timeout(15000), redirect: 'error' });
+          client_secret: env.KAKAO_CLIENT_SECRET, redirect_uri: url.origin + '/api/kakao-callback', code }).toString(),
+        signal: AbortSignal.timeout(15000), redirect: 'manual' });
       let token;
       try { token = await response.json(); }
       catch { token = {}; detail = 'HTTP' + response.status; }
@@ -54,7 +54,12 @@ export async function onRequest({ request, env }) {
       } else if (response.ok && !token.id_token) outcome = 'kakao_oidc_required';
 
     }
-  } catch { /* Preserve the last safe stage; never expose or log credentials. */ }
+  } catch (error) {
+    if (outcome === 'kakao_token_failed') {
+      outcome = ['TimeoutError', 'AbortError'].includes(error?.name) ? 'kakao_connection_timeout' : 'kakao_connection_failed';
+    }
+    // Do not log error.message: provider exceptions can contain credentials.
+  }
   headers.set('Location', '/?auth=' + outcome + (outcome === 'kakao_token_failed' && detail ? '&detail=' + detail : ''));
   return new Response(null, { status: 303, headers });
 }

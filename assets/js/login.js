@@ -95,6 +95,8 @@ if (params.has('auth')) {
     kakao_rate_limited: '카카오 로그인 요청이 많습니다. 잠시 후 다시 시도해 주세요. (KOE237)',
     kakao_platform_invalid: '카카오 앱의 웹 플랫폼 설정을 확인해야 합니다. (KOE009)',
     kakao_ip_restricted: '카카오 앱의 요청 IP 제한 설정을 확인해야 합니다. (KOE127)',
+    kakao_connection_timeout: '서버에서 카카오에 연결하는 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요. (KAKAO-14)',
+    kakao_connection_failed: '서버에서 카카오 인증 서버로 연결하지 못했습니다. 서버 연결 확인이 필요합니다. (KAKAO-15)',
     kakao_token_failed: '카카오 인증 연결을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요. (KAKAO-03)',
     kakao_secret_invalid: '카카오 로그인 설정 확인이 필요합니다. (KAKAO-04)',
     kakao_oidc_required: '카카오 계정 인증 설정 확인이 필요합니다. (KAKAO-05)',
