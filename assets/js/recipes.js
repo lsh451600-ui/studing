@@ -52,11 +52,6 @@ async function refreshPosts(append = false) {
   renderPosts(data.posts, append); next = data.next; byId('recipe-more').hidden = !next;
 }
 byId('recipe-show-password').addEventListener('change', event => { input.type = event.target.checked ? 'text' : 'password'; });
-byId('recipe-lock').addEventListener('click', async () => {
-  if (posting) { byId('recipe-post-status').textContent = '게시물 저장을 마친 뒤 잠글 수 있습니다.'; return; }
-  try { await api('/api/recipes', { method: 'DELETE' }); resetView(); input.focus(); }
-  catch (error) { byId('recipe-board-status').textContent = '잠금 처리에 실패했습니다. 다시 눌러 주세요.'; }
-});
 window.addEventListener('pagehide', resetView);
 form.addEventListener('submit', async event => {
   event.preventDefault(); if (pending || !form.reportValidity()) return;

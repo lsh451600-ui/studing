@@ -80,9 +80,7 @@ const { chromium } = require('playwright');
       assert.equal(submissions, 1); assert.equal(await page.locator('.recipe-row-title').first().textContent(), '새 레시피');
       await page.locator('#recipe-admin-exit').click(); await page.waitForFunction(() => !document.querySelector('#recipe-editor').hidden);
       assert.equal(admin, false);
-      await page.locator('#recipe-lock').click(); await page.waitForFunction(() => !document.querySelector('#recipe-gate').hidden);
-      assert.equal(await page.locator('.recipe-post').count(), 0);
-      console.log('PASS recipe board gate, owner authentication, photo submission and lock', width);
+      console.log('PASS recipe board gate, owner authentication, photo submission', width);
       await context.close();
     }
   } finally { if (browser) await browser.close(); await new Promise(done => server.close(done)); }
