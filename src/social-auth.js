@@ -11,12 +11,12 @@ export function kakaoReady(env) {
 const cookieName = kind => kind === 'kakao' ? '__Host-member-kakao' : '__Host-member-oauth';
 export const clearOAuth = (kind = 'google') => `${cookieName(kind)}=; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=0`;
 const base64url = bytes => btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-export async function createFlow(kind = 'google') {
+export async function createFlow(kind = 'google', userId = null) {
   const name = cookieName(kind);
   const verifier = base64url(crypto.getRandomValues(new Uint8Array(48)));
   const nonce = base64url(crypto.getRandomValues(new Uint8Array(32)));
   const challenge = base64url(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
-  const value = encodeURIComponent(JSON.stringify({ verifier, nonce, expires: Date.now() + 600000 }));
+  const value = encodeURIComponent(JSON.stringify({ verifier, nonce, ...(userId ? { userId } : {}), expires: Date.now() + 600000 }));
   return { nonce, challenge, verifier, cookie: `${name}=${value}; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=600` };
 }
 export function readFlow(request, kind = 'google') {

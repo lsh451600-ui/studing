@@ -1,5 +1,17 @@
 const byId = id => document.getElementById(id);
 const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('login-status');
+const linkButton = document.createElement('button');
+linkButton.id = 'kakao-link-button'; linkButton.type = 'button'; linkButton.hidden = true;
+byId('logout-button').before(linkButton);
+linkButton.addEventListener('click', async () => {
+  linkButton.disabled = true;
+  byId('member-feedback').textContent = '카카오 계정 연결을 시작합니다.';
+  try {
+    const data = await api('/api/oauth', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ provider: 'kakao', action: 'link' }) });
+    location.assign(data.url);
+  } catch (error) { byId('member-feedback').textContent = error.message; linkButton.disabled = false; }
+});
 let pending = false, opener, currentUser = null;
 async function api(path, options = {}) {
   const response = await fetch(path, { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(15000), ...options });
@@ -10,6 +22,9 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   currentUser = user || null;
+  linkButton.hidden = !user;
+  linkButton.disabled = Boolean(user?.kakaoLinked);
+  linkButton.textContent = user?.kakaoLinked ? '카카오 연결 완료' : '카카오 계정 연결';
   if (!user && byId('profile-dialog').open) byId('profile-dialog').close();
   byId('login-open').hidden = Boolean(user); byId('signup-open').hidden = Boolean(user);
   byId('member-status').hidden = !user; byId('logout-button').hidden = !user;
@@ -83,6 +98,11 @@ checkSession().catch(() => {
 const params = new URLSearchParams(location.search);
 if (params.has('auth')) {
   const messages = {
+    kakao_linked: '기존 회원 계정에 카카오가 연결되었습니다. 다음부터 카카오로 로그인할 수 있습니다.',
+    kakao_link_session: '연결하려던 로그인 상태가 변경되었습니다. 기존 아이디로 로그인한 뒤 다시 연결해 주세요.',
+    kakao_link_conflict: '이 카카오는 다른 회원 계정에 이미 연결되어 있습니다.',
+    kakao_link_disabled: 'Supabase에서 수동 계정 연결 허용 설정이 필요합니다.',
+    kakao_link_failed: '카카오 계정을 연결하지 못했습니다. 이미 다른 계정에 연결되어 있는지 확인해 주세요.',
     confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.',
     social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.',
     kakao_flow_expired: '로그인 요청이 만료되었거나 다른 창에서 변경되었습니다. 로그인 버튼을 눌러 다시 시작해 주세요. (KAKAO-01)',

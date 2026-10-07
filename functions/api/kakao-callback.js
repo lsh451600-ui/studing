@@ -1,4 +1,4 @@
-import { settings, upstream, sessionCookies } from '../../src/member-auth.js';
+import { settings, upstream, sessionCookies, currentSession } from '../../src/member-auth.js';
 import { readFlow, clearOAuth, kakaoReady } from '../../src/social-auth.js';
 // Return only a fixed category, never a provider's raw error, code or token.
 export function classifyKakaoSessionError(data = {}) {
@@ -26,6 +26,15 @@ export async function onRequest({ request, env }) {
     if (!settings(env).ready || !kakaoReady(env)) outcome = 'kakao_config_required';
     else if (url.searchParams.has('error')) outcome = url.searchParams.get('error') === 'access_denied' ? 'kakao_cancelled' : 'kakao_provider_failed';
     else if (flow && url.searchParams.get('state') === flow.nonce && code && code.length <= 1024) {
+      let linkingSession = null;
+      if (flow.userId) {
+        linkingSession = await currentSession(request, env);
+        for (const cookie of linkingSession.cookies) headers.append('Set-Cookie', cookie);
+        if (!linkingSession.user || linkingSession.user.id !== flow.userId) {
+          headers.set('Location', '/?auth=kakao_link_session');
+          return new Response(null, { status: 303, headers });
+        }
+      }
       outcome = 'kakao_token_failed';
       const response = await fetch('https://kauth.kakao.com/oauth/token', { method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8', Accept: 'application/json' },
@@ -42,15 +51,18 @@ export async function onRequest({ request, env }) {
       if (response.ok && typeof token.id_token === 'string' && token.id_token && typeof token.access_token === 'string' && token.access_token) {
         outcome = 'kakao_supabase_failed';
         const result = await upstream(env, '/auth/v1/token?grant_type=id_token', { method: 'POST',
-          body: { provider: 'kakao', id_token: token.id_token, access_token: token.access_token, nonce: flow.verifier } });
+          token: linkingSession?.access,
+          body: { ...(linkingSession ? { link_identity: true } : {}), provider: 'kakao', id_token: token.id_token, access_token: token.access_token, nonce: flow.verifier } });
         if (result.ok && result.data.access_token) {
           outcome = 'kakao_session_failed';
           const verified = await upstream(env, '/auth/v1/user', { token: result.data.access_token });
-          if (verified.ok && verified.data.id) {
+          if (verified.ok && verified.data.id && (!linkingSession || verified.data.id === linkingSession.user.id)) {
             for (const cookie of sessionCookies(result.data)) headers.append('Set-Cookie', cookie);
-            outcome = 'social';
+            outcome = linkingSession ? 'kakao_linked' : 'social';
           }
-        } else outcome = classifyKakaoSessionError(result.data);
+        } else outcome = linkingSession
+          ? (['identity_already_exists', 'identity_already_linked'].includes(result.data.error_code || result.data.code) ? 'kakao_link_conflict' : result.data.error_code === 'manual_linking_disabled' ? 'kakao_link_disabled' : 'kakao_link_failed')
+          : classifyKakaoSessionError(result.data);
       } else if (response.ok && !token.id_token) outcome = 'kakao_oidc_required';
 
     }
