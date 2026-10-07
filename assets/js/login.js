@@ -158,7 +158,8 @@ window.addEventListener('member-authenticated', event => {
   writeSessionCache({ available: true, authenticated: true, user: event.detail });
   showUser(event.detail); byId('member-feedback').textContent = '';
 });
-const initialSession = checkSession({ force: params.has('auth') || params.has('login_required') }).catch(() => {
+const navigationType = performance.getEntriesByType('navigation')[0]?.type;
+const initialSession = checkSession({ force: navigationType === 'reload' || params.has('auth') || params.has('login_required') }).catch(() => {
   clearSessionCache();
   byId('member-status').hidden = false;
   byId('member-status').textContent = '로그인 상태 확인 지연';
