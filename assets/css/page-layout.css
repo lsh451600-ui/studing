@@ -118,3 +118,7 @@ button,.cta,.video-watch{min-height:44px}
 .site-menu .menu-footer [hidden]{display:none!important}
 .site-menu .menu-footer a{display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:12px 16px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:13px}
 .site-menu .menu-footer .kakao-link-button{width:100%;min-height:44px;background:#fee500;color:#191919;border-color:#fee500}
+
+/* Slightly narrower navigation drawer and an icon-only close control. */
+.site-menu{width:min(300px,84vw);padding:24px 20px}
+.site-menu #menu-close{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;padding:0;font-size:20px;line-height:1}
