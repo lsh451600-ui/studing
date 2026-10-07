@@ -124,7 +124,7 @@ def enrich_images(articles):
                     article[key] = cached[key]
             continue
         try:
-            result = gnewsdecoder(article['url'], interval=1, timeout=15)
+            result = gnewsdecoder(article['url'], interval=1)
             if not (result.get('success') or result.get('status')):
                 raise ValueError(result.get('message', 'Cannot resolve article'))
             original_url = result['decoded_url']
