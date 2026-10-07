@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install article URL decoder and HTML parser
-        run: pip install googlenewsdecoder==0.1.7 beautifulsoup4
+        run: pip install googlenewsdecoder==0.1.7 selectolax==0.4.12 beautifulsoup4
       - name: Collect Google News and update homepage
         run: python scripts/update_news.py
       - name: Commit updated articles
