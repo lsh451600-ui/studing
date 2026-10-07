@@ -1,11 +1,11 @@
 const TTL = 30 * 60 * 1000;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 const QUERY = '외식 트렌드|외식 산업|푸드 트렌드';
-const CACHE_KEY = 'dining-30d-v2';
+const CACHE_KEY = 'dining-30d-v3';
 const inFlight = new Map();
-const reasons = new Set(['api_key_invalid', 'api_not_enabled', 'api_key_restricted', 'quota_exceeded', 'youtube_forbidden', 'youtube_unavailable', 'youtube_connection_failed', 'youtube_timeout', 'no_video']);
+const reasons = new Set(['api_key_invalid', 'api_not_enabled', 'api_key_restricted', 'quota_exceeded', 'youtube_forbidden', 'youtube_unavailable', 'youtube_connection_failed', 'youtube_timeout', 'youtube_response_invalid', 'youtube_redirect_blocked', 'youtube_internal_error', 'no_video']);
 export function classifyYouTubeError(data = {}, status = 0) {
-  const codes = [...(data.error?.errors || []).map(item => item.reason), ...(data.error?.details || []).map(item => item.reason)];
+  const codes = [...(Array.isArray(data?.error?.errors) ? data.error.errors : []), ...(Array.isArray(data?.error?.details) ? data.error.details : [])].map(item => item?.reason);
   if (codes.some(code => ['keyInvalid', 'API_KEY_INVALID'].includes(code))) return 'api_key_invalid';
   if (codes.some(code => ['accessNotConfigured', 'SERVICE_DISABLED'].includes(code))) return 'api_not_enabled';
   if (codes.some(code => ['ipRefererBlocked', 'API_KEY_HTTP_REFERRER_BLOCKED', 'API_KEY_IP_ADDRESS_BLOCKED', 'API_KEY_SERVICE_BLOCKED'].includes(code))) return 'api_key_restricted';
@@ -14,7 +14,7 @@ export function classifyYouTubeError(data = {}, status = 0) {
 }
 function safeReason(error) {
   if (reasons.has(error?.message)) return error.message;
-  return ['TimeoutError', 'AbortError'].includes(error?.name) ? 'youtube_timeout' : 'youtube_connection_failed';
+  return ['TimeoutError', 'AbortError'].includes(error?.name) ? 'youtube_timeout' : 'youtube_internal_error';
 }
 function reply(data, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: {
@@ -23,27 +23,48 @@ function reply(data, status = 200) {
   } });
 }
 async function youtube(key, resource, parameters) {
-  const url = new URL('https://www.googleapis.com/youtube/v3/' + resource);
-  url.search = new URLSearchParams({ ...parameters, key }).toString();
-  const response = await fetch(url, { signal: AbortSignal.timeout(12000), redirect: 'error' });
-  if (!response.ok) {
-    let error = {}; try { error = await response.json(); } catch {}
-    throw new Error(classifyYouTubeError(error, response.status));
+  const signal = AbortSignal.timeout(12000);
+  const hosts = ['youtube.googleapis.com', 'www.googleapis.com'];
+  let failure = 'youtube_connection_failed';
+  for (const host of hosts) {
+    const url = new URL('https://' + host + '/youtube/v3/' + resource);
+    url.search = new URLSearchParams({ ...parameters, key }).toString();
+    let response;
+    try {
+      response = await fetch(url.href, { method: 'GET', headers: { Accept: 'application/json' }, signal, redirect: 'manual' });
+    } catch (error) {
+      if (signal.aborted || ['TimeoutError', 'AbortError'].includes(error?.name)) throw new Error('youtube_timeout');
+      // Fixed fields only: fetch exception messages can contain the API key URL.
+      const networkCodes = ['ENOTFOUND', 'EAI_AGAIN', 'ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT'];
+      console.warn('youtube_transport_failed', { stage: resource, host,
+        type: ['TypeError', 'Error'].includes(error?.name) ? error.name : 'Other',
+        code: networkCodes.includes(error?.cause?.code) ? error.cause.code : 'unknown' });
+      continue;
+    }
+    if (response.status >= 300 && response.status < 400) {
+      failure = 'youtube_redirect_blocked';
+      continue; // Try only the other fixed Google host, never an arbitrary Location URL.
+    }
+    let data;
+    try { data = await response.json(); } catch { throw new Error('youtube_response_invalid'); }
+    if (!response.ok) throw new Error(classifyYouTubeError(data, response.status));
+    if (!data || typeof data !== 'object' || Array.isArray(data) || (data.items !== undefined && !Array.isArray(data.items))) throw new Error('youtube_response_invalid');
+    return data;
   }
-  return response.json();
+  throw new Error(failure);
 }
 export async function selectVideo(key, now = Date.now()) {
   const found = await youtube(key, 'search', { part: 'snippet', type: 'video', q: QUERY,
     order: 'viewCount', publishedAfter: new Date(now - 30 * 86400000).toISOString(),
     regionCode: 'KR', relevanceLanguage: 'ko', safeSearch: 'moderate', videoEmbeddable: 'true', maxResults: '25' });
-  const ids = [...new Set((found.items || []).map(item => item.id?.videoId).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
+  const ids = [...new Set((found.items || []).map(item => item?.id?.videoId).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
   if (!ids.length) return null;
   const details = await youtube(key, 'videos', { part: 'snippet,statistics,status', id: ids.join(',') });
-  const candidates = (details.items || []).filter(video => ids.includes(video.id) && video.status?.embeddable === true
-    && video.status?.privacyStatus === 'public' && Number.isFinite(Number(video.statistics?.viewCount))
+  const candidates = (details.items || []).filter(video => ids.includes(video?.id) && video.status?.embeddable === true
+    && video.status?.privacyStatus === 'public' && /^(0|[1-9][0-9]*)$/.test(String(video.statistics?.viewCount)) && Number.isFinite(Number(video.statistics?.viewCount))
     && Number(video.statistics?.viewCount) >= 0 && typeof video.snippet?.title === 'string'
     && Date.parse(video.snippet.publishedAt) >= now - 30 * 86400000 && Date.parse(video.snippet.publishedAt) <= now
-    && !video.snippet.liveBroadcastContent?.match(/^(live|upcoming)$/));
+    && !['live', 'upcoming'].includes(video.snippet.liveBroadcastContent));
   candidates.sort((a, b) => Number(b.statistics.viewCount) - Number(a.statistics.viewCount));
   if (!candidates.length) return null;
   const top = candidates[0];
@@ -56,7 +77,7 @@ async function edgeResponse(request, env) {
   if (!cache) return reply({ available: false, reason: 'storage_unavailable' }, 503);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(env.YOUTUBE_API_KEY)));
   const fingerprint = Array.from(digest.slice(0, 12), byte => byte.toString(16).padStart(2, '0')).join('');
-  const key = new Request(new URL('/__video-cache/v2/' + fingerprint, request.url));
+  const key = new Request(new URL('/__video-cache/v3/' + fingerprint, request.url));
   let cached;
   try { cached = await cache.match(key); } catch { /* Cache outages must not block video lookup. */ }
   if (cached) return cached;

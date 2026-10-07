@@ -33,3 +33,11 @@ D1이 없거나 연결에 실패하면 Cloudflare 지역별 캐시로 영상 조
 - YT-11: 구글에서 기타 오류 응답 반환.
 
 /api/trend-video는 키나 구글 원문 오류를 노출하지 않고 고정된 reason 값만 제공합니다.
+
+통신 처리 보완:
+- Google 공식 클라이언트의 youtube.googleapis.com을 먼저 사용하며, 연결 실패 시 www.googleapis.com의 동일 API로 한 번 전환합니다.
+- 이동 응답의 Location은 따라가지 않습니다. 허용한 두 Google 주소로만 요청합니다.
+- YT-12: 유튜브 JSON 응답 형식 오류.
+- YT-13: 두 공식 API 주소에서 예상하지 못한 이동 응답.
+- YT-14: 영상 처리 중 내부 오류. 실제 연결 실패(YT-08)와 구분합니다.
+- Cloudflare 함수 로그의 youtube_transport_failed는 stage, host, type, 허용된 네트워크 code만 기록합니다. API 키·요청 URL·원문 예외 메시지는 기록하지 않습니다.

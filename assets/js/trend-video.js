@@ -16,6 +16,9 @@ const errors = {
   no_video: '최근 30일의 조건에 맞는 공개 영상을 찾지 못했습니다. (YT-09)',
   storage_unavailable: '영상 캐시에 연결하지 못했습니다. 서버 설정 확인이 필요합니다. (YT-10)',
   refresh_pending: '영상을 갱신하고 있습니다. 잠시 후 새로고침해 주세요.',
+  youtube_response_invalid: '유튜브 응답을 처리하지 못했습니다. 서버 응답 확인이 필요합니다. (YT-12)',
+  youtube_redirect_blocked: '유튜브 API 주소에서 예상하지 못한 이동 응답을 받았습니다. (YT-13)',
+  youtube_internal_error: '영상 정보 처리 중 오류가 발생했습니다. (YT-14)',
   youtube_unavailable: '유튜브에서 영상 정보를 가져오지 못했습니다. (YT-11)'
 };
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));

@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { runInNewContext } from 'node:vm';
 import { selectVideo, onRequest } from '../functions/api/trend-video.js';
 const now = Date.now();
 const secret = 'private-youtube-key';
@@ -9,7 +11,7 @@ function mockYoutube(t, items) {
   const calls = [];
   t.mock.method(globalThis, 'fetch', async url => {
     calls.push(new URL(url));
-    return Response.json(url.pathname.endsWith('/search') ? { items: items.map(v => ({ id: { videoId: v.id } })) } : { items });
+    return Response.json(new URL(url).pathname.endsWith('/search') ? { items: items.map(v => ({ id: { videoId: v.id } })) } : { items });
   });
   return calls;
 }
@@ -166,7 +168,7 @@ test('edge requests in flight share a lookup and return independently readable r
   edgeCache(t); let calls = 0;
   t.mock.method(globalThis, 'fetch', async url => {
     calls++; await new Promise(resolve => setTimeout(resolve, 10));
-    return Response.json(url.pathname.endsWith('/search') ? { items: [{ id: { videoId: 'bbbbbbbbbbb' } }] } : { items: [video('bbbbbbbbbbb', 500)] });
+    return Response.json(new URL(url).pathname.endsWith('/search') ? { items: [{ id: { videoId: 'bbbbbbbbbbb' } }] } : { items: [video('bbbbbbbbbbb', 500)] });
   });
   const results = await Promise.all(Array.from({ length: 5 }, async () => (await onRequest({ request, env: { YOUTUBE_API_KEY: secret } })).json()));
   assert.ok(results.every(result => result.video.id === 'bbbbbbbbbbb')); assert.equal(calls, 2);
@@ -177,4 +179,96 @@ test('edge cache outages do not discard a successfully fetched video', async t =
   edge.cache.put = async () => { throw new Error('cache write failure'); };
   const result = await (await onRequest({ request, env: { YOUTUBE_API_KEY: secret } })).json();
   assert.equal(result.available, true); assert.equal(result.video.id, 'bbbbbbbbbbb');
+});
+test('transport uses a URL string, JSON Accept header and manual redirects; network failure recovers on fixed alternate host', async t => {
+  const calls = [], warnings = [];
+  t.mock.method(console, 'warn', (...args) => warnings.push(args));
+  t.mock.method(globalThis, 'fetch', async (input, options) => {
+    assert.equal(typeof input, 'string'); assert.equal(options.method, 'GET');
+    assert.equal(options.headers.Accept, 'application/json'); assert.equal(options.redirect, 'manual');
+    const url = new URL(input); calls.push({ host: url.host, resource: url.pathname, signal: options.signal });
+    if (url.host === 'youtube.googleapis.com') throw new TypeError('Could not fetch ' + input, { cause: { code: 'ECONNRESET' } });
+    return Response.json(url.pathname.endsWith('/search') ? { items: [{ id: { videoId: 'bbbbbbbbbbb' } }] } : { items: [video('bbbbbbbbbbb', 500)] });
+  });
+  const result = await selectVideo(secret, now);
+  assert.equal(result.id, 'bbbbbbbbbbb');
+  assert.deepEqual(calls.map(call => call.host), ['youtube.googleapis.com', 'www.googleapis.com', 'youtube.googleapis.com', 'www.googleapis.com']);
+  assert.equal(calls[0].signal, calls[1].signal, 'alternate host shares search deadline');
+  assert.equal(calls[2].signal, calls[3].signal, 'alternate host shares video deadline');
+  assert.equal(warnings.length, 2);
+  assert.ok(!JSON.stringify(warnings).includes(secret)); assert.ok(!JSON.stringify(warnings).includes('https://'));
+  assert.deepEqual(warnings[0], ['youtube_transport_failed', { stage: 'search', host: 'youtube.googleapis.com', type: 'TypeError', code: 'ECONNRESET' }]);
+});
+test('manual redirects use only the fixed alternate host, never the Location URL', async t => {
+  const calls = [];
+  t.mock.method(globalThis, 'fetch', async input => {
+    const url = new URL(input); calls.push(url.host);
+    if (url.host === 'youtube.googleapis.com') return new Response(null, { status: 302, headers: { Location: 'https://untrusted.example/steal?key=' + secret } });
+    return Response.json(url.pathname.endsWith('/search') ? { items: [{ id: { videoId: 'bbbbbbbbbbb' } }] } : { items: [video('bbbbbbbbbbb', 500)] });
+  });
+  assert.equal((await selectVideo(secret, now)).id, 'bbbbbbbbbbb');
+  assert.deepEqual(calls, ['youtube.googleapis.com', 'www.googleapis.com', 'youtube.googleapis.com', 'www.googleapis.com']);
+});
+test('HTTP key, forbidden and quota failures are not retried on the alternate host', async t => {
+  let calls = 0, response;
+  t.mock.method(globalThis, 'fetch', async () => { calls++; return response.clone(); });
+  for (const [status, data, reason] of [
+    [400, { error: { errors: [{ reason: 'keyInvalid' }] } }, 'api_key_invalid'],
+    [403, { error: { errors: [{ reason: 'forbidden' }] } }, 'youtube_forbidden'],
+    [429, { error: { message: secret } }, 'quota_exceeded'],
+    [403, { error: { errors: null, details: { reason: secret } } }, 'youtube_forbidden']
+  ]) {
+    response = Response.json(data, { status }); const before = calls;
+    await assert.rejects(selectVideo(secret, now), { message: reason }); assert.equal(calls, before + 1);
+  }
+});
+test('invalid JSON and invalid response shapes are response errors rather than network failures', async t => {
+  let response, calls = 0;
+  t.mock.method(globalThis, 'fetch', async () => { calls++; return response.clone(); });
+  for (const invalid of [new Response('<html>' + secret), Response.json([]), Response.json({ items: {} }), Response.json(null)]) {
+    response = invalid; const before = calls;
+    await assert.rejects(selectVideo(secret, now), { message: 'youtube_response_invalid' }); assert.equal(calls, before + 1);
+  }
+});
+test('unrecoverable transport, timeout and redirect errors remain distinct without leaking request URLs', async t => {
+  let mode, calls = 0; const warnings = [];
+  t.mock.method(console, 'warn', (...args) => warnings.push(args));
+  t.mock.method(globalThis, 'fetch', async input => {
+    calls++;
+    if (mode === 'redirect') return new Response(null, { status: 307, headers: { Location: 'https://untrusted.example/' } });
+    if (mode === 'timeout') throw new DOMException('Request ' + input, 'TimeoutError');
+    throw new TypeError('Request ' + input, { cause: { code: secret } });
+  });
+  for (const [kind, reason, expectedCalls] of [['network', 'youtube_connection_failed', 2], ['timeout', 'youtube_timeout', 1], ['redirect', 'youtube_redirect_blocked', 2]]) {
+    mode = kind; const before = calls;
+    const result = await (await onRequest({ request, env: { MEMBERS_DB: database(), YOUTUBE_API_KEY: secret } })).text();
+    assert.deepEqual(JSON.parse(result), { available: false, reason }); assert.ok(!result.includes(secret));
+    assert.equal(calls, before + expectedCalls);
+  }
+  assert.ok(!JSON.stringify(warnings).includes(secret)); assert.ok(!JSON.stringify(warnings).includes('https://'));
+});
+test('null entries and invalid view counts cannot displace validated candidates', async t => {
+  let calls = 0;
+  t.mock.method(globalThis, 'fetch', async input => {
+    calls++; const url = new URL(input);
+    return Response.json(url.pathname.endsWith('/search') ? { items: [null, { id: null }, { id: { videoId: 'bbbbbbbbbbb' } }, { id: { videoId: 'aaaaaaaaaaa' } }] }
+      : { items: [null, video('aaaaaaaaaaa', 0, { statistics: { viewCount: null } }), video('bbbbbbbbbbb', 500)] });
+  });
+  assert.equal((await selectVideo(secret, now)).id, 'bbbbbbbbbbb'); assert.equal(calls, 2);
+});
+test('browser error UI maps only known reasons and never echoes provider messages or key URLs', async () => {
+  const script = await readFile(new URL('../assets/js/trend-video.js', import.meta.url), 'utf8');
+  for (const [reason, expected] of [['youtube_connection_failed', 'YT-08'], ['youtube_response_invalid', 'YT-12'], ['youtube_redirect_blocked', 'YT-13'], ['youtube_internal_error', 'YT-14'], ['https://example.test/?key=' + secret, '잠시 후']]) {
+    const nodes = new Map(), calls = [];
+    const context = {
+      document: { hidden: false, getElementById(id) { if (!nodes.has(id)) nodes.set(id, { textContent: '' }); return nodes.get(id); } },
+      fetch: async (url, options) => { calls.push({ url, options }); return Response.json({ available: false, reason, message: secret, error: 'https://example.test/?key=' + secret }); },
+      AbortSignal, Intl, Date, setInterval() {}
+    };
+    runInNewContext(script, context);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.ok(nodes.get('video-status').textContent.includes(expected));
+    assert.ok(![...nodes.values()].some(node => node.textContent.includes(secret)));
+    assert.equal(calls[0].url, '/api/trend-video'); assert.equal(calls[0].options.cache, 'no-store');
+  }
 });
