@@ -26,15 +26,38 @@ export function collect(xml, now) {
   }).slice(0, 6);
 }
 async function fetchFeed(url) {
-  const options = { headers: { Accept: 'application/rss+xml, application/xml', 'User-Agent': 'DiningTrendJournal/1.0', 'Cache-Control': 'no-cache', Pragma: 'no-cache' }, signal: AbortSignal.timeout(12000), cf: { cacheTtl: 0, cacheEverything: false } };
-  try { return await fetch(url, { ...options, cache: 'no-store' }); }
-  catch (error) {
-    // Older Workers compatibility dates reject Request.cache before making a request.
-    if (!/cache.*(?:not implemented|unsupported)|unsupported cache mode/i.test(error?.message || '')) throw error;
-    return fetch(url, options);
+  let lastError;
+  for (const host of ['news.google.com', 'news.google.co.kr']) {
+    const target = new URL(url); target.hostname = host;
+    try {
+      // Headers and cf options also work with older Workers compatibility dates.
+      const response = await fetch(target.href, {
+        method: 'GET', headers: { Accept: 'application/rss+xml, application/xml',
+          'User-Agent': 'Mozilla/5.0 (compatible; DiningTrendJournal/1.0)',
+          'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+        signal: AbortSignal.timeout(7000), cf: { cacheTtl: 0, cacheEverything: false }
+      });
+      if (response.ok) return response;
+      lastError = Object.assign(new Error('feed'), { upstreamStatus: response.status });
+    } catch (error) { lastError = error; }
   }
+  throw lastError;
+}
+function diagnostic(error) {
+  const message = error?.message || '';
+  const code = error?.cause?.code || error?.code;
+  return {
+    errorType: ['TypeError', 'Error', 'TimeoutError', 'AbortError'].includes(error?.name) ? error.name : 'Other',
+    networkCode: ['ENOTFOUND', 'EAI_AGAIN', 'ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT'].includes(code) ? code : 'unknown',
+    errorCategory: /cache.*(?:not implemented|unsupported)|unsupported cache mode/i.test(message) ? 'cache_unsupported'
+      : /not implemented|not supported|is not a function/i.test(message) ? 'runtime_unsupported'
+      : /dns|resolve|ENOTFOUND|EAI_AGAIN/i.test(message) ? 'dns'
+      : /tls|ssl|certificate/i.test(message) ? 'tls'
+      : /fetch failed|network|connection/i.test(message) ? 'connection' : 'unknown'
+  };
 }
 export async function onRequest({ request }) {
+  const version = 'news-network-v2';
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff' };
   if (request.method !== 'GET') return Response.json({ available: false }, { status: 405, headers });
   const now = Date.now(), requestedAt = new Date(now).toISOString();
@@ -49,11 +72,13 @@ export async function onRequest({ request }) {
     const xml = await response.text(); if (xml.length > 2000000 || !/<rss\b/i.test(xml)) throw new Error('format');
     stage = 'filter';
     const articles = collect(xml, now); if (!articles.length) throw new Error('empty');
-    return Response.json({ available: true, articles, requestedAt, checkedAt: new Date().toISOString(), stale: false }, { headers });
+    return Response.json({ version, available: true, articles, requestedAt, checkedAt: new Date().toISOString(), stale: false }, { headers });
   } catch (error) {
+    upstreamStatus = error?.upstreamStatus || upstreamStatus;
+    const details = diagnostic(error);
     const failureCode = ['TimeoutError', 'AbortError'].includes(error?.name) ? 'NEWS-02' : upstreamStatus && upstreamStatus !== 200 ? 'NEWS-03' : stage === 'parse' ? 'NEWS-04' : stage === 'filter' ? 'NEWS-05' : 'NEWS-01';
-    console.warn('news_fetch_failed', { stage, failureCode, upstreamStatus });
+    console.warn('news_fetch_failed', { stage, failureCode, upstreamStatus, ...details });
     const articles = snapshot.articles.filter(a => Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000).slice(0, 6);
-    return Response.json({ available: articles.length > 0, articles, requestedAt, checkedAt: snapshot.updated_at, stale: true, reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
+    return Response.json({ version, ...details, available: articles.length > 0, articles, requestedAt, checkedAt: snapshot.updated_at, stale: true, reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
   }
 }

@@ -18,7 +18,7 @@ test('access cutoff excludes future and old articles, sorts, deduplicates and li
 test('every visit queries the feed without cache and reports actual request and collection times', async t => {
   let calls = 0;
   t.mock.method(globalThis, 'fetch', async (input, options) => {
-    calls++; assert.equal(new URL(input).host, 'news.google.com'); assert.equal(options.cache, 'no-store');
+    calls++; assert.equal(new URL(input).host, 'news.google.com'); assert.equal(options.cache, undefined); assert.equal(options.cf.cacheTtl, 0);
     return new Response('<rss><channel>' + item('외식 시장 변화', Date.now() - 1000, 'today') + '</channel></rss>');
   });
   for (let i = 0; i < 2; i++) {
@@ -36,7 +36,7 @@ test('outages are labeled stale and never relabel old collection times as curren
   assert.notEqual(data.checkedAt, data.requestedAt);
 });
 
- test('older Cloudflare cache-option errors recover with equivalent legacy cache bypass', async t => {
+ test('old Cloudflare runtimes never receive the unsupported cache property', async t => {
   let calls = 0;
   t.mock.method(globalThis, 'fetch', async (input, options) => {
     calls++;
@@ -45,7 +45,7 @@ test('outages are labeled stale and never relabel old collection times as curren
     return new Response('<rss><channel>' + item('외식 시장 변화', Date.now() - 1000, 'today') + '</channel></rss>');
   });
   const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
-  assert.equal(data.stale, false); assert.equal(calls, 2);
+  assert.equal(data.stale, false); assert.equal(calls, 1);
 });
 test('Google HTTP blocks and non-RSS responses have distinct diagnostics without raw messages', async t => {
   let response;
@@ -57,4 +57,15 @@ test('Google HTTP blocks and non-RSS responses have distinct diagnostics without
     assert.equal(data.stale, true); assert.equal(data.failureCode, expected);
     assert.ok(!JSON.stringify(data).includes('private text'));
   }
+});
+
+test('network failure on the primary Google host retries the Korean Google host', async t => {
+  const calls = [];
+  t.mock.method(globalThis, 'fetch', async input => {
+    const host = new URL(input).host; calls.push(host);
+    if (host === 'news.google.com') throw new TypeError('fetch failed');
+    return new Response('<rss><channel>' + item('외식 시장 변화', Date.now() - 1000, 'today') + '</channel></rss>');
+  });
+  const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
+  assert.equal(data.stale, false); assert.deepEqual(calls, ['news.google.com', 'news.google.co.kr']);
 });
