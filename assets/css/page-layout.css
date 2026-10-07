@@ -122,3 +122,15 @@ button,.cta,.video-watch{min-height:44px}
 /* Slightly narrower navigation drawer and an icon-only close control. */
 .site-menu{width:min(300px,84vw);padding:24px 20px}
 .site-menu #menu-close{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;padding:0;font-size:20px;line-height:1}
+
+/* Keep account controls visible without adding another header row. */
+html{scroll-padding-top:84px}
+header{position:sticky;top:0;z-index:40;min-height:72px;gap:12px;padding:10px 0;background:var(--paper);box-shadow:0 4px 12px #00000005}
+header .brand{gap:8px}
+header .menu-trigger{width:44px;height:44px;min-height:44px;padding:0;justify-content:center}
+header .member-controls{gap:6px}
+@media(max-width:1100px){
+  header{min-height:0;gap:6px;padding:4px 0}
+  header .brand{gap:5px}
+  header .member-controls{gap:4px}
+}
