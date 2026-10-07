@@ -41,7 +41,9 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   currentUser = user || null;
-  byId('menu-account-status').textContent = user ? user.username + '님 · 로그인 중' : '로그인하지 않았습니다.';
+  byId('menu-account-status').textContent = user ? user.username + '님' : '로그인하지 않았습니다.';
+  byId('menu-account-status').dataset.state = user ? 'authenticated' : 'anonymous';
+  byId('menu-account-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '로그인하지 않았습니다.');
   byId('menu-account-status').title = user ? user.username + '님' : '';
   byId('menu-account-action').hidden = false;
   byId('menu-account-action').textContent = user ? '로그아웃' : '로그인';
@@ -124,6 +126,7 @@ checkSession().catch(() => {
   byId('member-status').hidden = false;
   byId('member-status').textContent = '로그인 상태 확인 필요';
   byId('menu-account-status').textContent = '로그인 상태를 확인하지 못했습니다.';
+  byId('menu-account-status').dataset.state = 'unknown';
   byId('logout-button').hidden = false;
   showAuthError('로그인 상태를 확인하지 못했습니다. 새로고침하거나 로그아웃 후 다시 시도해 주세요.');
 });

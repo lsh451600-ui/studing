@@ -187,8 +187,13 @@ const { chromium } = require('playwright');
           await page.waitForFunction(() => !document.querySelector('#kakao-link-button').hidden);
           await page.locator('#menu-open').click();
           assert.ok(await page.locator('#kakao-link-button').isVisible());
-          assert.equal(await page.locator('#menu-account-status').textContent(), state.user.username + '님 · 로그인 중');
+          assert.equal(await page.locator('#menu-account-status').textContent(), state.user.username + '님');
           assert.equal(await page.locator('#menu-account-action').textContent(), '로그아웃');
+          assert.ok(await page.locator('#menu-account-status').evaluate(el => {
+            const dot = getComputedStyle(el, '::before');
+            const headerDot = getComputedStyle(document.querySelector('#member-status'), '::before');
+            return dot.backgroundColor === headerDot.backgroundColor && dot.width === headerDot.width && dot.content === '""';
+          }), 'drawer and masthead share the same green login indicator');
           assert.equal(await page.locator('#site-menu .menu-footer a').getAttribute('href'), '/inquiry');
           const linkBox = await page.locator('#kakao-link-button').boundingBox();
           assert.ok(linkBox.x >= 0 && linkBox.x + linkBox.width <= width && linkBox.height >= 44, 'Kakao link must fit viewport and touch target');
