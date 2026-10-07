@@ -9,3 +9,6 @@
 .signup-submit{width:100%;margin-top:24px;padding:14px;border:0;border-radius:10px;background:var(--accent);color:var(--paper);font-weight:600}.signup-submit:disabled{opacity:.55;cursor:default}
 .signup-status{font-size:12px;line-height:1.8;color:var(--muted);min-height:22px;margin-bottom:0}
 @media(max-width:640px){nav{flex-wrap:wrap;gap:12px}.signup-dialog{padding:24px}}
+
+
+.login-open{padding:10px 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;font-size:12px;white-space:nowrap}.member-status{font-size:12px;color:var(--accent);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.member-feedback{font-size:12px;line-height:1.8;color:var(--muted)}.member-feedback:empty{display:none}.signup-login-link{display:block;margin:18px auto 0;padding:8px;border:0;background:transparent;color:var(--accent);font-size:12px}nav [hidden]{display:none!important}

@@ -1,67 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { onRequest, hashPassword, validate } from '../functions/api/register.js';
-
-const body = { username: 'reader_1', password: 'a long test password', phone: '010-1234-5678', email: 'READER@example.com' };
-const request = (data = body, origin = 'https://studing.pages.dev') => new Request('https://studing.pages.dev/api/register', {
-  method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json', 'CF-Connecting-IP': '192.0.2.1' }, body: JSON.stringify(data),
-});
-class Database {
-  constructor() { this.saved = []; this.attempts = 0; }
-  prepare(sql) {
-    const db = this;
-    return { values: [], bind(...values) { this.values = values; return this; },
-      async first() { return { attempts: ++db.attempts }; },
-      async run() {
-        if (sql.includes('INSERT INTO members')) {
-          if (db.saved.some(a => a[1].toLowerCase() === this.values[1].toLowerCase() || a[4] === this.values[4])) {
-            throw new Error('D1_ERROR: UNIQUE constraint failed: members.username');
-          }
-          db.saved.push(this.values);
-        }
-        return { success: true };
-      },
-    };
-  }
-  async batch(statements) { return Promise.all(statements.map(s => s.run())); }
-}
-
-test('normalizes phone/email and rejects invalid or oversized fields', () => {
-  assert.equal(validate(body).phone, '01012345678');
-  assert.equal(validate(body).email, 'reader@example.com');
-  for (const invalid of [{ password: 'short' }, { phone: 'hello' }, { email: 'bad' }, { username: '<script>' }, { username: 'a'.repeat(21) }]) {
-    assert.equal(validate({ ...body, ...invalid }), null);
-  }
-});
-test('password salts differ and plaintext is never stored in the encoding', async () => {
-  const [a, b] = await Promise.all([hashPassword(body.password), hashPassword(body.password)]);
-  assert.notEqual(a, b);
-  assert.match(a, /^pbkdf2-sha256\$100000\$[0-9a-f]{32}\$[0-9a-f]{64}$/);
-  assert.ok(!a.includes(body.password));
-});
-test('requires the database and rejects cross-origin requests', async () => {
-  assert.equal((await onRequest({ request: request(), env: {} })).status, 503);
-  assert.equal((await onRequest({ request: request(body, 'https://other.example'), env: { MEMBERS_DB: new Database() } })).status, 403);
-  const response = await onRequest({ request: new Request('https://studing.pages.dev/api/register'), env: {} });
-  assert.equal((await response.json()).available, false);
-});
-test('successful registration persists hash and normalized details, rejects duplicates', async () => {
-  const db = new Database();
-  const response = await onRequest({ request: request(), env: { MEMBERS_DB: db } });
-  assert.equal(response.status, 201);
-  assert.equal(db.saved.length, 1);
-  assert.equal(db.saved[0][1], 'reader_1');
-  assert.ok(db.saved[0][2].startsWith('pbkdf2-sha256$'));
-  assert.equal(db.saved[0][3], '01012345678');
-  assert.equal(db.saved[0][4], 'reader@example.com');
-  assert.ok(!(await response.text()).includes(body.password));
-  assert.equal((await onRequest({ request: request(), env: { MEMBERS_DB: db } })).status, 409);
-});
-test('rate limit blocks before hashing/inserting and malformed bodies do not write accounts', async () => {
-  const db = new Database(); db.attempts = 5;
-  assert.equal((await onRequest({ request: request(), env: { MEMBERS_DB: db } })).status, 429);
-  assert.equal(db.saved.length, 0);
-  assert.equal((await onRequest({ request: request({ ...body, username: 'bad' }), env: { MEMBERS_DB: db } })).status, 400);
-  assert.equal((await onRequest({ request: request({ ...body, password: 'x'.repeat(5000) }), env: { MEMBERS_DB: db } })).status, 400);
-  assert.equal(db.saved.length, 0);
-});
+import {onRequest as register} from '../functions/api/register.js';
+import {onRequest as login} from '../functions/api/login.js';
+import {onRequest as session} from '../functions/api/session.js';
+import {onRequest as logout} from '../functions/api/logout.js';
+import {onRequest as confirm} from '../functions/api/auth-confirm.js';
+import {validate} from '../src/member-auth.js';
+const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test',SUPABASE_SECRET_KEY:'sb_secret_test'};
+const member={username:'tester',password:'a-strong-password',phone:'010-1234-5678',email:'TEST@example.com'};
+const user={id:'member-id',user_metadata:{username:'tester'}};
+const tokens={access_token:'access-test',refresh_token:'refresh-test',expires_in:3600,user};
+function req(path,body,extra={}) {return new Request('https://studing.pages.dev'+path,{method:body===undefined?'GET':'POST',headers:{Origin:'https://studing.pages.dev','Content-Type':'application/json',...extra},...(body===undefined?{}:{body:JSON.stringify(body)})});}
+function mock(t,steps){let calls=0;t.mock.method(globalThis,'fetch',async(url,options)=>{const step=steps[calls++];assert.ok(step,'unexpected request');assert.ok(url.includes(step.path));step.check?.(options);return new Response(JSON.stringify(step.data??{}),{status:step.status??200});});return()=>assert.equal(calls,steps.length);}
+const limit={path:'member_auth_limit',data:true};
+test('validation normalizes fields and rejects weak passwords',()=>{assert.equal(validate(member).email,'test@example.com');assert.equal(validate(member).phone,'01012345678');assert.equal(validate({...member,password:'0034'}),null);assert.equal(validate({...member,username:'<script>'}),null);});
+test('unconfigured and cross-origin writes fail closed',async()=>{assert.equal((await register({env:{},request:req('/api/register',member)})).status,503);assert.equal((await login({env,request:req('/api/login',{}, {Origin:'https://evil.example'})})).status,403);});
+test('signup sends private metadata and waits for email confirmation',async t=>{const done=mock(t,[limit,{path:'/signup',data:{id:'new'},check:o=>{const b=JSON.parse(o.body);assert.equal(b.data.phone,'01012345678');assert.equal(b.password,member.password);}}]);const r=await register({env,request:req('/api/register',member)});assert.equal(r.status,201);assert.equal((await r.json()).confirmationRequired,true);assert.equal(r.headers.get('Set-Cookie'),null);done();});
+test('username login resolves email only on server and sets HttpOnly cookies',async t=>{const done=mock(t,[limit,{path:'resolve_member_login',data:'test@example.com',check:o=>assert.equal(o.headers.apikey,env.SUPABASE_SECRET_KEY)},{path:'grant_type=password',data:tokens}]);const r=await login({env,request:req('/api/login',{identifier:'tester',password:member.password})});assert.equal(r.status,200);const b=await r.text();assert.ok(!b.includes(tokens.access_token));assert.ok(!b.includes(env.SUPABASE_SECRET_KEY));assert.ok(r.headers.get('Set-Cookie').includes('HttpOnly'));assert.ok(r.headers.get('Set-Cookie').includes('Secure'));done();});
+test('invalid password does not create a session',async t=>{mock(t,[limit,{path:'grant_type=password',status:400}]);const r=await login({env,request:req('/api/login',{identifier:member.email,password:'wrong'})});assert.equal(r.status,401);assert.equal(r.headers.get('Set-Cookie'),null);});
+test('rate limited login never calls password endpoint',async t=>{const done=mock(t,[{path:'member_auth_limit',data:false}]);assert.equal((await login({env,request:req('/api/login',{identifier:member.email,password:'wrong'})})).status,429);done();});
+test('forged cookies are verified remotely and rejected',async t=>{mock(t,[{path:'/user',status:401}]);const r=await session({env,request:req('/api/session',undefined,{Cookie:'__Host-member-access=forged'})});assert.equal((await r.json()).authenticated,false);assert.ok(r.headers.get('Set-Cookie').includes('Max-Age=0'));});
+test('expired access refreshes and re-verifies user',async t=>{const done=mock(t,[{path:'/user',status:401},{path:'grant_type=refresh_token',data:tokens},{path:'/user',data:user}]);const r=await session({env,request:req('/api/session',undefined,{Cookie:'__Host-member-access=expired; __Host-member-refresh=refresh-test'})});assert.equal((await r.json()).authenticated,true);assert.ok(r.headers.get('Set-Cookie').includes('access-test'));done();});
+test('outages do not masquerade as logout',async t=>{mock(t,[{path:'/user',status:503}]);const r=await session({env,request:req('/api/session',undefined,{Cookie:'__Host-member-access=test'})});assert.equal(r.status,503);assert.equal(r.headers.get('Set-Cookie'),null);});
+test('logout revokes server session and clears both cookies',async t=>{const done=mock(t,[{path:'/user',data:user},{path:'/logout',data:{}}]);const r=await logout({env,request:req('/api/logout',{}, {Cookie:'__Host-member-access=test'})});assert.equal(r.status,200);assert.equal(r.headers.getSetCookie().length,2);done();});
+test('confirmation exchanges token server-side and redirects without token',async t=>{mock(t,[{path:'/verify',data:tokens}]);const r=await confirm({env,request:req('/api/auth-confirm?token_hash='+'a'.repeat(40))});assert.equal(r.status,303);assert.equal(r.headers.get('Location'),'/?auth=confirmed');assert.ok(r.headers.get('Set-Cookie').includes('HttpOnly'));});

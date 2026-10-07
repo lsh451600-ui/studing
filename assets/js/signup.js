@@ -58,6 +58,10 @@ form.addEventListener('submit', async event => {
       available = false;
       status.textContent = data.message;
       submit.textContent = '가입 완료';
+      if (data.authenticated && data.user) {
+        window.dispatchEvent(new CustomEvent('member-authenticated', { detail: data.user }));
+        dialog.close();
+      }
     } else {
       status.textContent = data.message || '가입을 완료하지 못했습니다. 다시 시도해 주세요.';
     }
@@ -73,3 +77,4 @@ form.addEventListener('submit', async event => {
     form.removeAttribute('aria-busy');
   }
 });
+
