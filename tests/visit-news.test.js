@@ -35,3 +35,26 @@ test('outages are labeled stale and never relabel old collection times as curren
   assert.equal(data.stale, true); assert.equal(data.reason, 'news_unavailable');
   assert.notEqual(data.checkedAt, data.requestedAt);
 });
+
+ test('older Cloudflare cache-option errors recover with equivalent legacy cache bypass', async t => {
+  let calls = 0;
+  t.mock.method(globalThis, 'fetch', async (input, options) => {
+    calls++;
+    if (options.cache) throw new Error("The 'cache' field on 'RequestInitializerDict' is not implemented.");
+    assert.equal(options.cf.cacheTtl, 0); assert.equal(options.headers['Cache-Control'], 'no-cache');
+    return new Response('<rss><channel>' + item('외식 시장 변화', Date.now() - 1000, 'today') + '</channel></rss>');
+  });
+  const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
+  assert.equal(data.stale, false); assert.equal(calls, 2);
+});
+test('Google HTTP blocks and non-RSS responses have distinct diagnostics without raw messages', async t => {
+  let response;
+  t.mock.method(console, 'warn', () => {});
+  t.mock.method(globalThis, 'fetch', async () => response.clone());
+  for (const [value, expected] of [[new Response('private text', { status: 403 }), 'NEWS-03'], [new Response('<html>private text</html>'), 'NEWS-04']]) {
+    response = value;
+    const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
+    assert.equal(data.stale, true); assert.equal(data.failureCode, expected);
+    assert.ok(!JSON.stringify(data).includes('private text'));
+  }
+});

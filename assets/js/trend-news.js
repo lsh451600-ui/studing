@@ -25,7 +25,7 @@ async function loadNews() {
       card.append(photo, source, title, published, read); cards.append(card);
     }
     section.querySelector('.cards').replaceChildren(cards);
-    stamp.textContent = '최근 30일 외식 트렌드 · 최신 6개 · 접속할 때 조회\n접속 기준: ' + kst(data.requestedAt) + ' (한국 시간)\n실제 수집: ' + kst(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 수집이 지연되어 이전 결과를 표시합니다.' : '');
+    stamp.textContent = '최근 30일 외식 트렌드 · 최신 6개 · 접속할 때 조회\n접속 기준: ' + kst(data.requestedAt) + ' (한국 시간)\n실제 수집: ' + kst(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 수집이 지연되어 이전 결과를 표시합니다.' + (/^NEWS-0[1-5]$/.test(data.failureCode || '') ? ' (' + data.failureCode + ')' : '') : '');
   } catch {
     stamp.textContent = '최신 기사 조회에 실패해 이전 수집 결과를 표시합니다. 실제 수집: ' + stamp.dataset.collected + ' (한국 시간)';
   }

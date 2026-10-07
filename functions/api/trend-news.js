@@ -25,20 +25,35 @@ export function collect(xml, now) {
     if (seen.has(key)) return false; seen.add(key); return true;
   }).slice(0, 6);
 }
+async function fetchFeed(url) {
+  const options = { headers: { Accept: 'application/rss+xml, application/xml', 'User-Agent': 'DiningTrendJournal/1.0', 'Cache-Control': 'no-cache', Pragma: 'no-cache' }, signal: AbortSignal.timeout(12000), cf: { cacheTtl: 0, cacheEverything: false } };
+  try { return await fetch(url, { ...options, cache: 'no-store' }); }
+  catch (error) {
+    // Older Workers compatibility dates reject Request.cache before making a request.
+    if (!/cache.*(?:not implemented|unsupported)|unsupported cache mode/i.test(error?.message || '')) throw error;
+    return fetch(url, options);
+  }
+}
 export async function onRequest({ request }) {
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff' };
   if (request.method !== 'GET') return Response.json({ available: false }, { status: 405, headers });
   const now = Date.now(), requestedAt = new Date(now).toISOString();
   const url = new URL('https://news.google.com/rss/search');
   url.search = new URLSearchParams({ q: QUERY, hl: 'ko', gl: 'KR', ceid: 'KR:ko' }).toString();
+  let stage = 'fetch', upstreamStatus = null;
   try {
-    const response = await fetch(url.href, { cache: 'no-store', headers: { Accept: 'application/rss+xml, application/xml' }, signal: AbortSignal.timeout(12000) });
+    const response = await fetchFeed(url.href);
+    upstreamStatus = response.status;
     if (!response.ok) throw new Error('feed');
-    const xml = await response.text(); if (xml.length > 2000000) throw new Error('size');
+    stage = 'parse';
+    const xml = await response.text(); if (xml.length > 2000000 || !/<rss\b/i.test(xml)) throw new Error('format');
+    stage = 'filter';
     const articles = collect(xml, now); if (!articles.length) throw new Error('empty');
     return Response.json({ available: true, articles, requestedAt, checkedAt: new Date().toISOString(), stale: false }, { headers });
-  } catch {
+  } catch (error) {
+    const failureCode = ['TimeoutError', 'AbortError'].includes(error?.name) ? 'NEWS-02' : upstreamStatus && upstreamStatus !== 200 ? 'NEWS-03' : stage === 'parse' ? 'NEWS-04' : stage === 'filter' ? 'NEWS-05' : 'NEWS-01';
+    console.warn('news_fetch_failed', { stage, failureCode, upstreamStatus });
     const articles = snapshot.articles.filter(a => Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000).slice(0, 6);
-    return Response.json({ available: articles.length > 0, articles, requestedAt, checkedAt: snapshot.updated_at, stale: true, reason: 'news_unavailable' }, { headers });
+    return Response.json({ available: articles.length > 0, articles, requestedAt, checkedAt: snapshot.updated_at, stale: true, reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
   }
 }
