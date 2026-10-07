@@ -9,8 +9,13 @@ on:
       - 'tests/social-auth.test.js'
       - 'tests/kakao-auth.test.js'
       - 'tests/login-ui.cjs'
+      - 'assets/js/visitors.js'
+      - 'tests/visitors.test.js'
       - 'assets/js/login.js'
       - 'assets/js/site-menu.js'
+      - 'assets/js/recipes.js'
+      - 'assets/css/recipe-board.css'
+      - 'tests/recipe-board-ui.cjs'
       - 'assets/js/trend-video.js'
       - 'assets/css/page-layout.css'
       - 'tests/trend-video.test.js'
@@ -29,7 +34,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js
+      - run: node --test tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
 
   browser:
     runs-on: ubuntu-latest
@@ -44,4 +49,6 @@ jobs:
           npm install --prefix /tmp/login-browser-check --no-save playwright
           /tmp/login-browser-check/node_modules/.bin/playwright install --with-deps chromium
       - name: Verify login layout and account controls in Chromium
-        run: NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
+        run: |
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/recipe-board-ui.cjs

@@ -30,15 +30,18 @@ function renderPosts(posts, append = false) {
     const empty = document.createElement('p'); empty.textContent = '아직 등록된 레시피가 없습니다.'; content.append(empty);
   }
   for (const post of posts) {
-    const card = document.createElement('article'); card.className = 'recipe-post';
-    const title = document.createElement('h2'); title.textContent = post.title;
+    const card = document.createElement('details'); card.className = 'recipe-post';
+    const summary = document.createElement('summary'); summary.className = 'recipe-row';
+    const title = document.createElement('span'); title.className = 'recipe-row-title'; title.textContent = post.title;
     const time = document.createElement('time'); time.dateTime = post.created_at;
     time.textContent = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at));
-    card.append(title, time);
+    const arrow = document.createElement('span'); arrow.className = 'recipe-row-arrow'; arrow.textContent = '+'; arrow.setAttribute('aria-hidden', 'true');
+    summary.append(title, time, arrow); card.append(summary);
+    const detail = document.createElement('div'); detail.className = 'recipe-detail'; card.append(detail);
     if (post.image_url) {
-      const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 레시피 사진'; image.loading = 'lazy'; card.append(image);
+      const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 레시피 사진'; image.loading = 'lazy'; detail.append(image);
     }
-    const body = document.createElement('p'); body.className = 'recipe-post-body'; body.textContent = post.body; card.append(body); content.append(card);
+    const body = document.createElement('p'); body.className = 'recipe-post-body'; body.textContent = post.body; detail.append(body); content.append(card);
   }
   content.hidden = false;
 }
@@ -126,3 +129,4 @@ byId('recipe-more').addEventListener('click', async () => {
   try { await refreshPosts(true); } catch (error) { byId('recipe-board-status').textContent = error.message; }
   finally { button.disabled = false; }
 });
+

@@ -17,13 +17,22 @@ async function update() {
     }
     const video = data.video;
     if (currentId !== video.id) {
-      // A regular YouTube embed keeps player controls, captions and user-initiated playback.
-      const iframe = document.createElement('iframe');
-      iframe.src = 'https://www.youtube-nocookie.com/embed/' + video.id + '?playsinline=1&rel=0';
-      iframe.title = video.title; iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-      iframe.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-      iframe.allowFullscreen = true;
-      player.replaceChildren(iframe); currentId = video.id;
+      const start = document.createElement('button');
+      start.type = 'button'; start.className = 'video-start'; start.id = 'video-start';
+      start.setAttribute('aria-label', video.title + ' 재생');
+      const thumbnail = document.createElement('img');
+      thumbnail.src = 'https://i.ytimg.com/vi/' + video.id + '/hqdefault.jpg'; thumbnail.alt = '';
+      const mark = document.createElement('span'); mark.className = 'video-play-mark'; mark.textContent = '▶'; mark.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span'); label.textContent = '영상 재생';
+      start.append(thumbnail, mark, label);
+      start.addEventListener('click', () => {
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube-nocookie.com/embed/' + video.id + '?autoplay=1&playsinline=1&rel=0&controls=1';
+        iframe.title = video.title; iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        iframe.allow = 'autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        iframe.allowFullscreen = true; player.replaceChildren(iframe);
+      }, { once: true });
+      player.replaceChildren(start); currentId = video.id;
     }
     title.textContent = video.title;
     meta.textContent = video.channel + ' · 조회수 ' + new Intl.NumberFormat('ko-KR').format(video.views) + '회';
