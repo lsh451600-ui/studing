@@ -77,7 +77,8 @@ export async function currentSession(request, env) {
   return { user: user.data, access, cookies };
 }
 export function publicUser(user) {
-  return { id: user.id, username: user.user_metadata?.username || '회원' };
+  return { id: user.id, username: user.user_metadata?.username || '회원',
+    kakaoLinked: user.identities?.some(identity => identity.provider === 'kakao') === true || user.app_metadata?.providers?.includes('kakao') === true };
 }
 export async function limitAttempts(request, env, scope, maximum = 10) {
   const period = Math.floor(Date.now() / 900000);

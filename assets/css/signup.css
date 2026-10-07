@@ -38,3 +38,23 @@
 .member-feedback:empty{display:none}
 @media(max-width:1100px){header{flex-wrap:wrap;padding-top:20px;padding-bottom:20px}nav{flex-wrap:wrap;gap:14px}.member-controls{gap:8px}}
 @media(max-width:640px){nav{width:100%;flex-wrap:wrap;gap:12px}.member-controls{width:100%;justify-content:flex-start;padding-top:10px;border-top:1px solid var(--line)}.member-status{max-width:calc(100% - 88px)}.signup-dialog{padding:22px}}
+
+.login-open,.logout-button,.signup-open,.kakao-link-button{min-height:44px}
+.kakao-link-button{padding:10px 13px;border:1px solid #fee500;border-radius:9px;background:#fee500;color:#191919;font:inherit;font-size:12px;white-space:nowrap;cursor:pointer}
+.signup-dialog .signup-close,.signup-dialog .signup-login-link{min-height:44px}
+#auth-error-dialog{width:min(380px,calc(100vw - 32px))}
+#auth-error-message{overflow-wrap:anywhere}
+#auth-error-close{min-height:44px}
+@media(max-width:540px){
+  .signup-dialog{padding:20px;max-height:calc(100dvh - 24px)}
+  .signup-dialog .signup-field input{font-size:16px}
+}
+
+.auth-error-dialog{box-sizing:border-box;margin:auto;width:min(380px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:28px;border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);box-shadow:0 24px 80px #0004}
+.auth-error-dialog::backdrop{background:#071e40a6;backdrop-filter:blur(3px)}
+.auth-error-dialog .auth-error-icon{display:grid;place-items:center;width:44px;height:44px;margin:0 0 18px;border-radius:50%;background:var(--surface);color:var(--accent);font-size:24px;font-weight:700;line-height:1}
+.auth-error-dialog #auth-error-title{margin:0 0 12px;font-size:22px;line-height:1.5;letter-spacing:-.5px}
+.auth-error-dialog #auth-error-message{margin:0 0 24px;color:var(--muted);font-size:14px;line-height:1.8;overflow-wrap:anywhere}
+.auth-error-dialog #auth-error-close{display:block;float:none;width:100%;min-height:46px;margin:0;padding:12px 16px;border:0;border-radius:9px;background:#235dde;color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.auth-error-dialog #auth-error-close:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:540px){.auth-error-dialog{padding:24px}}

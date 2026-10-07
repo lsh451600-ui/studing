@@ -22,10 +22,11 @@ const { chromium } = require('playwright');
   try {
     browser = await chromium.launch({ headless: true });
     for (const path of ['/', '/about', '/recipes']) {
-      for (const width of [390, 1280]) {
+      for (const width of [320, 360, 390, 430, 768, 1280]) {
         for (const theme of ['light', 'dark']) {
           const context = await browser.newContext({ viewport: { width, height: 900 } });
           let state = { available: true, authenticated: false, user: null };
+          let loginSucceeds = false;
           let trend = { available: true, video: { id: 'abcdefghijk', title: '외식 트렌드 테스트', channel: '테스트', views: 1234 }, checkedAt: new Date().toISOString(), stale: false };
           await context.route('**/*', async route => {
             const url = new URL(route.request().url());
@@ -33,6 +34,11 @@ const { chromium } = require('playwright');
             if (url.pathname === '/api/trend-video') return route.fulfill({ json: trend });
             if (url.pathname === '/api/session') return route.fulfill({ json: state });
             if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: { google: true, kakao: true } } });
+            if (url.pathname === '/api/login') {
+              if (!loginSucceeds) return route.fulfill({ status: 401, json: { message: '아이디 또는 비밀번호를 확인해 주세요.' } });
+              state = { available: true, authenticated: true, needsProfile: false, user: { id: 'member', username: '테스트회원', kakaoLinked: true } };
+              return route.fulfill({ json: state });
+            }
             if (url.pathname === '/api/logout') { state = { available: true, authenticated: false }; return route.fulfill({ json: { authenticated: false } }); }
             if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
             return route.continue();
@@ -82,20 +88,42 @@ const { chromium } = require('playwright');
           for (const key of ['dialog', 'identifier', 'password', 'submit', 'kakao', 'google']) {
             assert.ok(boxes[key].left >= 0 && boxes[key].right <= boxes.width, key + ' must fit viewport');
           }
-          await page.locator('#login-close').click();
-          state = { available: true, authenticated: true, needsProfile: false, user: { id: 'member', username: '테스트회원' } };
-          await page.reload();
-          await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'authenticated');
+          await page.locator('#login-identifier').fill('tester');
+          await page.locator('#login-password').fill('wrong-password');
+          await page.locator('#login-submit').click();
+          await page.waitForFunction(() => document.querySelector('#auth-error-dialog')?.open);
+          assert.ok((await page.locator('#auth-error-message').textContent()).includes('아이디 또는 비밀번호'));
+          await page.locator('#auth-error-close').click();
+          await page.waitForFunction(() => !document.querySelector('#auth-error-dialog').open);
+          assert.ok(await page.locator('#login-dialog').evaluate(el => el.open));
+          assert.equal(await page.locator('#login-identifier').inputValue(), 'tester');
+          assert.equal(await page.locator('#login-password').inputValue(), '');
+          loginSucceeds = true;
+          await page.locator('#login-password').fill('correct-password');
+          await page.locator('#login-submit').click();
+          await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'authenticated' && !document.querySelector('#login-dialog').open);
+          assert.equal(await page.locator('#member-feedback').textContent(), '');
+          assert.ok(!(await page.locator('#kakao-link-button').isVisible()));
           assert.equal(await page.locator('#member-status').textContent(), '로그인 중 · 테스트회원님');
           assert.ok(await page.locator('#logout-button').isVisible());
           assert.ok(!(await page.locator('#login-open').isVisible()));
           assert.ok(!(await page.locator('#signup-open').isVisible()));
           const logout = await page.locator('#logout-button').boundingBox();
           assert.ok(logout.x >= 0 && logout.x + logout.width <= width, 'logout must fit viewport');
+          assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'linked account page must fit viewport');
+          state.user.kakaoLinked = false;
+          await page.reload();
+          await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'authenticated');
+          await page.waitForFunction(() => !document.querySelector('#kakao-link-button').hidden);
+          assert.ok(await page.locator('#kakao-link-button').isVisible());
+          const linkBox = await page.locator('#kakao-link-button').boundingBox();
+          assert.ok(linkBox.x >= 0 && linkBox.x + linkBox.width <= width && linkBox.height >= 44, 'Kakao link must fit viewport and touch target');
+          assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'unlinked account page must fit viewport');
           await page.locator('#logout-button').click();
           await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'anonymous');
           assert.ok(await page.locator('#login-open').isVisible());
           assert.ok(!(await page.locator('#logout-button').isVisible()));
+          assert.equal(await page.locator('#member-feedback').textContent(), '');
           state = { available: true, authenticated: true, needsProfile: false, profileUnavailable: true, user: { id: 'member', username: '카카오 회원' } };
           await page.reload();
           await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'authenticated');

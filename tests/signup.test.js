@@ -24,3 +24,13 @@ test('expired access refreshes and re-verifies user',async t=>{const done=mock(t
 test('outages do not masquerade as logout',async t=>{mock(t,[{path:'/user',status:503}]);const r=await session({env,request:req('/api/session',undefined,{Cookie:'__Host-member-access=test'})});assert.equal(r.status,503);assert.equal(r.headers.get('Set-Cookie'),null);});
 test('logout revokes server session and clears both cookies',async t=>{const done=mock(t,[{path:'/user',data:user},{path:'/logout',data:{}}]);const r=await logout({env,request:req('/api/logout',{}, {Cookie:'__Host-member-access=test'})});assert.equal(r.status,200);assert.equal(r.headers.getSetCookie().length,2);done();});
 test('confirmation exchanges token server-side and redirects without token',async t=>{mock(t,[{path:'/verify',data:tokens}]);const r=await confirm({env,request:req('/api/auth-confirm?token_hash='+'a'.repeat(40))});assert.equal(r.status,303);assert.equal(r.headers.get('Location'),'/?auth=confirmed');assert.ok(r.headers.get('Set-Cookie').includes('HttpOnly'));});
+test('password login reports an existing Kakao identity immediately',async t=>{
+ const done=mock(t,[limit,{path:'resolve_member_login',data:'test@example.com'},{path:'grant_type=password',data:{...tokens,user:{...user,identities:[{provider:'email'},{provider:'kakao'}]}}}]);
+ const r=await login({env,request:req('/api/login',{identifier:'tester',password:member.password})});
+ assert.equal((await r.json()).user.kakaoLinked,true);done();
+});
+test('session reports Kakao linked from trusted provider metadata',async t=>{
+ const done=mock(t,[{path:'/user',data:{...user,app_metadata:{providers:['email','kakao']}}},{path:'/member_profiles',data:[{username:'tester',phone:'01012345678'}]}]);
+ const r=await session({env,request:req('/api/session',undefined,{Cookie:'__Host-member-access=access-test'})});
+ assert.equal((await r.json()).user.kakaoLinked,true);done();
+});

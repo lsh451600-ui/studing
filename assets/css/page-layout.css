@@ -15,3 +15,57 @@ header{justify-content:flex-start;gap:20px}header>nav{margin-left:auto;justify-c
 .trend-video{min-width:0;margin:0;border:1px solid var(--line);border-radius:22px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}.video-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:23px 24px 0}.video-kicker{font-size:9px;letter-spacing:1.6px;color:var(--muted);font-weight:600}.video-kicker>span{color:#e73b36;margin-right:7px}.video-badge{font-size:10px;border:1px solid var(--line);border-radius:30px;padding:5px 9px;color:var(--accent);background:var(--paper)}.trend-video h2{margin:14px 24px 21px;font-size:24px;letter-spacing:-1px;line-height:1.5}.video-player{aspect-ratio:16/9;position:relative;background:#101c2e;overflow:hidden}.video-player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.video-placeholder{height:100%;display:grid;align-content:center;justify-items:center;gap:14px;padding:24px;text-align:center;background:radial-gradient(ellipse at 65% 20%,#243f66,#101c2e 75%);color:#dbe8fa}.video-placeholder p{font-size:12px;line-height:1.8;margin:0}.video-play-mark{display:grid;place-items:center;width:56px;height:42px;border-radius:13px;background:#e53935;color:white;font-size:20px}.video-info{padding:19px 24px 23px}.video-title{font-size:15px;line-height:1.7;font-weight:700;margin:0 0 9px}.video-meta,.video-status{font-size:10px;color:var(--muted);line-height:1.9;margin:0}.video-status:empty{display:none}.video-watch{display:inline-block;font-size:11px;color:var(--accent);font-weight:600;margin-top:13px;padding:5px 0}.video-watch:hover{text-decoration:underline}
 @media(max-width:1100px){header>nav{flex:1;min-width:230px}.brand strong{font-size:15px}}
 @media(max-width:640px){header{gap:14px;align-items:center}.menu-trigger{padding:10px}.menu-trigger span{font-size:11px}header .brand{flex:1}.brand strong{font-size:14px}header>nav{margin:0;width:100%;flex:auto;justify-content:space-between}header .member-controls{width:auto;flex:1;padding-top:0;border-top:0;justify-content:flex-end}.video-heading{padding:20px 20px 0}.trend-video h2{margin:13px 20px 20px;font-size:22px}.video-info{padding:18px 20px 21px}.trend-video{border-radius:16px}}
+
+/* Keep header controls and reading columns comfortable on narrow screens. */
+header>nav,.member-controls,.hero>*,.cards>*{min-width:0}
+header>nav>a{display:inline-flex;align-items:center;min-height:44px}
+button,.cta,.video-watch{min-height:44px}
+.video-watch{display:inline-flex;align-items:center}
+.video-title,.video-meta,.video-status,.card h3,.card .desc{overflow-wrap:anywhere}
+@media(max-width:800px){
+  .wrap{width:calc(100% - 32px)}
+  header{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px 12px;min-height:0;padding:20px 0}
+  header .brand{min-width:0;gap:10px;justify-self:start}
+  header .brand strong{font-size:clamp(13px,3.7vw,17px);white-space:normal}
+  header .brand small{font-size:7px;letter-spacing:1px}
+  header .mark{width:36px;height:36px;flex-shrink:0}
+  header>nav{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:12px;min-width:0;width:100%;margin:0;padding-top:12px;border-top:1px solid var(--line)}
+  header>nav>a{font-size:11px;white-space:nowrap;padding:0 2px}
+  header .member-controls{display:flex;justify-content:flex-end;align-items:center;gap:8px;width:100%;margin:0;padding:0;border:0;min-width:0}
+  header .member-status{max-width:100%;min-width:0;line-height:1.6;font-size:11px;padding:8px 10px}
+  header .member-controls[data-state="authenticated"] .member-status{flex-basis:100%;border-radius:10px}
+  header .member-controls button{min-height:44px;padding:10px 12px;font-size:11px}
+  .menu-trigger{padding:10px;gap:7px}
+  .hero{padding:28px 0 30px;gap:28px}
+  .hero h1{font-size:clamp(34px,7vw,49px);line-height:1.3;letter-spacing:-1.5px}
+  .intro{font-size:13px;line-height:1.9}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+  .section-head{gap:16px;align-items:flex-start}
+  .section-head h2{font-size:clamp(23px,5vw,29px)}
+  .about{gap:24px}
+  .partnership{padding:24px}
+  .inquiry-fields{grid-template-columns:1fr}
+  footer{flex-wrap:wrap;gap:10px;font-size:10px;line-height:1.8}
+}
+@media(max-width:540px){
+  .cards{grid-template-columns:minmax(0,1fr)}
+  .card h3{font-size:20px}
+  .card .desc{font-size:13px}
+  .eyebrow{line-height:1.7;letter-spacing:.7px}
+  .video-heading{padding:18px 16px 0;flex-wrap:wrap;gap:8px}
+  .trend-video h2{margin:12px 16px 18px;font-size:21px}
+  .video-info{padding:16px}
+  .video-title{font-size:14px}
+  .video-meta,.video-status{font-size:11px}
+  .section-head{margin-top:32px;flex-wrap:wrap;gap:8px}
+  .section-head>span{max-width:none;text-align:left;font-size:10px}
+  .ribbon{flex-wrap:wrap;gap:8px 14px}
+  .ribbon p{line-height:1.9}
+  .about{padding:22px}
+  .about p{font-size:13px;line-height:1.9}
+  .partnership{padding:20px;margin:28px 0}
+  .partnership .section-head{margin-bottom:18px}
+  .partnership-intro{font-size:13px}
+  .inquiry-submit{width:100%;min-height:46px}
+}
+@media(max-width:800px){.inquiry-field input,.inquiry-field textarea{font-size:16px}}

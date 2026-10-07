@@ -1,4 +1,4 @@
-import { settings, reply, sameOrigin, readJSON, currentSession, upstream } from '../../src/member-auth.js';
+import { settings, reply, sameOrigin, readJSON, currentSession, upstream, publicUser } from '../../src/member-auth.js';
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return reply(405, '지원하지 않는 요청입니다.');
   if (!sameOrigin(request)) return reply(403, '홈페이지에서 다시 시도해 주세요.');
@@ -15,6 +15,6 @@ export async function onRequest({ request, env }) {
       body: { requested_username: username, requested_phone: phone } });
     if (!result.ok) return reply(result.data.code === '23505' ? 409 : 400,
       result.data.code === '23505' ? '이미 사용 중인 아이디입니다.' : '정보를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.', {}, session.cookies);
-    return reply(200, '회원가입이 완료되었습니다.', { user: { id: session.user.id, username: result.data }, needsProfile: false }, session.cookies);
+    return reply(200, '회원가입이 완료되었습니다.', { user: { ...publicUser(session.user), username: result.data }, needsProfile: false }, session.cookies);
   } catch { return reply(503, '회원 정보에 연결하지 못했습니다.', {}, session?.cookies || []); }
 }
