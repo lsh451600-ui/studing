@@ -1,16 +1,40 @@
-.signup-open{border:1px solid var(--accent);border-radius:9px;background:var(--accent);color:var(--paper);padding:10px 14px;font-size:12px;white-space:nowrap}
-.signup-dialog{width:min(480px,92vw);max-height:90vh;overflow:auto;padding:30px;border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink)}
+/* Scope account dialogs so the article popup's float/layout rules cannot leak in. */
+.signup-dialog{box-sizing:border-box;width:min(420px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;margin:auto;padding:28px;border:1px solid var(--line);border-radius:18px;background:var(--paper);color:var(--ink);box-shadow:0 24px 80px #0003}
 .signup-dialog::backdrop{background:#071e40a6;backdrop-filter:blur(3px)}
-.signup-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}.signup-heading h2{font-size:26px;margin:0}.signup-close{padding:8px;border:0;background:transparent;color:var(--muted);font-size:13px}
-.signup-intro{color:var(--muted);font-size:13px;line-height:1.9;margin:14px 0 24px}.signup-field{display:block;font-size:13px;font-weight:600;margin-top:18px}
-.signup-field input{display:block;width:100%;margin-top:8px;padding:13px 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;font-weight:400;min-height:46px}
-.signup-field input:focus{outline:2px solid var(--accent);outline-offset:2px}.signup-hint{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:7px;line-height:1.6}
-.signup-show{display:flex;align-items:center;gap:7px;margin:12px 0 0;font-size:12px;color:var(--muted)}.signup-show input{accent-color:var(--accent)}
-.signup-submit{width:100%;margin-top:24px;padding:14px;border:0;border-radius:10px;background:var(--accent);color:var(--paper);font-weight:600}.signup-submit:disabled{opacity:.55;cursor:default}
-.signup-status{font-size:12px;line-height:1.8;color:var(--muted);min-height:22px;margin-bottom:0}
-@media(max-width:640px){nav{flex-wrap:wrap;gap:12px}.signup-dialog{padding:24px}}
-
-
-.login-open{padding:10px 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;font-size:12px;white-space:nowrap}.member-status{font-size:12px;color:var(--accent);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.member-feedback{font-size:12px;line-height:1.8;color:var(--muted)}.member-feedback:empty{display:none}.signup-login-link{display:block;margin:18px auto 0;padding:8px;border:0;background:transparent;color:var(--accent);font-size:12px}nav [hidden]{display:none!important}
-
-.social-login{border-bottom:1px solid #9996;padding-bottom:18px;margin-bottom:20px}.social-login>p:first-child{font-size:14px}.social-button{display:block;width:100%;padding:13px;margin:10px 0;border:1px solid #9996;border-radius:8px;font:inherit;cursor:pointer}.social-google{background:#fff;color:#202124}.social-kakao{background:#fee500;color:#191919}.social-button:disabled{opacity:.55;cursor:not-allowed}.social-button:focus-visible{outline:3px solid #4285f4;outline-offset:3px}
+.signup-dialog *{box-sizing:border-box}
+.signup-dialog button{float:none;clear:none;font:inherit;cursor:pointer;line-height:1.5}
+.signup-dialog form{display:grid;gap:16px;width:100%;margin:0}
+.signup-dialog .signup-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.signup-dialog .signup-heading h2,.signup-dialog>h2{font-size:24px;line-height:1.4;margin:0;letter-spacing:-.5px}
+.signup-dialog .signup-close{flex:none;width:auto;padding:8px;border:0;background:transparent;color:var(--muted);font-size:13px}
+.signup-dialog .signup-intro{color:var(--muted);font-size:13px;line-height:1.8;margin:12px 0 24px}
+.signup-dialog .signup-field{display:block;min-width:0;font-size:13px;font-weight:600;margin:0;text-align:left}
+.signup-dialog .signup-field input{display:block;width:100%;min-width:0;margin:8px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;font-weight:400;min-height:46px}
+.signup-dialog .signup-field input:focus{outline:2px solid var(--accent);outline-offset:2px}
+.signup-dialog .signup-hint{display:block;font-size:11px;color:var(--muted);font-weight:400;margin:7px 0 0;line-height:1.6}
+.signup-dialog .signup-show{display:flex;align-items:center;gap:8px;margin:0;font-size:12px;color:var(--muted);font-weight:400}
+.signup-dialog .signup-show input{width:16px;height:16px;margin:0;accent-color:var(--accent)}
+.signup-dialog .signup-submit{display:block;width:100%;min-height:46px;margin:0;padding:12px 16px;border:0;border-radius:9px;background:#235dde;color:#fff;font-size:14px;font-weight:600}
+.signup-dialog button:disabled{opacity:.55;cursor:not-allowed}
+.signup-dialog .signup-status{font-size:12px;line-height:1.7;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.signup-dialog .signup-status:empty{display:none}
+.signup-dialog .signup-login-link{display:block;margin:0 auto;padding:8px;border:0;background:transparent;color:var(--accent);font-size:12px}
+.signup-dialog .social-login{display:grid;gap:10px;margin:22px 0 0;padding:0;border:0}
+.signup-dialog .social-divider{display:flex;align-items:center;gap:12px;margin:0 0 4px;font-size:12px;line-height:1.6;color:var(--muted)}
+.signup-dialog .social-divider:before,.signup-dialog .social-divider:after{content:'';height:1px;flex:1;background:var(--line)}
+.signup-dialog .social-button{display:block;width:100%;min-height:46px;padding:12px 16px;margin:0;border:1px solid var(--line);border-radius:9px;font-size:14px;font-weight:600;text-align:center}
+.signup-dialog .social-google{background:#fff;color:#202124}
+.signup-dialog .social-kakao{background:#fee500;color:#191919;border-color:#fee500}
+.signup-dialog button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.member-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.member-controls [hidden]{display:none!important}
+.member-status{display:inline-flex;align-items:center;gap:6px;max-width:240px;padding:8px 12px;border:1px solid var(--line);border-radius:30px;background:var(--surface);color:var(--muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.member-controls[data-state="authenticated"] .member-status{color:var(--ink);border-color:var(--accent)}
+.member-controls[data-state="authenticated"] .member-status:before{content:'';flex:none;width:7px;height:7px;border-radius:50%;background:#219653}
+.login-open,.logout-button,.signup-open{min-height:38px;padding:9px 13px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;font-size:12px;white-space:nowrap;cursor:pointer}
+.signup-open{border-color:#235dde;background:#235dde;color:#fff}
+.logout-button{border-color:var(--accent);color:var(--accent);background:var(--paper)}
+.member-feedback{font-size:12px;line-height:1.8;color:var(--muted);overflow-wrap:anywhere}
+.member-feedback:empty{display:none}
+@media(max-width:1100px){header{flex-wrap:wrap;padding-top:20px;padding-bottom:20px}nav{flex-wrap:wrap;gap:14px}.member-controls{gap:8px}}
+@media(max-width:640px){nav{width:100%;flex-wrap:wrap;gap:12px}.member-controls{width:100%;justify-content:flex-start;padding-top:10px;border-top:1px solid var(--line)}.member-status{max-width:calc(100% - 88px)}.signup-dialog{padding:22px}}

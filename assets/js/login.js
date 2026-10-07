@@ -2,7 +2,7 @@ const byId = id => document.getElementById(id);
 const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('login-status');
 let pending = false, opener, currentUser = null;
 async function api(path, options = {}) {
-  const response = await fetch(path, { cache: 'no-store', credentials: 'same-origin', ...options });
+  const response = await fetch(path, { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(15000), ...options });
   let data;
   try { data = await response.json(); } catch { throw new Error('서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.'); }
   if (!response.ok) throw new Error(data.message || '요청을 완료하지 못했습니다.');
@@ -13,10 +13,15 @@ function showUser(user) {
   if (!user && byId('profile-dialog').open) byId('profile-dialog').close();
   byId('login-open').hidden = Boolean(user); byId('signup-open').hidden = Boolean(user);
   byId('member-status').hidden = !user; byId('logout-button').hidden = !user;
-  byId('member-status').textContent = user ? user.username + '님' : '';
+  byId('member-status').textContent = user ? '로그인 중 · ' + user.username + '님' : '';
+  byId('member-status').closest('.member-controls').dataset.state = user ? 'authenticated' : 'anonymous';
+  byId('logout-button').textContent = '로그아웃';
 }
 async function checkSession() {
   const data = await api('/api/session'); showUser(data.authenticated ? data.user : null);
+  if (data.authenticated && data.profileUnavailable) {
+    byId('member-feedback').textContent = '로그인되었습니다. 회원 정보를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.';
+  }
   if (data.authenticated && data.needsProfile && !byId('profile-dialog').open) {
     if (dialog.open) dialog.close();
     byId('profile-dialog').showModal();
@@ -61,14 +66,20 @@ form.addEventListener('submit', async event => {
 });
 byId('logout-button').addEventListener('click', async () => {
   byId('logout-button').disabled = true;
+  byId('logout-button').textContent = '로그아웃 중…';
   try { await api('/api/logout', { method: 'POST' }); showUser(null); byId('member-feedback').textContent = '로그아웃되었습니다.'; }
   catch (error) { byId('member-feedback').textContent = error.message; }
-  finally { byId('logout-button').disabled = false; }
+  finally { byId('logout-button').disabled = false; byId('logout-button').textContent = '로그아웃'; }
 });
 window.addEventListener('member-authenticated', event => {
   showUser(event.detail); byId('member-feedback').textContent = '회원가입과 로그인이 완료되었습니다.';
 });
-checkSession().catch(() => { byId('member-feedback').textContent = '로그인 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.'; });
+checkSession().catch(() => {
+  byId('member-status').hidden = false;
+  byId('member-status').textContent = '로그인 상태 확인 필요';
+  byId('logout-button').hidden = false;
+  byId('member-feedback').textContent = '로그인 상태를 확인하지 못했습니다. 새로고침하거나 로그아웃 후 다시 시도해 주세요.';
+});
 const params = new URLSearchParams(location.search);
 if (params.has('auth')) {
   byId('member-feedback').textContent = ({ confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.', social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.', kakao_oidc_required: '카카오 로그인 연결을 준비 중입니다. 잠시 후 다시 시도해 주세요.' })[params.get('auth')] || '인증 링크가 만료되었거나 유효하지 않습니다. 로그인 화면에서 다시 확인해 주세요.';

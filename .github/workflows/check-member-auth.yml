@@ -8,6 +8,10 @@ on:
       - 'src/social-auth.js'
       - 'tests/social-auth.test.js'
       - 'tests/kakao-auth.test.js'
+      - 'tests/login-ui.cjs'
+      - 'assets/js/login.js'
+      - 'assets/css/signup.css'
+      - '*.html'
       - 'tests/signup.test.js'
       - '.github/workflows/check-member-auth.yml'
   workflow_dispatch:
@@ -22,3 +26,18 @@ jobs:
         with:
           node-version: '24'
       - run: node --test tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install browser test tools
+        run: |
+          npm install --prefix /tmp/login-browser-check --no-save playwright
+          /tmp/login-browser-check/node_modules/.bin/playwright install --with-deps chromium
+      - name: Verify login layout and account controls in Chromium
+        run: NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
