@@ -16,6 +16,8 @@ on:
       - 'assets/js/recipes.js'
       - 'assets/css/recipe-board.css'
       - 'tests/recipe-board-ui.cjs'
+      - 'tests/recipe-access.test.js'
+      - 'src/recipe-server.js'
       - 'assets/js/trend-video.js'
       - 'assets/css/page-layout.css'
       - 'tests/trend-video.test.js'
@@ -34,7 +36,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
 
   browser:
     runs-on: ubuntu-latest
