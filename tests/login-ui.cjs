@@ -26,9 +26,11 @@ const { chromium } = require('playwright');
         for (const theme of ['light', 'dark']) {
           const context = await browser.newContext({ viewport: { width, height: 900 } });
           let state = { available: true, authenticated: false, user: null };
+          let trend = { available: true, video: { id: 'abcdefghijk', title: '외식 트렌드 테스트', channel: '테스트', views: 1234 }, checkedAt: new Date().toISOString(), stale: false };
           await context.route('**/*', async route => {
             const url = new URL(route.request().url());
             if (url.origin !== origin) return route.abort();
+            if (url.pathname === '/api/trend-video') return route.fulfill({ json: trend });
             if (url.pathname === '/api/session') return route.fulfill({ json: state });
             if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: { google: true, kakao: true } } });
             if (url.pathname === '/api/logout') { state = { available: true, authenticated: false }; return route.fulfill({ json: { authenticated: false } }); }
@@ -39,6 +41,32 @@ const { chromium } = require('playwright');
           await page.goto(origin + path);
           await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
           await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'anonymous');
+          await page.locator('#menu-open').click();
+          assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'true');
+          const menuBox = await page.locator('#site-menu').boundingBox();
+          assert.ok(menuBox.x >= 0 && menuBox.x + menuBox.width <= width, 'menu must fit viewport');
+          assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/', '/about', '/#trends', '/recipes']);
+          await page.keyboard.press('Escape');
+          await page.waitForFunction(() => !document.querySelector('#site-menu').open);
+          assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'false');
+          await page.locator('#menu-open').click();
+          await page.locator('#menu-close').click();
+          await page.waitForFunction(() => !document.querySelector('#site-menu').open);
+          assert.equal(await page.locator('#menu-open').evaluate(el => document.activeElement === el), true);
+          if (path === '/') {
+            await page.waitForSelector('#video-player iframe');
+            assert.equal(await page.locator('#video-player iframe').getAttribute('src'), 'https://www.youtube-nocookie.com/embed/abcdefghijk?playsinline=1&rel=0');
+            assert.equal(await page.locator('#video-title').textContent(), trend.video.title);
+            const playerBox = await page.locator('#video-player').boundingBox();
+            assert.ok(playerBox.x >= 0 && playerBox.x + playerBox.width <= width, 'video must fit viewport');
+            trend = { available: false, reason: 'setup_required' };
+            await page.reload();
+            await page.waitForFunction(() => document.querySelector('#video-loading').textContent.includes('준비'));
+            assert.equal(await page.locator('#video-player iframe').count(), 0);
+            assert.ok(await page.locator('#video-watch').isVisible());
+            await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'anonymous');
+          }
+          assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'page must fit viewport');
           await page.locator('#login-open').click();
           await page.waitForFunction(() => !document.querySelector('#login-submit').disabled);
           await page.waitForFunction(() => !document.querySelector('[data-social="kakao"]').disabled);

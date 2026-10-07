@@ -10,6 +10,10 @@ on:
       - 'tests/kakao-auth.test.js'
       - 'tests/login-ui.cjs'
       - 'assets/js/login.js'
+      - 'assets/js/site-menu.js'
+      - 'assets/js/trend-video.js'
+      - 'assets/css/page-layout.css'
+      - 'tests/trend-video.test.js'
       - 'assets/css/signup.css'
       - '*.html'
       - 'tests/signup.test.js'
@@ -25,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js
+      - run: node --test tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js
 
   browser:
     runs-on: ubuntu-latest
