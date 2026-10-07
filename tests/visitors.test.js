@@ -43,6 +43,6 @@ test('refresh and navigation count once per browser per day; next day adds to cu
 test('unavailable storage and foreign origins do not invent counts or set visitor cookies', async () => {
   const missing = await onRequest({ env: {}, request: request() });
   assert.equal(missing.status, 503); assert.equal(missing.headers.get('Set-Cookie'), null);
-  assert.deepEqual(await missing.json(), { available: false });
+  assert.deepEqual(await missing.json(), { available: false, reason: 'storage_not_configured' });
   assert.equal((await onRequest({ env: {}, request: request('', 'https://other.example') })).status, 403);
 });

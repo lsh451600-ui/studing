@@ -5,6 +5,11 @@ on:
     paths:
       - 'functions/api/*.js'
       - 'src/member-auth.js'
+      - 'src/community.js'
+      - 'tests/community.test.js'
+      - 'tests/board-ui.cjs'
+      - 'assets/js/board.js'
+      - 'assets/css/board.css'
       - 'src/social-auth.js'
       - 'tests/social-auth.test.js'
       - 'tests/kakao-auth.test.js'
@@ -39,7 +44,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
 
   browser:
     runs-on: ubuntu-latest
@@ -57,3 +62,4 @@ jobs:
         run: |
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/recipe-board-ui.cjs
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/board-ui.cjs

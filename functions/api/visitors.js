@@ -11,7 +11,7 @@ function reply(status, data, cookie) {
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return reply(405, { available: false });
   if (request.headers.get('Origin') !== new URL(request.url).origin) return reply(403, { available: false });
-  if (!env.MEMBERS_DB) return reply(503, { available: false });
+  if (!env.MEMBERS_DB) return reply(503, { available: false, reason: 'storage_not_configured' });
   const stored = (request.headers.get('Cookie') || '').split(';').map(value => value.trim()).find(value => value.startsWith(COOKIE + '='))?.slice(COOKIE.length + 1);
   const id = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(stored || '') ? stored : crypto.randomUUID();
   const day = koreaDay();
@@ -26,5 +26,5 @@ export async function onRequest({ request, env }) {
     const counts = results[2].results[0];
     const cookie = `${COOKIE}=${id}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=31536000`;
     return reply(200, { available: true, day, today: counts.today, total: counts.total }, cookie);
-  } catch { return reply(503, { available: false }); }
+  } catch { return reply(503, { available: false, reason: 'storage_unavailable' }); }
 }

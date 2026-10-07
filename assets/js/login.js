@@ -21,7 +21,7 @@ errorDialog.addEventListener('close', () => {
 const linkButton = document.createElement('button');
 linkButton.className = 'kakao-link-button';
 linkButton.id = 'kakao-link-button'; linkButton.type = 'button'; linkButton.hidden = true;
-byId('logout-button').before(linkButton);
+document.querySelector('#site-menu .menu-footer').prepend(linkButton);
 linkButton.addEventListener('click', async () => {
   linkButton.disabled = true;
   byId('member-feedback').textContent = '';
