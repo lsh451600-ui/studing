@@ -7,7 +7,7 @@ const { chromium } = require('playwright');
   const root = process.cwd();
   const server = createServer(async (req, res) => {
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    const name = pathname === '/' ? 'index.html' : pathname === '/about' ? 'about.html' : pathname === '/recipes' ? 'recipes.html' : pathname === '/board' ? 'board.html' : pathname === '/private' ? 'private.html' : pathname === '/inquiry' ? 'inquiry.html' : pathname.slice(1);
+    const name = pathname === '/' ? 'index.html' : pathname === '/about' ? 'about.html' : pathname === '/recipes' ? 'recipes.html' : pathname === '/board' ? 'board.html' : pathname === '/private' ? 'private.html' : pathname === '/inquiry' ? 'inquiry.html' : pathname === '/startup' ? 'startup.html' : pathname.slice(1);
     const path = resolve(root, name);
     if (!path.startsWith(root + '/')) { res.writeHead(403).end(); return; }
     try {
@@ -21,7 +21,7 @@ const { chromium } = require('playwright');
   let browser;
   try {
     browser = await chromium.launch({ headless: true });
-    for (const path of ['/', '/about', '/recipes', '/board', '/private', '/inquiry']) {
+    for (const path of ['/', '/about', '/recipes', '/board', '/private', '/inquiry', '/startup']) {
       for (const width of [320, 360, 390, 430, 768, 1280]) {
         for (const theme of ['light', 'dark']) {
           const context = await browser.newContext({ viewport: { width, height: 900 } });
@@ -80,9 +80,11 @@ const { chromium } = require('playwright');
             assert.ok(!(await page.locator('.ribbon').textContent()).includes('IN FOCUS'));
             assert.ok(await page.locator('.ribbon').evaluate(el => getComputedStyle(el).borderTopStyle === 'solid' && parseFloat(getComputedStyle(el).borderTopWidth) >= 1));
           }
+          assert.deepEqual(await page.locator('#site-menu .menu-number').allTextContents(), ['01', '02', '03', '04', '05', '06']);
+          assert.equal(await page.locator('#site-menu a[href="/startup"] span').nth(1).textContent(), '창업의 모든것');
           const menuBox = await page.locator('#site-menu').boundingBox();
           assert.ok(menuBox.x >= 0 && menuBox.x + menuBox.width <= width, 'menu must fit viewport');
-          assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/about', '/#trends', '/recipes', '/board', '/private']);
+          assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/about', '/#trends', '/recipes', '/board', '/startup', '/private']);
           await page.keyboard.press('Escape');
           await page.waitForFunction(() => !document.querySelector('#site-menu').open && document.querySelector('#menu-open').getAttribute('aria-expanded') === 'false' && document.activeElement === document.querySelector('#menu-open'));
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'false');
