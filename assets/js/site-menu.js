@@ -12,3 +12,18 @@ menu.addEventListener('click', event => {
     if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) menu.close();
   }
 });
+
+
+// Hysteresis prevents header resizing from repeatedly toggling near the threshold.
+const masthead = document.querySelector('header');
+let scrollFrame = 0;
+function updateMasthead() {
+  scrollFrame = 0;
+  if (window.scrollY > 80) masthead.classList.add('is-compact');
+  else if (window.scrollY < 12) masthead.classList.remove('is-compact');
+}
+window.addEventListener('scroll', () => {
+  if (!scrollFrame) scrollFrame = requestAnimationFrame(updateMasthead);
+}, { passive: true });
+window.addEventListener('pageshow', updateMasthead);
+updateMasthead();

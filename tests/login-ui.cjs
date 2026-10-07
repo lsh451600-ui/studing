@@ -55,10 +55,16 @@ const { chromium } = require('playwright');
           assert.equal(await page.locator('#visitor-counter').count(), 0);
           assert.equal((await page.locator('#menu-open').textContent()).trim(), '');
           assert.equal((await page.locator('#menu-close').textContent()).trim(), '×');
+          const expandedHeight = await page.locator('header').evaluate(el => el.getBoundingClientRect().height);
           await page.evaluate(() => window.scrollTo({ top: 350, behavior: 'instant' }));
+          if (path === '/') {
+            await page.waitForFunction(() => document.querySelector('header').classList.contains('is-compact'));
+            await page.waitForFunction(height => document.querySelector('header').getBoundingClientRect().height < height - 2, expandedHeight);
+          }
           assert.ok(await page.locator('header').evaluate(el => getComputedStyle(el).position === 'sticky' && Math.abs(el.getBoundingClientRect().top) <= 1), 'account header stays at the viewport top');
           assert.ok(await page.locator('#login-open').isVisible());
           await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+          await page.waitForFunction(() => !document.querySelector('header').classList.contains('is-compact'));
           await page.locator('#menu-open').click();
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'true');
           const menuBox = await page.locator('#site-menu').boundingBox();
