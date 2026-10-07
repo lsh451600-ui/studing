@@ -1,5 +1,6 @@
 """Collect Google News results and render dated source links into the homepage."""
 import html
+import hashlib
 import json
 import re
 import time
@@ -56,28 +57,123 @@ def collect(xml, now):
             unique.append(article)
     if not unique:
         raise ValueError('No valid recent articles. Preserve the previous homepage.')
-    return unique[:9]
+    return unique[:6]
+
+
+def image_candidates(markup, page_url):
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(markup, 'html.parser')
+    body = soup.select_one('#article-view-content-div, #newsct_article, #harmonyContainer, .article-view-content, .article_body, .article-body, .news_body, article')
+    images = list(body.select('img')) if body else []
+    candidates = []
+    for img in images:
+        src = img.get('data-src') or img.get('data-original') or img.get('src')
+        label = (src or '') + ' ' + (img.get('alt') or '')
+        if not src or re.search(r'logo|banner|icon|avatar|advert|기자|로고', label, re.I):
+            continue
+        candidates.append((src, img.get('alt') or ''))
+    # Publisher metadata supplies the article representative image on other layouts.
+    for meta in soup.select('meta[property="og:image"], meta[name="twitter:image"]'):
+        if meta.get('content'):
+            candidates.append((meta['content'], ''))
+    result = []
+    seen = set()
+    for src, alt in candidates:
+        url = urllib.parse.urljoin(page_url, html.unescape(src))
+        parsed = urllib.parse.urlparse(url)
+        if parsed.scheme in ('http', 'https') and parsed.hostname and url not in seen:
+            seen.add(url)
+            result.append((url, alt))
+    return result
+
+
+def download_image(url, page_url):
+    request = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; DiningTrendJournal/1.0)', 'Referer': page_url})
+    with urllib.request.urlopen(request, timeout=20) as response:
+        data = response.read(5 * 1024 * 1024 + 1)
+    if len(data) > 5 * 1024 * 1024 or len(data) < 512:
+        raise ValueError('Image is too large or too small')
+    if data.startswith(b'\xff\xd8\xff'):
+        ext = '.jpg'
+    elif data.startswith(b'\x89PNG\r\n\x1a\n'):
+        ext = '.png'
+    elif data.startswith((b'GIF87a', b'GIF89a')):
+        ext = '.gif'
+    elif data.startswith(b'RIFF') and data[8:12] == b'WEBP':
+        ext = '.webp'
+    else:
+        raise ValueError('Unsupported image response')
+    relative = 'assets/news/' + hashlib.sha256(data).hexdigest()[:24] + ext
+    path = ROOT / relative
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
+    return relative
+
+
+def enrich_images(articles):
+    from googlenewsdecoder import gnewsdecoder
+    previous = {}
+    if (ROOT / 'news.json').exists():
+        previous = {a['url']: a for a in json.loads((ROOT / 'news.json').read_text())['articles']}
+    for article in articles:
+        cached = previous.get(article['url'], {})
+        if cached.get('image') and (ROOT / cached['image']).is_file():
+            for key in ('image', 'image_source', 'image_alt', 'original_url'):
+                if key in cached:
+                    article[key] = cached[key]
+            continue
+        try:
+            result = gnewsdecoder(article['url'], interval=1, timeout=15)
+            if not (result.get('success') or result.get('status')):
+                raise ValueError(result.get('message', 'Cannot resolve article'))
+            original_url = result['decoded_url']
+            if urllib.parse.urlparse(original_url).scheme not in ('https', 'http'):
+                raise ValueError('Invalid publisher URL')
+            article['original_url'] = original_url
+            request = urllib.request.Request(original_url, headers={
+                'User-Agent': 'Mozilla/5.0 (compatible; DiningTrendJournal/1.0)'})
+            with urllib.request.urlopen(request, timeout=20) as response:
+                page_url = response.url
+                markup = response.read(3 * 1024 * 1024)
+            for url, alt in image_candidates(markup, page_url)[:5]:
+                try:
+                    article['image'] = download_image(url, page_url)
+                    article['image_source'] = url
+                    article['image_alt'] = alt or article['title'] + ' · 기사 사진'
+                    break
+                except Exception as error:
+                    print(f'Image candidate skipped: {type(error).__name__}')
+        except Exception as error:
+            print(f'Article image unavailable ({article["source"]}): {error}')
+    used = {a.get('image') for a in articles}
+    for path in (ROOT / 'assets/news').glob('*'):
+        if path.is_file() and path.relative_to(ROOT).as_posix() not in used:
+            path.unlink()
 
 
 def render(articles, now):
     escape = html.escape
     cards = []
-    for index, article in enumerate(articles):
+    for index, article in enumerate(articles[:6]):
         published = datetime.fromisoformat(article['published_at']).astimezone(KST)
-        art = ('plate', 'coffee', 'arch')[index % 3]
-        interior = '<i></i>' if art == 'plate' else ''
-        cards.append(f'''<a class="card" href="{escape(article['url'], quote=True)}" target="_blank" rel="noopener noreferrer">
-<div class="art art{index % 3 + 1}" aria-hidden="true"><span class="num">{index+1:02d}</span><div class="{art}">{interior}</div></div>
+        image = '<div class="news-photo news-photo-empty"><span>기사 이미지 미제공</span></div>'
+        if article.get('image'):
+            image = f'<div class="news-photo"><img src="{escape(article["image"], quote=True)}" alt="{escape(article.get("image_alt", article["title"]), quote=True)}" loading="lazy" decoding="async" width="640" height="400"></div>'
+        cards.append(f'''<a class="card" href="{escape(article.get('original_url', article['url']), quote=True)}" target="_blank" rel="noopener noreferrer">
+{image}
 <p class="cat">{escape(article['source'])}</p><h3>{escape(article['title'])}</h3>
 <p class="desc"><time datetime="{escape(article['published_at'])}">{published:%Y.%m.%d %H:%M}</time> · 한국 시간</p>
 <div class="read"><span>기사 원문 읽기</span><span aria-hidden="true">↗</span></div></a>''')
     return '''<section id="trends"><div class="section-head"><div><small>DINING TREND NEWS</small><h2>외식의 다음 장면</h2></div><span>GOOGLE NEWS · 발행일 최신순</span></div>''' + f'''
-<p style="font-size:12px;color:var(--muted);line-height:1.9">최근 30일 외식 트렌드 기사 · 매일 오전 9시 수집 예정 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 언론사명을 누르면 기사 원문으로 이동합니다.</p>
+<p style="font-size:12px;color:var(--muted);line-height:1.9">최근 30일 외식 트렌드 최신 6개 · 매일 오전 9시 수집 예정 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 카드를 누르면 기사 원문으로 이동합니다.</p>
+<style>.news-photo{{height:200px;border-radius:10px;overflow:hidden;background:var(--surface)}}.news-photo img{{width:100%;height:100%;display:block;object-fit:cover}}.news-photo-empty{{display:grid;place-items:center;color:var(--muted);font-size:12px}}</style>
 <div class="cards">{''.join(cards)}</div></section>'''
 
 
 def update(xml, now):
     articles = collect(xml, now)
+    enrich_images(articles)
     page = ROOT / 'index.html'
     original = page.read_text(encoding='utf-8')
     changed, count = re.subn(r'<section id="trends">.*?</section>',
@@ -88,7 +184,7 @@ def update(xml, now):
     page.write_text(changed, encoding='utf-8')
     (ROOT / 'news.json').write_text(json.dumps({'updated_at': now.isoformat(),
         'source': FEED, 'articles': articles}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-    print(f'Updated {len(articles)} articles, newest: {articles[0]["published_at"]}')
+    print(f'Updated {len(articles)} articles, images: {sum(bool(a.get("image")) for a in articles)}, newest: {articles[0]["published_at"]}')
 
 
 if __name__ == '__main__':

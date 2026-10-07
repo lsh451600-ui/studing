@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install article URL decoder and HTML parser
+        run: pip install googlenewsdecoder==1.0.0 beautifulsoup4
       - name: Collect Google News and update homepage
         run: python scripts/update_news.py
       - name: Commit updated articles
@@ -30,6 +32,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html news.json
+          if [ -d assets/news ]; then git add -A assets/news; fi
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'Update dining trend articles from Google News'
           git push origin HEAD:main
