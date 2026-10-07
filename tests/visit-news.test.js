@@ -18,6 +18,7 @@ test('access cutoff excludes future and old articles, sorts, deduplicates and li
 test('every visit queries the feed without cache and reports actual request and collection times', async t => {
   let calls = 0;
   t.mock.method(globalThis, 'fetch', async (input, options) => {
+    if (new URL(input).host !== 'news.google.com') return new Response('', { status: 404 });
     calls++; assert.equal(new URL(input).host, 'news.google.com'); assert.equal(options.cache, undefined); assert.equal(options.cf.cacheTtl, 0);
     return new Response('<rss><channel>' + item('외식 시장 변화', Date.now() - 1000, 'today') + '</channel></rss>');
   });
@@ -39,6 +40,7 @@ test('outages are labeled stale and never relabel old collection times as curren
  test('old Cloudflare runtimes never receive the unsupported cache property', async t => {
   let calls = 0;
   t.mock.method(globalThis, 'fetch', async (input, options) => {
+    if (new URL(input).host !== 'news.google.com') return new Response('', { status: 404 });
     calls++;
     if (options.cache) throw new Error("The 'cache' field on 'RequestInitializerDict' is not implemented.");
     assert.equal(options.cf.cacheTtl, 0); assert.equal(options.headers['Cache-Control'], 'no-cache');
@@ -62,10 +64,22 @@ test('Google HTTP blocks and non-RSS responses have distinct diagnostics without
 test('network failure on the primary Google host retries the Korean Google host', async t => {
   const calls = [];
   t.mock.method(globalThis, 'fetch', async input => {
-    const host = new URL(input).host; calls.push(host);
+    const host = new URL(input).host; if (host === 'github.com') return new Response('', { status: 404 }); calls.push(host);
     if (host === 'news.google.com') throw new TypeError('fetch failed');
     return new Response('<rss><channel>' + item('외식 시장 변화', Date.now() - 1000, 'today') + '</channel></rss>');
   });
   const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
   assert.equal(data.stale, false); assert.deepEqual(calls, ['news.google.com', 'news.google.co.kr']);
+});
+
+test('blocked Google requests use current relay data without relabeling the collection time', async t => {
+  const collected = new Date(Date.now() - 120000).toISOString();
+  t.mock.method(console, 'warn', () => {});
+  t.mock.method(globalThis, 'fetch', async input => {
+    if (new URL(input).host === 'github.com') return Response.json({ updated_at: collected, articles: [{ title: '외식 시장 변화', source: '테스트신문', url: 'https://news.google.com/rss/articles/today', published_at: collected }] });
+    return new Response('', { status: 503 });
+  });
+  const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
+  assert.equal(data.sourceMode, 'relay'); assert.equal(data.stale, true);
+  assert.equal(data.checkedAt, collected); assert.ok(Date.parse(data.requestedAt) > Date.parse(collected));
 });

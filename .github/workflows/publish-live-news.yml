@@ -1,0 +1,51 @@
+name: Publish live Google news feed
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-live-news.yml
+permissions:
+  contents: write
+concurrency:
+  group: live-google-news-feed
+  cancel-in-progress: false
+jobs:
+  publish-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install googlenewsdecoder==0.1.7 selectolax==0.4.12 beautifulsoup4
+      - name: Collect Google news with original article images
+        run: python scripts/update_news.py
+      - name: Publish the data without rebuilding the website
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          repo = 'lsh451600-ui/studing'
+          view = subprocess.run(['gh', 'release', 'view', 'live-news-feed', '--repo', repo, '--json', 'assets'], capture_output=True, text=True)
+          if view.returncode:
+              subprocess.run(['gh', 'release', 'create', 'live-news-feed', '--repo', repo, '--target', '${{ github.sha }}', '--title', 'Live dining news data', '--notes', 'Google news articles and original images. Collection timestamp is included in news.json.', '--latest=false'], check=True)
+              known = set()
+          else:
+              known = {a['name'] for a in json.loads(view.stdout)['assets']}
+          data = json.loads(Path('news.json').read_text())
+          for article in data['articles']:
+              image = article.get('image')
+              if image and Path(image).is_file():
+                  if Path(image).name not in known:
+                      subprocess.run(['gh', 'release', 'upload', 'live-news-feed', image, '--repo', repo], check=True)
+                  article['image'] = 'https://github.com/' + repo + '/releases/download/live-news-feed/' + Path(image).name
+          Path('/tmp/live-feed').mkdir(exist_ok=True)
+          Path('/tmp/live-feed/news.json').write_text(json.dumps(data, ensure_ascii=False))
+          subprocess.run(['gh', 'release', 'upload', 'live-news-feed', '/tmp/live-feed/news.json', '--repo', repo, '--clobber'], check=True)
+          PY

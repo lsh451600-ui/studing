@@ -33,13 +33,13 @@ jobs:
           }
           if (!deployed) throw new Error('Deployment was not confirmed');
           let fresh = false;
-          for (let i = 0; i < 2; i++) {
+          for (let i = 0; i < 6; i++) {
             const response = await fetch('https://studing.pages.dev/api/trend-news?verify=' + process.env.COMMIT_SHA, { signal: AbortSignal.timeout(25000), cache: 'no-store' });
             const data = await response.json();
-            console.log(JSON.stringify({ version: data.version, available: data.available, stale: data.stale, failureCode: data.failureCode, upstreamStatus: data.upstreamStatus, errorType: data.errorType, networkCode: data.networkCode, errorCategory: data.errorCategory, articles: data.articles?.length, requestedAt: data.requestedAt, checkedAt: data.checkedAt }));
-            fresh = data.available === true && data.stale === false;
+            console.log(JSON.stringify({ version: data.version, available: data.available, stale: data.stale, sourceMode: data.sourceMode, failureCode: data.failureCode, upstreamStatus: data.upstreamStatus, errorType: data.errorType, networkCode: data.networkCode, errorCategory: data.errorCategory, articles: data.articles?.length, requestedAt: data.requestedAt, checkedAt: data.checkedAt }));
+            fresh = data.available === true && (data.stale === false || data.sourceMode === 'relay' && Date.parse(data.requestedAt) - Date.parse(data.checkedAt) <= 15 * 60000);
             if (fresh) break;
-            await pause(3000);
+            await pause(10000);
           }
           if (!fresh) throw new Error('Production news lookup still returns stale data; inspect the safe diagnostics above');
           JS

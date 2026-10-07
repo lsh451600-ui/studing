@@ -25,6 +25,22 @@ export function collect(xml, now) {
     if (seen.has(key)) return false; seen.add(key); return true;
   }).slice(0, 6);
 }
+async function loadRelay(now) {
+  try {
+    const response = await fetch('https://github.com/lsh451600-ui/studing/releases/download/live-news-feed/news.json', {
+      headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
+      signal: AbortSignal.timeout(8000), cf: { cacheTtl: 0, cacheEverything: false }
+    });
+    if (!response.ok) return null;
+    const text = await response.text(); if (text.length > 2000000) return null;
+    const data = JSON.parse(text), checked = Date.parse(data.updated_at);
+    if (!Number.isFinite(checked) || checked > now || now - checked > 86400000 || !Array.isArray(data.articles)) return null;
+    const articles = data.articles.filter(a => {
+      try { const url = new URL(a.url); return url.protocol === 'https:' && url.hostname === 'news.google.com' && typeof a.title === 'string' && typeof a.source === 'string' && Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000; } catch { return false; }
+    }).sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at)).slice(0, 6);
+    return articles.length ? { articles, checkedAt: data.updated_at } : null;
+  } catch { return null; }
+}
 async function fetchFeed(url) {
   let lastError;
   for (const host of ['news.google.com', 'news.google.co.kr']) {
@@ -57,12 +73,13 @@ function diagnostic(error) {
   };
 }
 export async function onRequest({ request }) {
-  const version = 'news-network-v2';
+  const version = 'news-network-v3';
   const headers = { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff' };
   if (request.method !== 'GET') return Response.json({ available: false }, { status: 405, headers });
   const now = Date.now(), requestedAt = new Date(now).toISOString();
   const url = new URL('https://news.google.com/rss/search');
   url.search = new URLSearchParams({ q: QUERY, hl: 'ko', gl: 'KR', ceid: 'KR:ko' }).toString();
+  const relayLookup = loadRelay(now);
   let stage = 'fetch', upstreamStatus = null;
   try {
     const response = await fetchFeed(url.href);
@@ -76,8 +93,10 @@ export async function onRequest({ request }) {
   } catch (error) {
     upstreamStatus = error?.upstreamStatus || upstreamStatus;
     const details = diagnostic(error);
+    const relay = await relayLookup;
     const failureCode = ['TimeoutError', 'AbortError'].includes(error?.name) ? 'NEWS-02' : upstreamStatus && upstreamStatus !== 200 ? 'NEWS-03' : stage === 'parse' ? 'NEWS-04' : stage === 'filter' ? 'NEWS-05' : 'NEWS-01';
     console.warn('news_fetch_failed', { stage, failureCode, upstreamStatus, ...details });
+    if (relay) return Response.json({ version, available: true, ...relay, requestedAt, stale: true, sourceMode: 'relay', reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
     const articles = snapshot.articles.filter(a => Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000).slice(0, 6);
     return Response.json({ version, ...details, available: articles.length > 0, articles, requestedAt, checkedAt: snapshot.updated_at, stale: true, reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
   }
