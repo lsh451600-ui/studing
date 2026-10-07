@@ -161,22 +161,26 @@ if (params.has('auth')) {
   params.delete('auth'); history.replaceState(null, '', location.pathname + (params.size ? '?' + params : '') + location.hash);
 }
 
+function socialStatus(message) {
+  for (const id of ['social-status', 'signup-social-status']) { if (byId(id)) byId(id).textContent = message; }
+}
+byId('signup-open').addEventListener('click', loadProviders);
 async function loadProviders() {
   document.querySelectorAll('[data-social]').forEach(button => { button.disabled = true; });
-  byId('social-status').textContent = '간편 로그인 연결을 확인하고 있습니다.';
+  socialStatus('간편 로그인 연결을 확인하고 있습니다.');
   try {
     const data = await api('/api/oauth');
     document.querySelectorAll('[data-social]').forEach(button => {
       const ready = data.providers?.[button.dataset.social] === true;
       button.disabled = !ready;
-      button.textContent = (button.dataset.social === 'google' ? '구글' : '카카오') + (ready ? '로 계속하기' : ' 로그인 · 연결 준비 중');
+      button.textContent = button.dataset.mode === 'signup' ? (ready ? '카카오로 가입하기' : '카카오 가입 · 연결 준비 중') : (button.dataset.social === 'google' ? '구글' : '카카오') + (ready ? '로 계속하기' : ' 로그인 · 연결 준비 중');
     });
-    byId('social-status').textContent = '';
-  } catch { byId('social-status').textContent = '간편 로그인 연결을 확인하지 못했습니다.'; }
+    socialStatus('');
+  } catch { socialStatus('간편 로그인 연결을 확인하지 못했습니다.'); }
 }
 document.querySelectorAll('[data-social]').forEach(button => button.addEventListener('click', async () => {
   document.querySelectorAll('[data-social]').forEach(b => { b.disabled = true; });
-  byId('social-status').textContent = '로그인 화면으로 이동하고 있습니다.';
+  socialStatus('로그인 화면으로 이동하고 있습니다.');
   try {
     const data = await api('/api/oauth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: button.dataset.social }) });
     location.assign(data.url);

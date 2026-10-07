@@ -35,7 +35,10 @@ const { chromium } = require('playwright');
             if (url.pathname === '/api/trend-video') { assert.equal(url.searchParams.get('visit'), '1'); return route.fulfill({ json: trend }); }
             if (url.pathname === '/api/trend-news') return route.fulfill({ json: { available: true, requestedAt: '2026-10-07T15:01:00Z', checkedAt: '2026-10-07T15:01:01Z', stale: false, articles: Array.from({ length: 6 }, (_, i) => ({ title: '외식 시장 변화 ' + i, source: '테스트신문', url: 'https://news.google.com/rss/articles/test' + i, published_at: '2026-10-07T14:00:00Z' })) } });
             if (url.pathname === '/api/session') return route.fulfill({ json: state });
-            if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: { google: true, kakao: true } } });
+            if (url.pathname === '/api/oauth') {
+              if (route.request().method() === 'POST') { assert.equal(route.request().postDataJSON().provider, 'kakao'); return route.fulfill({ status: 503, json: { message: '테스트 인증 연결 오류' } }); }
+              return route.fulfill({ json: { providers: { google: true, kakao: true } } });
+            }
             if (url.pathname === '/api/login') {
               if (!loginSucceeds) return route.fulfill({ status: 401, json: { message: '아이디 또는 비밀번호를 확인해 주세요.' } });
               state = { available: true, authenticated: true, needsProfile: false, user: { id: 'member', username: '테스트회원', kakaoLinked: true } };
@@ -49,8 +52,7 @@ const { chromium } = require('playwright');
           await page.goto(origin + path);
           await page.evaluate(theme => document.documentElement.dataset.theme = theme, theme);
           await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'anonymous');
-          await page.waitForFunction(() => document.querySelector('#visitor-today')?.textContent === '12');
-          assert.equal(await page.locator('#visitor-total').textContent(), '345');
+          assert.equal(await page.locator('#visitor-counter').count(), 0);
           await page.locator('#menu-open').click();
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'true');
           const menuBox = await page.locator('#site-menu').boundingBox();
@@ -67,6 +69,7 @@ const { chromium } = require('playwright');
             await page.waitForSelector('#video-start');
             await page.waitForFunction(() => document.querySelector('#news-status').textContent.includes('접속 기준:'));
             assert.equal(await page.locator('#trends .card').count(), 6);
+            assert.ok(await page.evaluate(() => document.querySelector('#news-status').compareDocumentPosition(document.querySelector('#trends .cards')) & Node.DOCUMENT_POSITION_PRECEDING), 'collection details appear below news cards');
             const newsStatus = await page.locator('#news-status').textContent();
             assert.ok(newsStatus.includes('2026. 10. 08.') && newsStatus.includes('00:01:00'), 'visit timestamp rolls over to the Korean calendar day');
             assert.equal(await page.locator('#video-player iframe').count(), 0);
@@ -86,12 +89,20 @@ const { chromium } = require('playwright');
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'page must fit viewport');
           assert.equal(await page.locator('header a[href*="partnership"]').count(), 0);
           assert.ok((await page.locator('header').boundingBox()).height <= (width <= 1100 ? 65 : 110), 'header remains one line');
+          await page.locator('#signup-open').click();
+          await page.waitForFunction(() => !document.querySelector('[data-mode="signup"]').disabled);
+          assert.equal(await page.locator('[data-mode="signup"]').textContent(), '카카오로 가입하기');
+          await page.locator('[data-mode="signup"]').click();
+          await page.waitForFunction(() => document.querySelector('#auth-error-dialog').open);
+          assert.ok((await page.locator('#auth-error-message').textContent()).includes('테스트 인증'));
+          await page.locator('#auth-error-close').click();
+          await page.locator('#signup-close').click();
           await page.locator('#login-open').click();
           await page.waitForFunction(() => !document.querySelector('#login-submit').disabled);
-          await page.waitForFunction(() => !document.querySelector('[data-social="kakao"]').disabled);
+          await page.waitForFunction(() => !document.querySelector('#login-dialog [data-social="kakao"]').disabled);
           const boxes = await page.evaluate(() => {
             const rect = id => { const r = document.querySelector(id).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; };
-            return { dialog: rect('#login-dialog'), identifier: rect('#login-identifier'), password: rect('#login-password'), submit: rect('#login-submit'), kakao: rect('[data-social="kakao"]'), google: rect('[data-social="google"]'), float: getComputedStyle(document.querySelector('[data-social="kakao"]')).float, width: innerWidth };
+            return { dialog: rect('#login-dialog'), identifier: rect('#login-identifier'), password: rect('#login-password'), submit: rect('#login-submit'), kakao: rect('#login-dialog [data-social="kakao"]'), google: rect('[data-social="google"]'), float: getComputedStyle(document.querySelector('#login-dialog [data-social="kakao"]')).float, width: innerWidth };
           });
           assert.ok(boxes.identifier.bottom <= boxes.password.top, 'ID must be above password');
           assert.ok(boxes.password.bottom <= boxes.submit.top, 'password must be above submit');
