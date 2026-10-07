@@ -69,6 +69,8 @@ const { chromium } = require('playwright');
       await page.waitForFunction(() => !document.querySelector('#recipe-editor').hidden);
       await page.locator('#recipe-post-title').fill('새 레시피'); await page.locator('#recipe-post-body').fill('새 레시피 조리 순서');
       await page.locator('#recipe-post-image').setInputFiles({ name: 'recipe.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j6xkAAAAASUVORK5CYII=', 'base64') });
+      await page.locator('#recipe-image-preview').waitFor({ state: 'visible' });
+      await page.waitForFunction(() => { const image = document.querySelector('#recipe-image-preview'); return image.complete && image.naturalWidth > 0; });
       assert.ok(await page.locator('#recipe-image-preview').isVisible());
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'composer fits viewport');
       await page.locator('#recipe-post-submit').click();
