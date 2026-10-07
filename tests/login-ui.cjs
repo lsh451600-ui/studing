@@ -47,11 +47,11 @@ const { chromium } = require('playwright');
           assert.ok(menuBox.x >= 0 && menuBox.x + menuBox.width <= width, 'menu must fit viewport');
           assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/', '/about', '/#trends', '/recipes']);
           await page.keyboard.press('Escape');
-          await page.waitForFunction(() => !document.querySelector('#site-menu').open);
+          await page.waitForFunction(() => !document.querySelector('#site-menu').open && document.querySelector('#menu-open').getAttribute('aria-expanded') === 'false' && document.activeElement === document.querySelector('#menu-open'));
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'false');
           await page.locator('#menu-open').click();
           await page.locator('#menu-close').click();
-          await page.waitForFunction(() => !document.querySelector('#site-menu').open);
+          await page.waitForFunction(() => !document.querySelector('#site-menu').open && document.querySelector('#menu-open').getAttribute('aria-expanded') === 'false' && document.activeElement === document.querySelector('#menu-open'));
           assert.equal(await page.locator('#menu-open').evaluate(el => document.activeElement === el), true);
           if (path === '/') {
             await page.waitForSelector('#video-player iframe');
