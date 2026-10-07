@@ -68,7 +68,7 @@ const { chromium } = require('playwright');
       await page.waitForFunction(() => document.querySelector('#recipe-admin-status').textContent.includes('확인'));
       assert.ok(await page.locator('#recipe-editor').isVisible()); assert.equal(submissions, 0);
       await page.locator('#recipe-admin-password').fill('owner-password'); await page.locator('#recipe-admin-submit').click();
-      await page.waitForFunction(() => !document.querySelector('#recipe-editor').hidden);
+      await page.waitForFunction(() => document.querySelector('#recipe-admin-panel').hidden && !document.querySelector('#recipe-admin-exit').hidden);
       await page.locator('#recipe-post-title').fill('새 레시피'); await page.locator('#recipe-post-body').fill('새 레시피 조리 순서');
       await page.locator('#recipe-post-image').setInputFiles({ name: 'recipe.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j6xkAAAAASUVORK5CYII=', 'base64') });
       await page.locator('#recipe-image-preview').waitFor({ state: 'visible' });
