@@ -15,6 +15,9 @@ export async function matchesPassword(candidate, expected) {
 }
 
 export async function onRequest({ request, env }) {
+  if (request.method === 'GET') {
+    return reply(200, { available: typeof env.RECIPE_PASSWORD === 'string' && env.RECIPE_PASSWORD.length > 0 });
+  }
   if (request.method !== 'POST') return reply(405, { message: '비밀번호를 입력해 주세요.' });
   if (request.headers.get('Origin') !== new URL(request.url).origin) {
     return reply(403, { message: '홈페이지에서 다시 시도해 주세요.' });

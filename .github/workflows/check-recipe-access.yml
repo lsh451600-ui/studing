@@ -1,0 +1,47 @@
+name: Verify recipe password deployment
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/recipes.js
+      - .github/workflows/check-recipe-access.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recipe-deployment-check
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify deployed password configuration and access rejection
+        run: |
+          python - <<'PY'
+          import json, time, urllib.request, urllib.error
+          url = 'https://studing.pages.dev/api/recipes'
+          for attempt in range(30):
+              try:
+                  request = urllib.request.Request(url, headers={'Cache-Control': 'no-cache'})
+                  with urllib.request.urlopen(request, timeout=10) as response:
+                      state = json.load(response)
+                  if 'available' not in state:
+                      raise ValueError('Waiting for latest deployment')
+                  if not state['available']:
+                      raise SystemExit('RECIPE_PASSWORD is not configured on the deployed Pages project.')
+                  break
+              except (urllib.error.URLError, ValueError):
+                  if attempt == 29:
+                      raise
+                  time.sleep(4)
+          request = urllib.request.Request(url, data=json.dumps({'password': '__deployment_invalid_password_probe__'}).encode(),
+              headers={'Content-Type':'application/json', 'Origin':'https://studing.pages.dev'}, method='POST')
+          try:
+              urllib.request.urlopen(request, timeout=15)
+              raise SystemExit('Invalid password was not rejected.')
+          except urllib.error.HTTPError as error:
+              if error.code != 401:
+                  raise SystemExit('Unexpected password verification response: ' + str(error.code))
+          print('PASS: production password configured; incorrect password rejected.')
+          PY
