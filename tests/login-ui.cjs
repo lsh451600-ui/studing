@@ -96,6 +96,15 @@ const { chromium } = require('playwright');
           assert.equal(await page.locator('#menu-open').evaluate(el => document.activeElement === el), true);
           if (path === '/') {
             await page.waitForSelector('#video-start');
+            const copyBox = await page.locator('.hero-copy').boundingBox();
+            const videoBox = await page.locator('.trend-video').boundingBox();
+            if (width > 800) {
+              assert.ok(copyBox.x + copyBox.width <= videoBox.x, 'intro stays inside its column without covering YouTube');
+              assert.ok(await page.locator('.hero-copy').evaluate(el => parseFloat(getComputedStyle(el).paddingInlineStart) >= 20));
+            } else {
+              assert.ok(copyBox.y + copyBox.height <= videoBox.y, 'intro stays above the video on phones');
+              assert.equal(await page.locator('.hero-copy').evaluate(el => getComputedStyle(el).textAlign), 'center');
+            }
             await page.waitForFunction(() => document.querySelector('#news-status').textContent.includes('접속 기준:'));
             assert.equal(await page.locator('#trends .card').count(), 6);
             assert.ok(await page.evaluate(() => document.querySelector('#news-status').compareDocumentPosition(document.querySelector('#trends .cards')) & Node.DOCUMENT_POSITION_PRECEDING), 'collection details appear below news cards');
