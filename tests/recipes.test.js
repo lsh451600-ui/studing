@@ -14,8 +14,10 @@ test('fails closed without a configured secret', async () => {
   assert.equal(response.status, 503);
   assert.equal(response.headers.get('Cache-Control'), 'no-store, private');
 });
-test('GET and foreign-origin requests cannot access recipe data', async () => {
-  assert.equal((await onRequest({ request: new Request('https://studing.pages.dev/api/recipes'), env: { RECIPE_PASSWORD: secret } })).status, 405);
+test('GET returns readiness without recipe data; foreign-origin requests are rejected', async () => {
+  const status = await onRequest({ request: new Request('https://studing.pages.dev/api/recipes'), env: { RECIPE_PASSWORD: secret } });
+  assert.equal(status.status, 200);
+  assert.deepEqual(await status.json(), { available: true });
   assert.equal((await onRequest({ request: req(secret, 'https://other.example'), env: { RECIPE_PASSWORD: secret } })).status, 403);
 });
 test('wrong passwords receive no content and correct passwords open the page', async () => {
