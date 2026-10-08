@@ -1,25 +1,49 @@
 {
-  "updated_at": "2026-10-08T00:05:03.831953+00:00",
+  "updated_at": "2026-10-08T11:42:37.222849+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A30d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
-      "title": "가을 외식물가 상승에 배달 대신 집밥 택한다",
-      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5EOTlxeXN6elg4bUs4UDVGOUltS0RONmR4NHkxal83TW04dEtNYjVFbzJPWWh6b2RjNUdmTGxUNmdtZkllRVhQVlZ1Qzk1LS02Y2lFcFFTWDJDOEJvVmtwb2loMXNFZUE2?oc=5",
-      "source": "공감신문",
-      "published_at": "2026-10-05T03:35:03+00:00",
-      "image": "assets/news/9457edd54c71c9e02603f52f.jpg",
-      "image_source": "https://cdn.gokorea.kr/news/thumbnail/202610/880442_157802_3159_v150.jpg",
-      "image_alt": "가을 외식물가 상승에 배달 대신 집밥 택한다 · 기사 사진",
-      "original_url": "https://www.gokorea.kr/news/articleView.html?idxno=880442"
+      "title": "외식 프랜차이즈 줄줄이 가격인상… 소비자 부담 커진다",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5MbTZ1dndjam5fX2xRQXBnMER4VmQ1TkhoMlQxdnBRS0NYdlZTdnBoQlBBSDhHQ0hJMGxvY2IzTGJEN1pFLXdEbjNSSlVIQ3lxQUxLMzBidWdTQnNfT2p1a1dkSmQ3cDJ6ZDlscEx3TlNJcWM1Mm5ONzE5cw?oc=5",
+      "source": "부산일보",
+      "published_at": "2026-10-08T08:41:40+00:00",
+      "original_url": "https://mobile.busan.com/view/bstoday/view.php?code=2026100817394251223",
+      "image": "assets/news/febc6011757bd18cfeef1a04.jpg",
+      "image_source": "https://www.busan.com/nas/wcms/wcms_data/photos/2026/10/08/2026100817394003363_l.jpg",
+      "image_alt": "외식 프랜차이즈 줄줄이 가격인상… 소비자 부담 커진다 · 기사 사진"
+    },
+    {
+      "title": "소비 트렌드 다변화 속 외식·유통가, '고품질·체험·절약' 고객 공략",
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5yRlcwdVNhQnNFbElrUzNZSlgtRUIwR3pQdW9KLWdpM19NSS1Mb2NNbFZYV3NXRzFsX1FYOFk1U1dDMW90ZGNoREZHWjhleXFMeGhfcEIwWFpQdmxoRjdxalBqd0ItVnlmYXc?oc=5",
+      "source": "데일리팝",
+      "published_at": "2026-10-08T07:25:00+00:00",
+      "original_url": "https://www.dailypop.kr/news/articleView.html?idxno=103193",
+      "image": "assets/news/e233b813302721361ed02c92.jpg",
+      "image_source": "https://www.dailypop.kr/news/photo/202610/103193_171050_1914.jpg",
+      "image_alt": "사진=풀무원푸드앤컬처 ‘자연은 맛있다 칼국수’ 1호점 전경"
+    },
+    {
+      "title": "[경제+] 스크린 넘어 관광·외식까지...中 국경절 '영화+' 소비시장 들썩",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9hRTlRR1JiNWJLdlduYVpLaFB0VDF3UlZjUHE5cmNXUlp3VWR5YnFwdjV6REhPSjFUdVpmV3JXVDdPZi1SVVpqamtTS2FpQ21PS21NNnJ5Yy1pczIwVy1CRUxpSXhMZVlFdUJlNl9mNnnSAXBBVV95cUxPYUU5UUdSYjViS3ZXbmFaS2hQdFQxd1JWY1BxOXJjV1Jad1VkeWJxcHY1ekRIT0oxVHVaZldyV1Q3T2YtUlVaamprU0thaUNtT0ttTTZyeWMtaXMyMFctQkVMaUl4TGVZRXVCZTZfZjZ5?oc=5",
+      "source": "내외뉴스통신",
+      "published_at": "2026-10-08T01:59:28+00:00",
+      "original_url": "http://www.nbnnews.co.kr/news/articleViewAmp.html?idxno=1061097"
+    },
+    {
+      "title": "[경제+] 스크린 넘어 관광·외식까지...中 국경절 '영화+' 소비시장 들썩-Xinhua",
+      "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTFB0Yk9jazNZeUxsbVdZU2NvbC1XMHlzRDE3YTVyVXE5VmVudWZNbnFheGcwcFB0ek5FX0tqY0VlNHVveTdyNkRRY3NpbkdSc3lYYXpJMkhxUWwzYkRKcjBZd3lMalZQQVl2NEx4eXA2a3A4Ukw5ZUE?oc=5",
+      "source": "신화망",
+      "published_at": "2026-10-08T01:15:15+00:00",
+      "original_url": "https://kr.news.cn/20261008/38fabbf3ea67440ba4b42969f8ac6c2d/c.html"
     },
     {
       "title": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령!",
-      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9ucGIzdnRpT1VBZXZyN25zTGdGcVdGQkYwb1UyZG1JeHBZc3Zkejg2aGg3SnozazltOFhRVE1xNmJxalZzeGh0MGdpX3dDRHNtTjNB?oc=5",
-      "source": "네이트",
-      "published_at": "2026-10-04T10:36:00+00:00",
-      "original_url": "https://news.nate.com/view/20261004n12948",
-      "image": "assets/news/71b1d3c6317551dba6cfa293.jpg",
-      "image_source": "https://thumbnews.nateimg.co.kr/view610///news.nateimg.co.kr/orgImg/yn/2026/10/04/202610041925261824_t.jpg",
+      "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1wUTh3VUdfenp1d2x1ZEp1Rml4by1Kb2gxUktuOUU4OWtkLTgzY2I2WHNEXzVVZ1lnT09sYW1NY2QxRldIcGVGYWhQRXVkQWtpazdxV3RBVTFxbktFWFE?oc=5",
+      "source": "YTN",
+      "published_at": "2026-10-04T10:25:00+00:00",
+      "original_url": "https://www.ytn.co.kr/_ln/1230_202610041925261824",
+      "image": "assets/news/33706f0981f006ee4964e5a1.jpg",
+      "image_source": "https://image.ytn.co.kr/special/jpg/global_common/2026/202610041925261824_h.jpg",
       "image_alt": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령! · 기사 사진"
     },
     {
@@ -31,36 +55,6 @@
       "image_source": "https://www.foodbank.co.kr/news/photo/202610/68607_30138_3642.jpg",
       "image_alt": "중국 우시 태호 인근 쇼핑몰에 문을 연 ‘교촌치킨 중국 우시점’. 사진=제공",
       "original_url": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607"
-    },
-    {
-      "title": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력”",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42VTVTTXM0RWJBMkExVFNfeDgxU3VVWGNPbVRTTmd2WWdoS1RiVGFaTUcyaXRTR3FjT255YmF1UVJfTTRkX0F5UEpmbXFvc0Ezcm5EOXdmaWFrT2hXNzFIRjZBT0FOOVI3OFgxYmlB?oc=5",
-      "source": "식품저널 foodnews",
-      "published_at": "2026-10-02T02:31:09+00:00",
-      "image": "assets/news/b26171f6ad61c7780c2ae5ca.jpg",
-      "image_source": "https://cdn.foodnews.co.kr/news/thumbnail/202610/120398_86820_2438_v150.jpg",
-      "image_alt": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력” · 기사 사진",
-      "original_url": "https://www.foodnews.co.kr/news/articleView.html?idxno=120398"
-    },
-    {
-      "title": "제주 물가 2.7%로 둔화… 외식 제외 개인서비스는 4.2%",
-      "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE5mWlJ0V1hhZ2R4VHlYUkRONldMWmdkcnR3ajVwYnpGRXFVWm9hR2hFYzNHY3FyTnZLUUZjSGZyWlg4Vm9WVmZxbENwVllFWGdlOGprYw?oc=5",
-      "source": "Daum",
-      "published_at": "2026-10-02T00:04:35+00:00",
-      "image": "assets/news/40b136f77a8045b8f7688f74.jpg",
-      "image_source": "https://img3.daumcdn.net/thumb/R658x0.q70/?fname=https://t1.daumcdn.net/news/202610/02/fnnewsi/20261002090435941jwea.jpg",
-      "image_alt": "제주시 제주중앙지하상가에서 시민들이 이동하고 있다. 9월 제주 개인서비스 가격은 지난해 같은 달보다 3.1% 상승했고 외식을 제외한 개인서비스는 4.2% 올라 전체 물가 상승률을 웃돌았다. 사진=뉴시스",
-      "original_url": "https://v.daum.net/v/20261002090435614?f=p"
-    },
-    {
-      "title": "농산물값 내렸지만 고기·외식은 올라…9월 먹거리 물가 ‘온도차’",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBHbkNPN1piWDI0OTdsblZLUUp6WXZhNzJreXJxWXJtUDRyOHd3dHhIQXMwRmkzSGVUQklaWS1FbktlNW1SOGxjN1FXZDNjVEF1MXVQVDJiNkdGeU9aYlp5SEZOcHV1OWpWSWxKeg?oc=5",
-      "source": "푸드아이콘",
-      "published_at": "2026-10-01T23:40:00+00:00",
-      "image": "assets/news/30302654d5da5d683f25e516.png",
-      "image_source": "https://www.foodicon.co.kr/news/photo/202610/35516_53980_4326.jpg",
-      "image_alt": "농산물값 내렸지만 고기·외식은 올라…9월 먹거리 물가 ‘온도차’ · 기사 사진",
-      "original_url": "https://www.foodicon.co.kr/news/articleView.html?idxno=35516"
     }
   ]
 }
