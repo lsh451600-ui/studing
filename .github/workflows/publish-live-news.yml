@@ -66,6 +66,7 @@ jobs:
           else:
               known = {a['name'] for a in json.loads(view.stdout)['assets']}
           data = json.loads(Path('news.json').read_text())
+          print('News refreshed:', data['updated_at'], 'articles:', len(data['articles']), 'newest:', data['articles'][0]['title'], flush=True)
           for article in data['articles']:
               image = article.get('image')
               if image and Path(image).is_file():
