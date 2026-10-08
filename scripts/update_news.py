@@ -2,6 +2,8 @@
 import html
 import hashlib
 import json
+import os
+from difflib import SequenceMatcher
 import re
 import time
 import urllib.parse
@@ -18,7 +20,19 @@ FEED = 'https://news.google.com/rss/search?' + urllib.parse.urlencode(
     {'q': QUERY, 'hl': 'ko', 'gl': 'KR', 'ceid': 'KR:ko'})
 
 
-def collect(xml, now):
+def title_key(title):
+    return re.sub(r'[^\w]', '', re.sub(r'\[[^]]*\]|【[^】]*】', '', title)).lower()
+
+
+def same_article(article, previous):
+    if article['url'] == previous.get('url'):
+        return True
+    left, right = title_key(article['title']), title_key(previous.get('title', ''))
+    return bool(left and right) and (left == right or
+        min(len(left), len(right)) >= 15 and SequenceMatcher(None, left, right).ratio() >= 0.86)
+
+
+def collect(xml, now, history=()):
     articles = []
     seen = set()
     for item in ET.fromstring(xml).findall('./channel/item'):
@@ -52,10 +66,10 @@ def collect(xml, now):
     unique = []
     for article in articles:
         key = article.pop('_key')
-        if key not in seen:
+        if key not in seen and not any(same_article(article, old) for old in [*history, *unique]):
             seen.add(key)
             unique.append(article)
-    if not unique:
+    if not articles:
         raise ValueError('No valid recent articles. Preserve the previous homepage.')
     return unique[:6]
 
@@ -168,12 +182,35 @@ def render(articles, now):
     return '''<section id="trends"><div class="section-head"><div><small>DINING TREND NEWS</small><h2>외식의 다음 장면</h2></div><span>GOOGLE NEWS · 발행일 최신순</span></div>''' + f'''
 
 <style>.news-photo{{height:200px;border-radius:10px;overflow:hidden;background:var(--surface)}}.news-photo img{{width:100%;height:100%;display:block;object-fit:cover}}.news-photo-empty{{display:grid;place-items:center;color:var(--muted);font-size:12px}}</style>
-<div class="cards">{''.join(cards)}</div><p id="news-status" data-collected="{now.astimezone(KST):%Y.%m.%d %H:%M}" style="font-size:12px;color:var(--muted);line-height:1.9;white-space:pre-line" role="status">최근 30일 외식 트렌드 최신 6개 · 매일 오전 9시·오후 9시 자동 갱신 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 카드를 누르면 기사 원문으로 이동합니다.</p></section>'''
+<div class="cards">{''.join(cards)}</div><p id="news-status" data-collected="{now.astimezone(KST):%Y.%m.%d %H:%M}" style="font-size:12px;color:var(--muted);line-height:1.9;white-space:pre-line" role="status">최근 30일 외식 트렌드 최신 기사 · 매일 오전 9시·오후 9시 자동 갱신 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 카드를 누르면 기사 원문으로 이동합니다.</p></section>'''
 
 
 def update(xml, now):
-    articles = collect(xml, now)
-    enrich_images(articles)
+    local = json.loads((ROOT / 'news.json').read_text()) if (ROOT / 'news.json').exists() else {}
+    previous_path = os.environ.get('PREVIOUS_NEWS_PATH')
+    remote = json.loads(Path(previous_path).read_text()) if previous_path else {}
+    previous = max([local, remote], key=lambda data: data.get('updated_at', ''))
+    history = []
+    for data in [local, remote]:
+        for article in [*data.get('history', []), *data.get('articles', [])]:
+            if article.get('url') and article.get('title') and not any(old['url'] == article['url'] for old in history):
+                history.append({key: article[key] for key in ('url', 'title', 'published_at')})
+    articles = collect(xml, now, history)
+    # Never rotate previously unseen but older stories into a latest-news feed.
+    cutoff = max((a['published_at'] for a in history), default='')
+    articles = [a for a in articles if a['published_at'] > cutoff]
+    new_count = len(articles)
+    if articles:
+        enrich_images(articles)
+    else:
+        articles = previous.get('articles', [])
+        if not articles:
+            raise ValueError('No new articles and no previous collection available')
+        print('No unseen newer articles; preserving the displayed collection.')
+    for article in articles:
+        if not any(old['url'] == article['url'] for old in history):
+            history.append({key: article[key] for key in ('url', 'title', 'published_at')})
+    history = [a for a in history if datetime.fromisoformat(a['published_at']) >= now - timedelta(days=60)]
     page = ROOT / 'index.html'
     original = page.read_text(encoding='utf-8')
     changed, count = re.subn(r'<section id="trends">.*?</section>',
@@ -183,7 +220,7 @@ def update(xml, now):
     # Keep the initial template scripts: news cards are links, not dialog buttons.
     page.write_text(changed, encoding='utf-8')
     (ROOT / 'news.json').write_text(json.dumps({'updated_at': now.isoformat(),
-        'source': FEED, 'articles': articles}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+        'source': FEED, 'articles': articles, 'history': history, 'new_articles': new_count}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     (ROOT / 'src/news-snapshot.js').write_text('export const snapshot = ' + (ROOT / 'news.json').read_text().strip() + ';\n', encoding='utf-8')
     print(f'Updated {len(articles)} articles, images: {sum(bool(a.get("image")) for a in articles)}, newest: {articles[0]["published_at"]}')
 

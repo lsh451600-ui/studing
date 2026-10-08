@@ -46,9 +46,15 @@ jobs:
             }
           }
           JS
+      - name: Load previously published articles to prevent repeats
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download live-news-feed --pattern news.json --output /tmp/previous-news.json --repo lsh451600-ui/studing
       - name: Collect Google news with original article images
         id: news
         if: ${{ !cancelled() }}
+        env:
+          PREVIOUS_NEWS_PATH: /tmp/previous-news.json
         run: python scripts/update_news.py
       - name: Publish the data without rebuilding the website
         if: ${{ !cancelled() && steps.news.outcome == 'success' }}

@@ -25,7 +25,13 @@ jobs:
           python-version: '3.12'
       - name: Install article URL decoder and HTML parser
         run: pip install googlenewsdecoder==0.1.7 selectolax==0.4.12 beautifulsoup4
+      - name: Load previously published articles to prevent repeats
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download live-news-feed --pattern news.json --output /tmp/previous-news.json --repo lsh451600-ui/studing
       - name: Collect Google News and update homepage
+        env:
+          PREVIOUS_NEWS_PATH: /tmp/previous-news.json
         run: python scripts/update_news.py
       - name: Commit updated articles
         run: |
