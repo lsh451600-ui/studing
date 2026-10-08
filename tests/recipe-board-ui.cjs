@@ -23,6 +23,11 @@ const { chromium } = require('playwright');
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       let submissions = 0, accountWriterMode = false;
       const posts = [{ canEdit: true, canDelete: true, id: 'first', category: '베이커리', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
+      const listing = (params = new URLSearchParams()) => {
+        const filtered = posts.filter(p => (!params.get('category') || p.category === params.get('category')) && (!params.get('q') || (p.title + ' ' + p.body).includes(params.get('q'))));
+        const totalPages = Math.max(1, Math.ceil(filtered.length / 10)), page = Math.min(Number(params.get('page') || 1), totalPages);
+        return { posts: filtered.slice((page - 1) * 10, page * 10), total: filtered.length, totalPages, page };
+      };
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
         if (url.origin !== origin) return route.abort();
@@ -33,7 +38,7 @@ const { chromium } = require('playwright');
         if (url.pathname === '/api/recipes') {
           if (req.method() === 'DELETE') return route.fulfill({ json: {} });
           assert.equal(req.postDataJSON().password, 'reader-password');
-          return route.fulfill({ json: { posts, adminConfigured: true, canWrite: accountWriterMode, accountWriter: accountWriterMode, storageAvailable: true, next: null } });
+          return route.fulfill({ json: { ...listing(), adminConfigured: true, canWrite: accountWriterMode, accountWriter: accountWriterMode, storageAvailable: true, next: null } });
         }
         if (url.pathname === '/api/recipe-posts') {
           if (req.method() === 'PATCH') {
@@ -51,7 +56,7 @@ const { chromium } = require('playwright');
             posts.unshift({ ...payload, id: 'new', created_at: '2026-10-07T02:00:00Z' }); submissions++;
             return route.fulfill({ json: { success: true } });
           }
-          return route.fulfill({ json: { posts: url.searchParams.get('category') ? posts.filter(p => p.category === url.searchParams.get('category')) : posts, next: null } });
+          return route.fulfill({ json: listing(url.searchParams) });
         }
         return route.continue();
       });
@@ -59,7 +64,9 @@ const { chromium } = require('playwright');
       await page.goto(origin + '/recipes');
       assert.ok(await page.locator('#recipe-gate').isVisible());
       const gateBox = await page.locator('#recipe-gate').boundingBox();
-      assert.ok(Math.abs(gateBox.x + gateBox.width / 2 - width / 2) <= 2, 'password gate is centered');
+      const mainBox = await page.locator('main').boundingBox();
+      assert.ok(Math.abs(gateBox.x - mainBox.x) <= 1, 'password gate aligns with left edge');
+      assert.equal(await page.locator('main h1').evaluate(el => getComputedStyle(el).textAlign), 'left');
       assert.ok(!(await page.locator('#recipe-board').isVisible()));
       await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
       await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
@@ -105,7 +112,7 @@ const { chromium } = require('playwright');
       await page.locator('#recipe-category-menu button[data-category="베이커리"]').click();
       await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
       await page.locator('#recipe-category-menu summary').click();
-      await Promise.all([page.waitForResponse(response => response.url().endsWith('/api/recipe-posts')), page.locator('#recipe-category-menu button[data-category=""]').click()]);
+      await Promise.all([page.waitForResponse(response => new URL(response.url()).pathname === '/api/recipe-posts'), page.locator('#recipe-category-menu button[data-category=""]').click()]);
       await page.locator('.recipe-row').click();
       await page.locator('.recipe-post-actions').getByRole('button', { name: '수정', exact: true }).click();
       await page.locator('.recipe-inline-edit input').fill('수정한 자료');
@@ -123,6 +130,29 @@ const { chromium } = require('playwright');
       assert.equal(await page.locator('.recipe-board-kicker').count(), 0);
       assert.equal(await page.locator('#recipe-admin-panel').count(), 0);
       assert.ok(await page.locator('#recipe-search-form').evaluate(form => form.querySelector('label').htmlFor === 'recipe-filter-category'));
+      for (let n = 0; n < 21; n++) posts.push({ id: 'paged-' + n, category: n % 2 ? '한식' : '베이커리', title: '페이지 자료 ' + n, body: '내용 ' + n, created_at: '2026-10-07T01:00:00Z' });
+      await page.locator('#recipe-heading-link').click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 10);
+      assert.deepEqual(await page.locator('#recipe-pagination button').allTextContents(), ['1', '2', '3']);
+      await page.getByRole('button', { name: '2페이지', exact: true }).click();
+      await page.waitForFunction(() => document.querySelector('#recipe-pagination [aria-current]').textContent === '2');
+      assert.equal(await page.locator('.recipe-post').count(), 10);
+      await page.getByRole('button', { name: '3페이지', exact: true }).click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 2);
+      await page.locator('#recipe-search-query').fill('수정한 자료');
+      await page.locator('#recipe-search-submit').click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
+      assert.equal(await page.locator('.recipe-row-title').textContent(), '수정한 자료');
+      assert.equal(await page.locator('#recipe-pagination [aria-current]').textContent(), '1');
+      await page.locator('#recipe-search-query').fill('페이지 자료');
+      await page.locator('#recipe-search-submit').click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 10);
+      await page.getByRole('button', { name: '2페이지', exact: true }).click();
+      await page.waitForFunction(() => document.querySelector('#recipe-pagination [aria-current]').textContent === '2');
+      assert.ok((await page.locator('.recipe-row-title').allTextContents()).every(t => t.startsWith('페이지 자료')));
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'pagination fits viewport');
+      posts.splice(1); await page.locator('#recipe-heading-link').click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
       accountWriterMode = true;
       await page.goto(origin + '/recipes');
       await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();

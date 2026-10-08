@@ -87,19 +87,23 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   await db.prepare('DELETE FROM recipe_limits WHERE expires_at < ?').bind(now).run();
   return row.attempts <= maximum;
 }
-export async function listPosts(db, before = null, { q = '', category = '', identity = null } = {}) {
+export async function listPosts(db, before = null, { q = '', category = '', identity = null, page = 1 } = {}) {
   await ensurePosts(db);
   const fields = 'id, author_id, title, body, category, created_at, downloads, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
   const filters = [], values = [];
   if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
   if (category) { filters.push('category = ?'); values.push(category); }
   if (before) { filters.push('id < ?'); values.push(before); }
-  const query = db.prepare(`SELECT ${fields} FROM recipe_posts${filters.length ? ' WHERE ' + filters.join(' AND ') : ''} ORDER BY id DESC LIMIT 21`).bind(...values);
+  const where = filters.length ? ' WHERE ' + filters.join(' AND ') : '';
+  const { total } = await db.prepare('SELECT COUNT(*) AS total FROM recipe_posts' + where).bind(...values).first();
+  const totalPages = Math.max(1, Math.ceil(total / 10));
+  page = Math.min(page, totalPages);
+  const query = db.prepare(`SELECT ${fields} FROM recipe_posts${where} ORDER BY id DESC LIMIT 10 OFFSET ?`).bind(...values, (page - 1) * 10);
   const { results } = await query.all();
-  const posts = results.slice(0, 20).map(({ author_id, ...post }) => ({ ...post, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id),
+  const posts = results.map(({ author_id, ...post }) => ({ ...post, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id),
     image_url: post.has_image ? `/api/recipe-image?id=${post.id}` : null,
     attachment_url: post.has_attachment ? `/api/recipe-file?id=${post.id}` : null }));
-  return { posts, next: results.length > 20 ? posts[posts.length - 1].id : null };
+  return { posts, page, total, totalPages, next: page < totalPages && posts.length ? posts[posts.length - 1].id : null };
 }
 export function validatePost(data) {
   if (!data || typeof data.title !== 'string' || typeof data.body !== 'string') throw new Error('제목과 내용을 입력해 주세요.');

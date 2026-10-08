@@ -4,7 +4,7 @@ const form = byId('recipe-access-form'), input = byId('recipe-password'), submit
 const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
 const board = byId('recipe-board'), editor = byId('recipe-editor');
 const postForm = byId('recipe-post-form');
-let pending = false, posting = false, next = null, previewURL = null, generation = 0, storage = false, accountWriter = false;
+let pending = false, posting = false, currentPage = 1, previewURL = null, generation = 0, storage = false, accountWriter = false;
 function clearPreview() {
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = null; byId('recipe-image-preview').removeAttribute('src'); byId('recipe-image-preview').hidden = true;
@@ -14,7 +14,7 @@ function resetView() {
   content.hidden = true; board.hidden = true; editor.hidden = true;
   postForm.reset(); clearPreview(); gate.hidden = false; status.textContent = '';
   byId('recipe-post-status').textContent = '';
-  byId('recipe-board-status').textContent = ''; next = null;
+  byId('recipe-board-status').textContent = ''; currentPage = 1;
   byId('recipe-admin-open').hidden = true;
 }
 async function api(path, options = {}) {
@@ -25,9 +25,9 @@ async function api(path, options = {}) {
   return data;
 }
 const jsonOptions = body => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-function renderPosts(posts, append = false) {
-  if (!append) content.replaceChildren();
-  if (!posts.length && !append) {
+function renderPosts(posts) {
+  content.replaceChildren();
+  if (!posts.length) {
     const empty = document.createElement('p'); empty.textContent = byId('recipe-search-query').value.trim() || byId('recipe-filter-category').value ? '검색 결과가 없습니다.' : '아직 등록된 레시피가 없습니다.'; content.append(empty);
   }
   for (const post of posts) {
@@ -70,16 +70,33 @@ function renderPosts(posts, append = false) {
   }
   content.hidden = false;
 }
-async function refreshPosts(append = false) {
+function renderPagination(data) {
+  currentPage = data.page || 1;
+  const pages = data.totalPages || 1, pagination = byId('recipe-pagination');
+  pagination.replaceChildren();
+  // Keep numbered navigation compact for large collections.
+  const numbers = new Set([1, pages]);
+  for (let n = Math.max(1, currentPage - 2); n <= Math.min(pages, currentPage + 2); n++) numbers.add(n);
+  let previous = 0;
+  for (const n of [...numbers].sort((a, b) => a - b)) {
+    if (previous && n > previous + 1) {
+      const gap = document.createElement('span'); gap.textContent = '…'; pagination.append(gap);
+    }
+    const button = document.createElement('button'); button.type = 'button'; button.textContent = String(n);
+    button.dataset.page = n; button.setAttribute('aria-label', n + '페이지');
+    if (n === currentPage) button.setAttribute('aria-current', 'page');
+    pagination.append(button); previous = n;
+  }
+}
+async function refreshPosts(page = currentPage) {
   const current = generation;
-  const params = new URLSearchParams();
-  if (append && next) params.set('before', next);
+  const params = new URLSearchParams({ page: String(page) });
   const q = byId('recipe-search-query').value.trim(), category = byId('recipe-filter-category').value;
   if (q) params.set('q', q);
   if (category) params.set('category', category);
-  const data = await api('/api/recipe-posts' + (params.size ? '?' + params : ''));
+  const data = await api('/api/recipe-posts?' + params);
   if (current !== generation) return;
-  renderPosts(data.posts, append); next = data.next; byId('recipe-more').hidden = !next;
+  renderPosts(data.posts); renderPagination(data);
 }
 byId('recipe-show-password').addEventListener('change', event => { input.type = event.target.checked ? 'text' : 'password'; });
 window.addEventListener('pagehide', resetView);
@@ -90,7 +107,7 @@ form.addEventListener('submit', async event => {
   try {
     const data = await api('/api/recipes', jsonOptions({ password: input.value }));
     if (current !== generation) return;
-    renderPosts(data.posts || []); next = data.next; byId('recipe-more').hidden = !next;
+    renderPosts(data.posts || []); renderPagination(data);
     board.hidden = false; gate.hidden = true;
     storage = Boolean(data.storageAvailable); accountWriter = data.accountWriter === true;
     editor.hidden = !accountWriter;
@@ -112,7 +129,7 @@ byId('recipe-heading-link').addEventListener('click', async event => {
   if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
   if (!gate.hidden) { byId('recipe-password').focus(); return; }
-  generation++; next = null; editor.hidden = true;
+  generation++; currentPage = 1; editor.hidden = true;
   byId('recipe-search-form').reset();
   for (const post of content.querySelectorAll('details[open]')) post.open = false;
   try { await refreshPosts(); byId('recipe-board-heading').focus({ preventScroll: true }); }
@@ -127,12 +144,12 @@ byId('recipe-category-menu').addEventListener('click', async event => {
   if (!button) return;
   byId('recipe-filter-category').value = button.dataset.category;
   byId('recipe-category-menu').open = false;
-  generation++; next = null;
+  generation++; currentPage = 1;
   try { await refreshPosts(); }
   catch (error) { byId('recipe-board-status').textContent = error.message; }
 });
 byId('recipe-search-form').addEventListener('submit', async event => {
-  event.preventDefault(); next = null;
+  event.preventDefault(); generation++; currentPage = 1;
   const button = byId('recipe-search-submit'); button.disabled = true;
   try { await refreshPosts(); } catch (error) { byId('recipe-board-status').textContent = error.message; }
   finally { button.disabled = false; }
@@ -186,12 +203,18 @@ postForm.addEventListener('submit', async event => {
     const payload = { category: byId('recipe-post-category').value, title: byId('recipe-post-title').value, body: byId('recipe-post-body').value, image: file ? await encodeFile(file) : null, attachment };
     await api('/api/recipe-posts', jsonOptions(payload)); postForm.reset(); clearPreview();
     postStatus.textContent = '게시물을 올렸습니다.';
-    try { await refreshPosts(); } catch { byId('recipe-board-status').textContent = '게시물은 저장됐습니다. 목록을 새로고침해 주세요.'; }
+    try { await refreshPosts(1); } catch { byId('recipe-board-status').textContent = '게시물은 저장됐습니다. 목록을 새로고침해 주세요.'; }
   } catch (error) { postStatus.textContent = error.message; }
   finally { posting = false; byId('recipe-post-submit').disabled = false; postForm.removeAttribute('aria-busy'); }
 });
-byId('recipe-more').addEventListener('click', async () => {
-  const button = byId('recipe-more'); button.disabled = true;
-  try { await refreshPosts(true); } catch (error) { byId('recipe-board-status').textContent = error.message; }
-  finally { button.disabled = false; }
+byId('recipe-pagination').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-page]');
+  if (!button || Number(button.dataset.page) === currentPage) return;
+  generation++;
+  byId('recipe-pagination').setAttribute('aria-busy', 'true');
+  try {
+    await refreshPosts(Number(button.dataset.page));
+    byId('recipe-content').scrollIntoView({ block: 'start' });
+  } catch (error) { byId('recipe-board-status').textContent = error.message; }
+  finally { byId('recipe-pagination').removeAttribute('aria-busy'); }
 });

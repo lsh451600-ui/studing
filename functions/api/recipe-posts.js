@@ -33,9 +33,11 @@ export async function onRequest({ request, env }) {
       const params = new URL(request.url).searchParams;
       const raw = params.get('before');
       if (raw !== null && (!/^\d+$/.test(raw) || !Number.isSafeInteger(Number(raw)) || Number(raw) < 1)) return reply(400, { message: '페이지 정보를 확인해 주세요.' });
+      const page = params.get('page') || '1';
+      if (!/^[1-9]\d*$/.test(page) || !Number.isSafeInteger(Number(page))) return reply(400, { message: '페이지 정보를 확인해 주세요.' });
       const q = (params.get('q') || '').trim(), category = params.get('category') || '';
       if (q.length > 100 || (category && !['한식', '중식', '일식', '양식', '베이커리'].includes(category))) return reply(400, { message: '검색 조건을 확인해 주세요.' });
-      return reply(200, await listPosts(db, raw ? Number(raw) : null, { q, category, identity }));
+      return reply(200, await listPosts(db, raw ? Number(raw) : null, { q, category, identity, page: Number(page) }));
     }
     let post;
     try { post = validatePost(await readJSON(request, 2300000)); }

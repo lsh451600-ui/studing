@@ -27,3 +27,11 @@
 .recipe-category-menu button{display:block;width:100%;border:0;text-align:left;font-size:12px;padding:8px 12px;min-height:36px}
 .recipe-category-menu button:hover{background:var(--surface)}
 @media(max-width:540px){.recipe-collection-page .recipe-row,.recipe-collection-page .recipe-list-heading{grid-template-columns:57px minmax(0,1fr) 48px 65px;gap:6px;padding-left:8px;padding-right:8px}.recipe-collection-page .recipe-row time{grid-column:4;text-align:right;font-size:10px}.recipe-collection-page .recipe-list-heading span:last-child{display:block}.recipe-collection-page .recipe-row-title{font-size:13px}.recipe-collection-page .recipe-category{font-size:10px;padding:4px 5px}.recipe-downloads{font-size:10px}}
+
+.recipe-collection-page:has(#recipe-gate:not([hidden]))>.eyebrow,.recipe-collection-page:has(#recipe-gate:not([hidden]))>h1,.recipe-collection-page:has(#recipe-gate:not([hidden]))>.recipe-lead{text-align:left}
+.recipe-collection-page #recipe-gate{margin-left:0;margin-right:0}
+.recipe-collection-page .recipe-detail,.recipe-collection-page .recipe-post-body{text-align:left}
+#recipe-pagination{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin:24px 0}
+#recipe-pagination button{min-width:40px;padding:8px 10px}
+#recipe-pagination button[aria-current=page]{background:var(--accent);border-color:var(--accent);color:#fff}
+#recipe-pagination[aria-busy=true]{opacity:.65}

@@ -125,9 +125,21 @@ test('pagination preserves older posts and missing storage cannot report success
   const env = makeEnv(), viewer = await loginViewer(env);
   for (let i = 0; i < 22; i++) await env.MEMBERS_DB.prepare('INSERT INTO recipe_posts (title, body, created_at) VALUES (?, ?, ?)').bind('Post '+i, 'body', new Date().toISOString()).run();
   const page = await posts({ env, request: request('/api/recipe-posts', { cookie: viewer }) }); const first = await page.json();
-  assert.equal(first.posts.length, 20); assert.equal(first.next, 3);
-  const second = await posts({ env, request: request('/api/recipe-posts?before=3', { cookie: viewer }) });
-  assert.equal((await second.json()).posts.length, 2);
+  assert.equal(first.posts.length, 10); assert.equal(first.total, 22); assert.equal(first.totalPages, 3); assert.equal(first.page, 1);
+  const second = await posts({ env, request: request('/api/recipe-posts?page=2', { cookie: viewer }) });
+  const middle = await second.json(); assert.equal(middle.posts.length, 10); assert.equal(middle.page, 2);
+  const last = await (await posts({ env, request: request('/api/recipe-posts?page=3', { cookie: viewer }) })).json();
+  assert.equal(last.posts.length, 2); assert.equal(last.posts[1].title, 'Post 0');
+  assert.equal(new Set([...first.posts, ...middle.posts, ...last.posts].map(p => p.id)).size, 22);
+  const searched = await (await posts({ env, request: request('/api/recipe-posts?q=Post%200', { cookie: viewer }) })).json();
+  assert.equal(searched.posts.length, 1); assert.equal(searched.posts[0].title, 'Post 0'); assert.equal(searched.totalPages, 1);
+  const searchPage = await (await posts({ env, request: request('/api/recipe-posts?q=Post&page=2', { cookie: viewer }) })).json();
+  assert.equal(searchPage.posts.length, 10); assert.equal(searchPage.total, 22);
+  for (const invalid of ['0', '-1', 'abc', '1.5', '9007199254740992']) {
+    assert.equal((await posts({ env, request: request('/api/recipe-posts?page=' + invalid, { cookie: viewer }) })).status, 400);
+  }
+  const clamped = await (await posts({ env, request: request('/api/recipe-posts?page=99', { cookie: viewer }) })).json();
+  assert.equal(clamped.page, 3); assert.equal(clamped.posts.length, 2);
   const owner = await loginAdmin(env, viewer);
   operator(t, env); const memberCookie = owner + '; __Host-member-access=verified';
   assert.equal((await posts({ env: { ...env, MEMBERS_DB: undefined }, request: request('/api/recipe-posts', { method: 'POST', cookie: memberCookie, data: { title: 'x', body: 'y' } }) })).status, 503);
