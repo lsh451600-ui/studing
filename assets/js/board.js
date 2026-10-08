@@ -28,7 +28,7 @@ function rows(posts, append) {
 }
 async function loadList(append = false) {
   const version = ++generation;
-  if (!append) { selected = null; byId('board-detail').hidden = true; byId('board-index').hidden = false; byId('board-write').hidden = false; byId('board-editor').hidden = true; }
+  if (!append) { selected = null; byId('board-detail').hidden = true; byId('board-index').hidden = false; byId('board-editor').hidden = true; }
   byId('board-status').textContent = '게시물을 불러오고 있습니다.';
   try {
     const params = new URLSearchParams();
@@ -44,7 +44,7 @@ async function loadDetail(id, focus = true) {
   try {
     const data = await api('/api/board-posts?id=' + id);
     if (version !== generation) return;
-    selected = data.post.id; byId('board-index').hidden = true; byId('board-write').hidden = true; byId('board-editor').hidden = true; byId('board-detail').hidden = false;
+    selected = data.post.id; byId('board-index').hidden = true; byId('board-editor').hidden = true; byId('board-detail').hidden = false;
     byId('board-title').textContent = data.post.title;
     byId('board-author').textContent = data.post.author + ' · ' + date(data.post.created_at) + ' (한국 시간)';
     byId('board-body').textContent = data.post.body;
@@ -67,6 +67,11 @@ async function loadDetail(id, focus = true) {
 }
 byId('board-login').addEventListener('click', () => byId('login-open').click());
 byId('board-write').addEventListener('click', () => {
+  if (!byId('board-detail').hidden) {
+    history.pushState(null, '', '/board');
+    byId('board-detail').hidden = true;
+    byId('board-index').hidden = false;
+  }
   byId('board-editor').hidden = false;
   updateAuth();
   if (!authenticated()) byId('login-open').click();
