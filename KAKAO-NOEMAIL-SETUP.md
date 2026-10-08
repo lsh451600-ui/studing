@@ -15,14 +15,14 @@
 카카오 Developers → 앱 → 플랫폼 키 → 사용 중인 REST API 키 → 카카오 로그인 리다이렉트 URI에 다음 주소를 **추가**하고 저장합니다.
 
 ```text
-https://studing.pages.dev/api/kakao-callback
+https://dining.win/api/kakao-callback
 ```
 
 이전 Supabase 콜백 주소를 직접 열지 않습니다. 새 로그인은 위 홈페이지 콜백 주소로 돌아옵니다. 기존 URI는 남겨도 됩니다.
 
 ## 3. Cloudflare Pages 환경 변수 2개 추가
 
-Workers & Pages → studing.pages.dev가 표시된 studing Pages 프로젝트 → Settings → Variables and Secrets → Production에 추가합니다.
+Workers & Pages → Pages 프로젝트 `studing` → Settings → Variables and Secrets → Production에 추가합니다.
 
 | 이름 | 값 | 유형 |
 | --- | --- | --- |

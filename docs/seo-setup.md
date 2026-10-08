@@ -29,7 +29,11 @@ RSS에는 자체 가이드의 본문과 발행일·고유 주소를 넣습니다
 - Supabase Site URL: `https://dining.win`
 - Supabase Redirect URLs: `https://dining.win/api/oauth-callback**`, `https://dining.win/api/auth-confirm`, `https://dining.win/reset-password`
 
-현재 `www.dining.win`은 접근이 확인되지 않아 대표 주소나 사이트맵에 넣지 않습니다. 향후 연결하면 대표 주소인 `https://dining.win`으로 HTTP 리디렉션을 설정합니다. 이전 Pages 도메인도 같은 공개 페이지의 canonical로 새 주소를 알립니다. 이전 도메인에서 진행 중인 로그인·이메일 복구의 코드와 쿠키는 호스트에 묶이므로, 전체 주소를 무조건 이동시키기 전 외부 인증 설정과 이전 세션 영향을 확인해야 합니다.
+대표 주소는 `https://dining.win`입니다. 이전 Pages 도메인과 `www.dining.win`에서 공개 페이지를 요청하면 새 도메인으로 301 이동하고, `index.html`·공개 `.html` 별칭 및 후행 슬래시도 대표 경로로 정리합니다. 다만 현재 `www.dining.win`은 DNS에서 찾을 수 없으므로 Cloudflare DNS에 `www` 호스트를 먼저 연결해야 방문자가 리디렉션에 도달할 수 있습니다. 구 도메인에서 진행 중인 OAuth 콜백은 PKCE 쿠키를 보존하도록 예외 처리합니다.
+
+Google Fonts 원격 `@import`를 제거해 첫 렌더링을 막던 글꼴 요청을 없애고 시스템 글꼴을 사용합니다. 대형 PNG 로고는 WebP 파생 이미지로 교체했으며 파비콘을 필요한 크기로 줄였습니다. 뉴스 사진은 원 출처의 저작물 URL을 사용하므로 원본 포맷·파일 크기를 이 저장소에서 바꿀 수 없습니다. 사진 표시에는 고정 비율과 `object-fit: cover`를 적용하고 지연 로딩을 유지합니다. 이미지의 제작 메타데이터는 기존 원본에서도 파일 크기의 16% 미만이었습니다.
+
+HTTPS Strict-Transport-Security 헤더는 1년 유효기간으로 설정했습니다. SPF는 DNS와 발신 이메일 제공업체에 맞는 TXT 값이 필요합니다. 현재 도메인에 SPF/MX 레코드가 없고 이 사이트는 자체 도메인 발신 메일을 구성하지 않았으므로 임의의 SPF 값을 게시하지 않습니다. 메일 발신을 설정할 때 제공업체가 지정한 SPF 값을 DNS에 등록하세요.
 
 검색 반영과 순위는 검색엔진이 결정합니다. 구조 검사는 콘텐츠의 전문성·사실성이나 검색 상위 노출을 보증하지 않습니다. 실제 매장 경험과 검증 가능한 근거를 갖춘 콘텐츠를 지속적으로 보완하고 수집/색인/검색어 실적을 관찰합니다.
 

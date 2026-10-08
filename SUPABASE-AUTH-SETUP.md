@@ -30,7 +30,7 @@ supabase db push
 
 ## 3. 이메일 인증
 
-Supabase Authentication에서 Email 가입과 이메일 인증을 켜고 최소 비밀번호 길이를 12로 설정합니다. URL Configuration의 Site URL은 `https://studing.pages.dev`입니다.
+Supabase Authentication에서 Email 가입과 이메일 인증을 켜고 최소 비밀번호 길이를 12로 설정합니다. URL Configuration의 Site URL은 `https://dining.win`입니다.
 Confirm signup 이메일 템플릿의 인증 링크를 다음과 같이 설정합니다.
 
 ```html
@@ -51,7 +51,7 @@ Confirm signup 이메일 템플릿의 인증 링크를 다음과 같이 설정�
 - `/mypage`: 로그인한 회원 본인의 아이디, 이메일, 전화번호, 가입일, 로그인 방식을 표시합니다. `/api/account`가 서버에서 세션을 검증합니다.
 - `/forgot-password`: 아이디 또는 이메일로 비밀번호 재설정 메일을 요청합니다. 등록 여부나 계정 이메일은 응답에 노출하지 않습니다.
 - `/reset-password`: 이메일 링크의 인증 정보를 검증한 뒤 12~128자의 새 비밀번호를 설정합니다. 성공하면 재로그인을 안내하고 기존 세션의 종료를 요청합니다.
-- Supabase URL Configuration → Redirect URLs에 `https://studing.pages.dev/reset-password`를 추가하면 재설정 화면으로 직접 이동합니다. 설정하지 않아 기본 Site URL로 돌아오는 표준 recovery 링크도 홈페이지에서 재설정 화면으로 연결합니다.
+- Supabase URL Configuration → Redirect URLs에 `https://dining.win/reset-password`를 추가하면 재설정 화면으로 직접 이동합니다. 설정하지 않아 기본 Site URL로 돌아오는 표준 recovery 링크도 홈페이지에서 재설정 화면으로 연결합니다.
 - Reset Password 이메일 템플릿은 기본 `{{ .ConfirmationURL }}` 링크를 사용할 수 있습니다. 토큰 해시 방식으로 직접 연결하려면 아래 링크를 사용합니다. 해시는 GET에서 소비하지 않고 새 비밀번호를 제출할 때 검증합니다.
 
 ```html

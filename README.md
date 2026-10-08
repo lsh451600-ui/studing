@@ -1,6 +1,6 @@
 # 외·모Check
 
-외식 매장 운영 가이드, 계산기, 외부 뉴스·영상, 회원 자료 공간을 제공하는 정적 사이트입니다. 운영 주소는 https://studing.pages.dev 입니다.
+외식 매장 운영 가이드, 계산기, 외부 뉴스·영상, 회원 자료 공간을 제공하는 정적 사이트입니다. 운영 주소는 https://dining.win 입니다.
 
 Cloudflare Pages는 저장소 루트를 배포합니다. `guides.html`과 `guides/*.html`은 로그인 없이 읽을 수 있는 원문 콘텐츠입니다. 가상 사례 및 AI 보조 작성 사실과 출처를 표시합니다. 계산은 `assets/js/guide-tools.js`에서 기기 안에서만 수행하며 입력을 저장하지 않습니다. 과거 `sites/dining-trends/dist/index.html`은 중복 게시를 피하도록 홈 이동 안내로 통합했습니다.
 

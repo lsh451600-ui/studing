@@ -6,7 +6,17 @@
     "/board*",
     "/startup*",
     "/private*",
-    "/mypage*"
+    "/mypage*",
+    "/",
+    "/about",
+    "/guides",
+    "/guides/*",
+    "/editorial",
+    "/privacy",
+    "/terms",
+    "/sitemap.xml",
+    "/feed.xml",
+    "/robots.txt"
   ],
   "exclude": []
 }

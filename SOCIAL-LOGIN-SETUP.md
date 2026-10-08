@@ -14,12 +14,12 @@ Authentication → URL Configuration:
 
 Site URL:
 ```
-https://studing.pages.dev
+https://dining.win
 ```
 
 Redirect URLs에 다음을 추가하세요. 끝의 `**`도 포함합니다. 서버가 생성한 일회용 flow 값이 쿼리에 붙기 때문입니다.
 ```
-https://studing.pages.dev/api/oauth-callback**
+https://dining.win/api/oauth-callback**
 ```
 
 이 주소는 홈페이지에서 인증 결과를 처리하는 주소입니다. 아래의 Google/Kakao에 넣는 Supabase 콜백 주소와 다릅니다.
@@ -28,7 +28,7 @@ https://studing.pages.dev/api/oauth-callback**
 
 1. Google Cloud Console 또는 Google Auth Platform에서 프로젝트를 선택하고 OAuth 동의 화면의 앱 이름·지원 이메일·대상 사용자를 설정합니다.
 2. OAuth 클라이언트를 Web application 유형으로 생성합니다.
-3. Authorized JavaScript origins에 `https://studing.pages.dev`를 넣습니다.
+3. Authorized JavaScript origins에 `https://dining.win`를 넣습니다.
 4. Authorized redirect URIs에 다음 주소를 등록합니다.
 ```
 https://wwqdmhjmfdndwxyfajfq.supabase.co/auth/v1/callback

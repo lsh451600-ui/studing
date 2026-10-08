@@ -50,6 +50,11 @@ on:
       - 'feed.xml'
       - 'scripts/build_feed.py'
       - 'tests/seo.test.js'
+      - 'functions/_middleware.js'
+      - '_routes.json'
+      - '_headers'
+      - 'assets/*.webp'
+      - 'favicon.ico'
       - 'tests/signup.test.js'
       - 'tests/account.test.js'
       - 'tests/account-ui.cjs'
@@ -108,7 +113,7 @@ jobs:
       - name: Verify deployed account pages and anonymous access restrictions
         run: |
           node --input-type=module <<'JS'
-          const origin = 'https://studing.pages.dev';
+          const origin = 'https://dining.win';
           const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
           let verified = false;
           for (let attempt = 0; attempt < 24; attempt++) {
