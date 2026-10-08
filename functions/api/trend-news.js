@@ -1,4 +1,6 @@
 import { snapshot } from '../../src/news-snapshot.js';
+// Only source links and metadata leave this endpoint; publisher photos are not republished.
+const metadataOnly = ({ image, image_source, image_alt, ...article }) => article;
 const QUERY = '외식 (트렌드 OR 소비 OR 가성비 OR 혼밥 OR 물가 OR 시장) -아카데미 -교육 -모집 when:30d';
 function decode(value) {
   return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (all, code) => {
@@ -18,7 +20,7 @@ export function collect(xml, now) {
     if (link.protocol !== 'https:' || link.hostname !== 'news.google.com' || !title || !source || !Number.isFinite(published) || published > now || published < now - 30 * 86400000) continue;
     if (!/외식|레스토랑|식당|프랜차이즈|음식점/.test(title) || !/트렌드|소비|물가|시장|열풍|확산|변화|증가|감소|성장|가성비|혼밥|식재료|산업/.test(title) || /아카데미|교육 모집|무료 교육|무료교육|맞춤형 교육|룰렛|카지노|슬롯|시어머니|며느리/.test(title)) continue;
     if (title.endsWith(' - ' + source)) title = title.slice(0, -source.length - 3);
-    articles.push({ ...old.get(url), title, url, source, published_at: new Date(published).toISOString() });
+    articles.push(metadataOnly({ ...old.get(url), title, url, source, published_at: new Date(published).toISOString() }));
   }
   return articles.sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at)).filter(a => {
     const key = a.title.replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
@@ -37,7 +39,7 @@ async function loadRelay(now) {
     if (!Number.isFinite(checked) || checked > now || now - checked > 86400000 || !Array.isArray(data.articles)) return null;
     const articles = data.articles.filter(a => {
       try { const url = new URL(a.url); return url.protocol === 'https:' && url.hostname === 'news.google.com' && typeof a.title === 'string' && typeof a.source === 'string' && Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000; } catch { return false; }
-    }).sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at)).slice(0, 6);
+    }).sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at)).slice(0, 6).map(metadataOnly);
     return articles.length ? { articles, checkedAt: data.updated_at } : null;
   } catch { return null; }
 }
@@ -100,7 +102,7 @@ export async function onRequest({ request }) {
     const failureCode = ['TimeoutError', 'AbortError'].includes(error?.name) ? 'NEWS-02' : upstreamStatus && upstreamStatus !== 200 ? 'NEWS-03' : stage === 'parse' ? 'NEWS-04' : stage === 'filter' ? 'NEWS-05' : 'NEWS-01';
     console.warn('news_fetch_failed', { stage, failureCode, upstreamStatus, ...details });
     if (relay) return Response.json({ version, available: true, ...relay, requestedAt, stale: true, sourceMode: 'relay', reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
-    const articles = snapshot.articles.filter(a => Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000).slice(0, 6);
+    const articles = snapshot.articles.filter(a => Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000).slice(0, 6).map(metadataOnly);
     return Response.json({ version, ...details, available: articles.length > 0, articles, requestedAt, checkedAt: snapshot.updated_at, stale: true, reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
   }
 }

@@ -1,7 +1,13 @@
 # 외·모Check
 
-반응형 외식 트렌드 소개 페이지입니다. 크림색과 벽돌색의 매거진 스타일, 레스토랑 SVG 일러스트, 세 개의 트렌드 카드와 글 미리보기 대화상자를 포함합니다. 글은 페이지 구성을 보여주기 위한 예시 콘텐츠입니다.
+외식 매장 운영 가이드, 계산기, 외부 뉴스·영상, 회원 자료 공간을 제공하는 정적 사이트입니다. 운영 주소는 https://studing.pages.dev 입니다.
 
-`index.html`을 브라우저에서 열면 페이지를 볼 수 있습니다. 정적 호스팅에는 프로젝트 전체를 사용하거나 `sites/dining-trends/dist`를 배포할 수 있습니다.
+Cloudflare Pages는 저장소 루트를 배포합니다. `guides.html`과 `guides/*.html`은 로그인 없이 읽을 수 있는 원문 콘텐츠입니다. 가상 사례 및 AI 보조 작성 사실과 출처를 표시합니다. 계산은 `assets/js/guide-tools.js`에서 기기 안에서만 수행하며 입력을 저장하지 않습니다. 과거 `sites/dining-trends/dist/index.html`은 중복 게시를 피하도록 홈 이동 안내로 통합했습니다.
 
-외부 Google Fonts를 사용할 수 없을 때는 시스템 글꼴로 표시됩니다.
+뉴스 수집은 한국 시간 09:00·21:00에 실행되며 제목·매체·발행일·원문 링크만 제공합니다. 외부 사진이나 기사 본문은 복제하지 않습니다. 수집 이력은 중복·유사 기사 제외에 사용합니다. GitHub 예약 작업은 대기열에 따라 지연될 수 있습니다.
+
+광고 로더는 홈과 공개 가이드 본문에만 포함합니다. 계정·복구·문의·회원 전용·오류·정책 페이지에는 넣지 않습니다. `ads.txt`와 계정 확인 메타는 유지합니다. Google의 사이트 승인과 자동 광고 설정은 AdSense 관리 화면에서 관리하며, 코드 변경으로 승인을 보장하지 않습니다. EEA·영국·스위스 대상 광고의 동의 메시지는 Google 인증 CMP 요건에 맞게 AdSense의 개인정보 보호 및 메시지 설정에서 별도로 관리해야 합니다.
+
+운영 및 개인정보 문의는 `/inquiry`에서 접수합니다. 운영자의 공식 연락처, 제공업체의 실제 프로젝트 리전·보존 설정 등은 확인된 정보로만 정책에 반영해야 합니다. 관련 안내는 `/about`, `/editorial`, `/privacy`, `/terms`에 있습니다.
+
+검증: `node --test tests/journal.test.js` 및 `python tests/test_update_news.py`. 브라우저 검증은 Playwright Chromium을 설치한 뒤 `node tests/journal-ui.cjs`로 실행합니다. 기존 회원·게시판 검증과 배포 후 공개 페이지 확인은 `.github/workflows/check-member-auth.yml`에서 실행합니다.

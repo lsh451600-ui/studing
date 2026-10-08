@@ -7,9 +7,6 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5MbTZ1dndjam5fX2xRQXBnMER4VmQ1TkhoMlQxdnBRS0NYdlZTdnBoQlBBSDhHQ0hJMGxvY2IzTGJEN1pFLXdEbjNSSlVIQ3lxQUxLMzBidWdTQnNfT2p1a1dkSmQ3cDJ6ZDlscEx3TlNJcWM1Mm5ONzE5cw?oc=5",
       "source": "부산일보",
       "published_at": "2026-10-08T08:41:40+00:00",
-      "image": "https://github.com/lsh451600-ui/studing/releases/download/live-news-feed/febc6011757bd18cfeef1a04.jpg",
-      "image_source": "https://www.busan.com/nas/wcms/wcms_data/photos/2026/10/08/2026100817394003363_l.jpg",
-      "image_alt": "외식 프랜차이즈 줄줄이 가격인상… 소비자 부담 커진다 · 기사 사진",
       "original_url": "https://mobile.busan.com/view/bstoday/view.php?code=2026100817394251223"
     },
     {
@@ -17,9 +14,6 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5yRlcwdVNhQnNFbElrUzNZSlgtRUIwR3pQdW9KLWdpM19NSS1Mb2NNbFZYV3NXRzFsX1FYOFk1U1dDMW90ZGNoREZHWjhleXFMeGhfcEIwWFpQdmxoRjdxalBqd0ItVnlmYXc?oc=5",
       "source": "데일리팝",
       "published_at": "2026-10-08T07:25:00+00:00",
-      "image": "https://github.com/lsh451600-ui/studing/releases/download/live-news-feed/e233b813302721361ed02c92.jpg",
-      "image_source": "https://www.dailypop.kr/news/photo/202610/103193_171050_1914.jpg",
-      "image_alt": "사진=풀무원푸드앤컬처 ‘자연은 맛있다 칼국수’ 1호점 전경",
       "original_url": "https://www.dailypop.kr/news/articleView.html?idxno=103193"
     },
     {
@@ -30,20 +24,10 @@ export const snapshot = {
       "original_url": "http://www.nbnnews.co.kr/news/articleViewAmp.html?idxno=1061097"
     },
     {
-      "title": "[경제+] 스크린 넘어 관광·외식까지...中 국경절 '영화+' 소비시장 들썩-Xinhua",
-      "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTFB0Yk9jazNZeUxsbVdZU2NvbC1XMHlzRDE3YTVyVXE5VmVudWZNbnFheGcwcFB0ek5FX0tqY0VlNHVveTdyNkRRY3NpbkdSc3lYYXpJMkhxUWwzYkRKcjBZd3lMalZQQVl2NEx4eXA2a3A4Ukw5ZUE?oc=5",
-      "source": "신화망",
-      "published_at": "2026-10-08T01:15:15+00:00",
-      "original_url": "https://kr.news.cn/20261008/38fabbf3ea67440ba4b42969f8ac6c2d/c.html"
-    },
-    {
       "title": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령!",
       "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1wUTh3VUdfenp1d2x1ZEp1Rml4by1Kb2gxUktuOUU4OWtkLTgzY2I2WHNEXzVVZ1lnT09sYW1NY2QxRldIcGVGYWhQRXVkQWtpazdxV3RBVTFxbktFWFE?oc=5",
       "source": "YTN",
       "published_at": "2026-10-04T10:25:00+00:00",
-      "image": "https://github.com/lsh451600-ui/studing/releases/download/live-news-feed/33706f0981f006ee4964e5a1.jpg",
-      "image_source": "https://image.ytn.co.kr/special/jpg/global_common/2026/202610041925261824_h.jpg",
-      "image_alt": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령! · 기사 사진",
       "original_url": "https://www.ytn.co.kr/_ln/1230_202610041925261824"
     },
     {
@@ -51,9 +35,6 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1pamNkckp0Y01SZ2VKczZ3LWN1OGdsZ1NQYV9sYUxUaWFzUkZkakF0RWRSbHRtTWxrME1EdTFXcVg3OGRWV21aLUJrRTdkNmEyckYyLWRqSE5KUm9RRUlvbGwteS10ckY3eWQtUw?oc=5",
       "source": "식품외식경제",
       "published_at": "2026-10-02T08:37:10+00:00",
-      "image": "https://github.com/lsh451600-ui/studing/releases/download/live-news-feed/1abb4acb2d6dc1b1c4cf4c8c.jpg",
-      "image_source": "https://www.foodbank.co.kr/news/photo/202610/68607_30138_3642.jpg",
-      "image_alt": "중국 우시 태호 인근 쇼핑몰에 문을 연 ‘교촌치킨 중국 우시점’. 사진=제공",
       "original_url": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607"
     }
   ],

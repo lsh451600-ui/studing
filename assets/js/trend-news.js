@@ -12,17 +12,11 @@ async function loadNews() {
     for (const article of data.articles.slice(0, 6)) {
       const url = safeURL(article.original_url || article.url); if (!url) continue;
       const card = document.createElement('a'); card.className = 'card'; card.href = url; card.target = '_blank'; card.rel = 'noopener noreferrer';
-      const photo = document.createElement('div'); photo.className = 'news-photo news-photo-empty';
-      const imageURL = safeURL(article.image || '');
-      if (article.image && imageURL) {
-        const image = document.createElement('img'); image.src = imageURL; image.alt = article.image_alt || article.title + ' · 기사 사진'; image.loading = 'lazy'; image.decoding = 'async'; image.width = 640; image.height = 400;
-        photo.className = 'news-photo'; photo.append(image);
-      } else { photo.textContent = '기사 이미지 미제공'; }
       const source = document.createElement('p'); source.className = 'cat'; source.textContent = article.source;
       const title = document.createElement('h3'); title.textContent = article.title;
       const published = document.createElement('p'); published.className = 'desc'; published.textContent = kst(article.published_at) + ' · 한국 시간';
       const read = document.createElement('div'); read.className = 'read'; read.textContent = '기사 원문 읽기 ↗';
-      card.append(photo, source, title, published, read); cards.append(card);
+      card.append(source, title, published, read); cards.append(card);
     }
     section.querySelector('.cards').replaceChildren(cards);
     stamp.textContent = '최근 30일 외식 트렌드 · ' + data.articles.length + '개 · 매일 오전 9시·오후 9시 자동 갱신\n접속 기준: ' + kst(data.requestedAt) + ' (한국 시간)\n실제 수집: ' + kst(data.checkedAt) + ' (한국 시간)' + (data.sourceMode === 'relay' ? (Date.parse(data.requestedAt) - Date.parse(data.checkedAt) <= 15 * 60000 ? ' · Google 뉴스 자동 수집본' : ' · 자동 수집이 지연되어 마지막 수집본을 표시합니다.') : data.stale ? ' · 수집이 지연되어 이전 결과를 표시합니다.' + (/^NEWS-0[1-5]$/.test(data.failureCode || '') ? ' (' + data.failureCode + ')' : '') : '');

@@ -36,6 +36,13 @@ on:
       - 'tests/trend-video.test.js'
       - 'assets/css/signup.css'
       - '*.html'
+      - 'guides/*.html'
+      - 'assets/css/journal.css'
+      - 'assets/js/guide-tools.js'
+      - 'tests/journal.test.js'
+      - 'tests/journal-ui.cjs'
+      - 'robots.txt'
+      - 'sitemap.xml'
       - 'tests/signup.test.js'
       - 'tests/account.test.js'
       - 'tests/account-ui.cjs'
@@ -54,7 +61,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/account.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/journal.test.js tests/account.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: python tests/test_update_news.py
 
   browser:
     runs-on: ubuntu-latest
@@ -70,6 +78,7 @@ jobs:
           /tmp/login-browser-check/node_modules/.bin/playwright install --with-deps chromium
       - name: Verify login layout and account controls in Chromium
         run: |
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/journal-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/account-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/recipe-board-ui.cjs
@@ -95,6 +104,12 @@ jobs:
               for (const [path, marker] of [['/forgot-password', 'id="forgot-password-form"'], ['/reset-password', 'id="reset-password-form"']]) {
                 const response = await fetch(origin + path, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
                 if (!response.ok || !(await response.text()).includes(marker)) throw new Error('Page not deployed: ' + path);
+              }
+              for (const path of ['/guides', '/guides/menu-margin', '/guides/break-even', '/guides/solo-dining', '/guides/menu-complexity', '/editorial', '/privacy', '/terms']) {
+                const result = await fetch(origin + path, { signal: AbortSignal.timeout(15000) });
+                const html = await result.text();
+                if (!result.ok || !html.includes('id="main-content"') || !html.includes('href="/privacy"')) throw new Error('Public journal page missing: ' + path);
+                if (!path.startsWith('/guides/') && html.includes('adsbygoogle.js')) throw new Error('Ads present on non-content screen: ' + path);
               }
               const page = await fetch(origin + '/mypage', { redirect: 'manual', signal: AbortSignal.timeout(15000) });
               if (page.status !== 302 || !page.headers.get('location')?.includes('login_required=1')) throw new Error('Mypage access restriction failed');

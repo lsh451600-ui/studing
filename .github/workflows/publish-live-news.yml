@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install googlenewsdecoder==0.1.7 selectolax==0.4.12 beautifulsoup4
+      - run: pip install googlenewsdecoder==0.1.7
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -50,7 +50,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release download live-news-feed --pattern news.json --output /tmp/previous-news.json --repo lsh451600-ui/studing
-      - name: Collect Google news with original article images
+      - name: Collect source links and article metadata
         id: news
         if: ${{ !cancelled() }}
         env:
@@ -67,18 +67,12 @@ jobs:
           repo = 'lsh451600-ui/studing'
           view = subprocess.run(['gh', 'release', 'view', 'live-news-feed', '--repo', repo, '--json', 'assets'], capture_output=True, text=True)
           if view.returncode:
-              subprocess.run(['gh', 'release', 'create', 'live-news-feed', '--repo', repo, '--target', '${{ github.sha }}', '--title', 'Live dining news data', '--notes', 'Google news articles and original images. Collection timestamp is included in news.json.', '--latest=false'], check=True)
+              subprocess.run(['gh', 'release', 'create', 'live-news-feed', '--repo', repo, '--target', '${{ github.sha }}', '--title', 'Live dining news data', '--notes', 'Google news source links and metadata. Collection timestamp is included in news.json.', '--latest=false'], check=True)
               known = set()
           else:
               known = {a['name'] for a in json.loads(view.stdout)['assets']}
           data = json.loads(Path('news.json').read_text())
           print('News refreshed:', data['updated_at'], 'articles:', len(data['articles']), 'newest:', data['articles'][0]['title'], flush=True)
-          for article in data['articles']:
-              image = article.get('image')
-              if image and Path(image).is_file():
-                  if Path(image).name not in known:
-                      subprocess.run(['gh', 'release', 'upload', 'live-news-feed', image, '--repo', repo], check=True)
-                  article['image'] = 'https://github.com/' + repo + '/releases/download/live-news-feed/' + Path(image).name
           Path('/tmp/live-feed').mkdir(exist_ok=True)
           Path('/tmp/live-feed/news.json').write_text(json.dumps(data, ensure_ascii=False))
           subprocess.run(['gh', 'release', 'upload', 'live-news-feed', '/tmp/live-feed/news.json', '--repo', repo, '--clobber'], check=True)
