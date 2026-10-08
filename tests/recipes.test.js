@@ -162,3 +162,25 @@ test('existing recipes gain a persistent download counter without losing content
   const post = (await listPosts(db)).posts[0];
   assert.equal(post.downloads, 1); assert.equal(post.title, '기존 레시피'); assert.equal(post.body, '재료와 조리법');
 });
+
+test('recipe sorting applies before pagination and preserves search and category filters', async () => {
+  const env = makeEnv(), viewer = await loginViewer(env);
+  const titles = ['하', '파', '타', '카', '차', '자', '아', '사', '바', '마', '라', '다', '나', '가'];
+  for (let i = 0; i < titles.length; i++) {
+    await env.MEMBERS_DB.prepare('INSERT INTO recipe_posts (title,body,category,downloads,created_at) VALUES (?,?,?,?,?)')
+      .bind(titles[i] + ' 레시피', '공통 검색', i % 2 ? '한식' : '베이커리', i % 4, '2026-10-08T00:00:00Z').run();
+  }
+  const get = async query => (await posts({ env, request: request('/api/recipe-posts?' + query, { cookie: viewer }) })).json();
+  const alphabetical = [...(await get('sort=title')).posts, ...(await get('sort=title&page=2')).posts];
+  assert.deepEqual(alphabetical.map(p => p.title), [...titles].reverse().map(t => t + ' 레시피'));
+  const popular = [...(await get('sort=downloads')).posts, ...(await get('sort=downloads&page=2')).posts];
+  assert.equal(popular.length, 14);
+  for (let i = 1; i < popular.length; i++) {
+    assert.ok(popular[i - 1].downloads >= popular[i].downloads);
+    if (popular[i - 1].downloads === popular[i].downloads) assert.ok(popular[i - 1].id > popular[i].id);
+  }
+  const filtered = await get('sort=title&q=' + encodeURIComponent('공통') + '&category=' + encodeURIComponent('한식'));
+  assert.equal(filtered.total, 7); assert.ok(filtered.posts.every(p => p.category === '한식'));
+  assert.deepEqual(filtered.posts.map(p => p.title), alphabetical.filter(p => p.category === '한식').map(p => p.title));
+  assert.equal((await posts({ env, request: request('/api/recipe-posts?sort=invalid', { cookie: viewer }) })).status, 400);
+});

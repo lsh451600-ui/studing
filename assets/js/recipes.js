@@ -4,7 +4,7 @@ const form = byId('recipe-access-form'), input = byId('recipe-password'), submit
 const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
 const board = byId('recipe-board'), editor = byId('recipe-editor');
 const postForm = byId('recipe-post-form');
-let pending = false, posting = false, currentPage = 1, previewURL = null, generation = 0, storage = false, accountWriter = false;
+let pending = false, posting = false, currentPage = 1, currentSort = 'latest', previewURL = null, generation = 0, storage = false, accountWriter = false;
 function clearPreview() {
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = null; byId('recipe-image-preview').removeAttribute('src'); byId('recipe-image-preview').hidden = true;
@@ -15,6 +15,7 @@ function resetView() {
   postForm.reset(); clearPreview(); gate.hidden = false; status.textContent = '';
   byId('recipe-post-status').textContent = '';
   byId('recipe-board-status').textContent = ''; currentPage = 1;
+  currentSort = 'latest'; updateSortButtons();
   byId('recipe-admin-open').hidden = true;
 }
 async function api(path, options = {}) {
@@ -94,9 +95,10 @@ async function refreshPosts(page = currentPage) {
   const q = byId('recipe-search-query').value.trim(), category = byId('recipe-filter-category').value;
   if (q) params.set('q', q);
   if (category) params.set('category', category);
+  params.set('sort', currentSort);
   const data = await api('/api/recipe-posts?' + params);
   if (current !== generation) return;
-  renderPosts(data.posts); renderPagination(data);
+  renderPosts(data.posts); renderPagination(data); updateSortButtons();
 }
 byId('recipe-show-password').addEventListener('change', event => { input.type = event.target.checked ? 'text' : 'password'; });
 window.addEventListener('pagehide', resetView);
@@ -139,6 +141,18 @@ window.addEventListener('member-session-change', () => {
   // A changed login must recheck publishing rights before the editor is shown again.
   if (gate.hidden) resetView();
 });
+function updateSortButtons() {
+  for (const button of document.querySelectorAll('[data-recipe-sort]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.recipeSort === currentSort));
+  }
+}
+for (const button of document.querySelectorAll('[data-recipe-sort]')) {
+  button.addEventListener('click', async () => {
+    currentSort = button.dataset.recipeSort; generation++; currentPage = 1;
+    try { await refreshPosts(); }
+    catch (error) { byId('recipe-board-status').textContent = error.message; }
+  });
+}
 byId('recipe-category-menu').addEventListener('click', async event => {
   const button = event.target.closest('button[data-category]');
   if (!button) return;

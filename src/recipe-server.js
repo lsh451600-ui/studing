@@ -87,7 +87,7 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   await db.prepare('DELETE FROM recipe_limits WHERE expires_at < ?').bind(now).run();
   return row.attempts <= maximum;
 }
-export async function listPosts(db, before = null, { q = '', category = '', identity = null, page = 1 } = {}) {
+export async function listPosts(db, before = null, { q = '', category = '', identity = null, page = 1, sort = 'latest' } = {}) {
   await ensurePosts(db);
   const fields = 'id, author_id, title, body, category, created_at, downloads, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
   const filters = [], values = [];
@@ -98,7 +98,8 @@ export async function listPosts(db, before = null, { q = '', category = '', iden
   const { total } = await db.prepare('SELECT COUNT(*) AS total FROM recipe_posts' + where).bind(...values).first();
   const totalPages = Math.max(1, Math.ceil(total / 10));
   page = Math.min(page, totalPages);
-  const query = db.prepare(`SELECT ${fields} FROM recipe_posts${where} ORDER BY id DESC LIMIT 10 OFFSET ?`).bind(...values, (page - 1) * 10);
+  const order = sort === 'title' ? 'title COLLATE NOCASE ASC, id DESC' : sort === 'downloads' ? 'downloads DESC, id DESC' : 'id DESC';
+  const query = db.prepare(`SELECT ${fields} FROM recipe_posts${where} ORDER BY ${order} LIMIT 10 OFFSET ?`).bind(...values, (page - 1) * 10);
   const { results } = await query.all();
   const posts = results.map(({ author_id, ...post }) => ({ ...post, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id),
     image_url: post.has_image ? `/api/recipe-image?id=${post.id}` : null,
