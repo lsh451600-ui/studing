@@ -102,6 +102,7 @@ function showUser(user) {
   byId('member-status').title = user ? '로그인 중 · ' + user.username + '님' : '';
   byId('member-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '회원 상태');
   byId('member-status').closest('.member-controls').dataset.state = user ? 'authenticated' : 'anonymous';
+  window.dispatchEvent(new CustomEvent('member-session-change', { detail: Boolean(user) }));
   byId('logout-button').textContent = '로그아웃';
 }
 function readSessionCache() {

@@ -25,7 +25,7 @@ export async function postPermissions(request, env, authorId) {
     if (session.user.id === authorId) return { ...denied, canEdit: true, canDelete: true };
     const profile = await memberProfile(env, session);
     const isAdmin = profile?.username?.toLowerCase() === 'lsh451600';
-    return { ...denied, canEdit: isAdmin, canDelete: isAdmin };
+    return { ...denied, canDelete: isAdmin };
   } catch {
     return { ...denied, permissionsUnavailable: true };
   }

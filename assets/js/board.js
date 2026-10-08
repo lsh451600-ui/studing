@@ -1,5 +1,5 @@
 const byId = id => document.getElementById(id);
-let selected = null, next = null, generation = 0, writing = false, commenting = false;
+let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 async function api(url, { method = 'GET', body } = {}) {
   const response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000),
@@ -9,7 +9,7 @@ async function api(url, { method = 'GET', body } = {}) {
   return result;
 }
 function node(tag, text, className) { const element = document.createElement(tag); element.textContent = text; if (className) element.className = className; return element; }
-function authenticated() { return document.querySelector('.member-controls').dataset.state === 'authenticated'; }
+function authenticated() { return sessionAuthenticated; }
 function updateAuth() {
   const ready = authenticated();
   byId('board-login-hint').hidden = ready;
@@ -131,6 +131,24 @@ byId('board-comment-form').addEventListener('submit', async event => {
   } catch (error) { byId('board-comment-status').textContent = error.message; }
   finally { commenting = false; updateAuth(); }
 });
-new MutationObserver(updateAuth).observe(document.querySelector('.member-controls'), { attributes: true, attributeFilter: ['data-state'] });
+window.addEventListener('member-session-change', event => {
+  authVersion++;
+  sessionAuthenticated = event.detail === true;
+  updateAuth();
+});
+async function syncSession() {
+  const version = authVersion;
+  try {
+    const data = await api('/api/session');
+    if (version !== authVersion) return;
+    sessionAuthenticated = data.authenticated === true;
+    updateAuth();
+  } catch (error) {
+    if (version !== authVersion) return;
+    sessionAuthenticated = false;
+    updateAuth();
+    byId('board-status').textContent = '로그인 상태를 확인하지 못했습니다. 새로고침 후 다시 시도해 주세요.';
+  }
+}
 function navigate() { const id = new URLSearchParams(location.search).get('post'); if (/^[1-9][0-9]*$/.test(id || '')) loadDetail(id); else loadList(); }
-window.addEventListener('popstate', navigate); updateAuth(); navigate();
+window.addEventListener('popstate', navigate); updateAuth(); syncSession(); navigate();

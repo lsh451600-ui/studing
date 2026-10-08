@@ -52,7 +52,7 @@ test('authors can update and delete their own posts, and deletion removes associ
   assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id) })).status, 404);
   assert.equal((await settings.MEMBERS_DB.prepare('SELECT id FROM community_comments WHERE post_id = ?').bind(id).all()).results.length, 0);
 });
-test('the verified lsh451600 login can update and delete another member post', async t => {
+test('the verified lsh451600 login can delete another member post but cannot edit it', async t => {
   const settings = env(t); await initialize(settings.MEMBERS_DB);
   const owner = async (id, title) => {
     const result = await settings.MEMBERS_DB.prepare('INSERT INTO community_posts (author_id, author, title, body, created_at) VALUES (?, ?, ?, ?, ?)').bind(id, 'member', title, 'Body', new Date().toISOString()).run();
@@ -61,8 +61,8 @@ test('the verified lsh451600 login can update and delete another member post', a
   const id = await owner('someone-else', 'Original');
   auth(t, { id: 'admin-id', username: 'lsh451600', nickname: 'Operator' });
   const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id, null, true) })).json();
-  assert.deepEqual(detail.permissions, { canEdit: true, canDelete: true, permissionsUnavailable: false });
-  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: 'Moderated', body: 'Edited' }, true, undefined, 'PATCH') })).status, 200);
+  assert.deepEqual(detail.permissions, { canEdit: false, canDelete: true, permissionsUnavailable: false });
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: 'Moderated', body: 'Edited' }, true, undefined, 'PATCH') })).status, 403);
   assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, null, true, undefined, 'DELETE') })).status, 200);
 });
 test('a different member cannot edit or delete someone else post', async t => {

@@ -42,14 +42,15 @@ export async function onRequest({ request, env }) {
     if (request.method === 'PATCH' || request.method === 'DELETE') {
       const post = await db.prepare('SELECT id, author_id FROM community_posts WHERE id = ?').bind(id).first();
       if (!post) return reply(404, '게시물이 없습니다.', {}, auth.session.cookies);
-      if (post.author_id !== auth.session.user.id && !auth.isAdmin) return reply(403, '작성자 또는 운영자만 수정·삭제할 수 있습니다.', {}, auth.session.cookies);
       if (request.method === 'DELETE') {
+        if (post.author_id !== auth.session.user.id && !auth.isAdmin) return reply(403, '작성자 또는 운영자만 삭제할 수 있습니다.', {}, auth.session.cookies);
         await db.batch([
           db.prepare('DELETE FROM community_comments WHERE post_id = ?').bind(id),
           db.prepare('DELETE FROM community_posts WHERE id = ?').bind(id)
         ]);
         return reply(200, '게시물을 삭제했습니다.', { id }, auth.session.cookies);
       }
+      if (post.author_id !== auth.session.user.id) return reply(403, '작성자만 수정할 수 있습니다.', {}, auth.session.cookies);
       const title = typeof data.title === 'string' ? data.title.trim() : '', body = typeof data.body === 'string' ? data.body.trim() : '';
       if (!title || title.length > 100 || !body || body.length > 10000) return reply(400, '제목은 100자, 내용은 10,000자 이내로 입력해 주세요.', {}, auth.session.cookies);
       await db.prepare('UPDATE community_posts SET title = ?, body = ? WHERE id = ?').bind(title, body, id).run();
