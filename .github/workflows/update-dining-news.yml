@@ -1,8 +1,8 @@
 name: Update dining trend news
 on:
   schedule:
-    # 00:00 UTC = 09:00 Asia/Seoul. GitHub may queue scheduled runs.
-    - cron: '0 0 * * *'
+    # 00:00 / 12:00 UTC = 09:00 / 21:00 Asia/Seoul. GitHub may queue runs.
+    - cron: '0 0,12 * * *'
   workflow_dispatch:
   push:
     branches: [main]

@@ -1,7 +1,8 @@
-name: Publish live Google news feed
+name: Refresh dining news and video
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # 00:00 / 12:00 UTC = 09:00 / 21:00 Asia/Seoul
+    - cron: '0 0,12 * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -15,16 +16,37 @@ concurrency:
 jobs:
   publish-feed:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install googlenewsdecoder==0.1.7 selectolax==0.4.12 beautifulsoup4
+      - name: Refresh the shared homepage video cache
+        run: |
+          python - <<'PYVIDEO'
+          import json, time, urllib.request
+          for attempt in range(3):
+              try:
+                  request = urllib.request.Request('https://studing.pages.dev/api/trend-video', headers={'Cache-Control': 'no-cache'})
+                  with urllib.request.urlopen(request, timeout=45) as response:
+                      data = json.load(response)
+                  if not data.get('available') or data.get('stale'):
+                      raise RuntimeError('Video refresh failed: ' + data.get('reason', 'stale'))
+                  print('Video refreshed:', data['video']['title'], data['checkedAt'])
+                  break
+              except Exception:
+                  if attempt == 2:
+                      raise
+                  time.sleep(10)
+          PYVIDEO
       - name: Collect Google news with original article images
+        id: news
+        if: ${{ !cancelled() }}
         run: python scripts/update_news.py
       - name: Publish the data without rebuilding the website
+        if: ${{ !cancelled() && steps.news.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

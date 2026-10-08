@@ -80,6 +80,9 @@ export async function onRequest({ request }) {
   const url = new URL('https://news.google.com/rss/search');
   url.search = new URLSearchParams({ q: QUERY, hl: 'ko', gl: 'KR', ceid: 'KR:ko' }).toString();
   const relayLookup = loadRelay(now);
+  const scheduled = await relayLookup;
+  if (scheduled) return Response.json({ version, available: true, ...scheduled, requestedAt,
+    stale: false, sourceMode: 'scheduled' }, { headers });
   let stage = 'fetch', upstreamStatus = null;
   try {
     const response = await fetchFeed(url.href);

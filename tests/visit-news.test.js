@@ -72,14 +72,15 @@ test('network failure on the primary Google host retries the Korean Google host'
   assert.equal(data.stale, false); assert.deepEqual(calls, ['news.google.com', 'news.google.co.kr']);
 });
 
-test('blocked Google requests use current relay data without relabeling the collection time', async t => {
+test('scheduled collection is served first without querying Google again', async t => {
   const collected = new Date(Date.now() - 120000).toISOString();
   t.mock.method(console, 'warn', () => {});
+  let googleCalls = 0;
   t.mock.method(globalThis, 'fetch', async input => {
     if (new URL(input).host === 'github.com') return Response.json({ updated_at: collected, articles: [{ title: '외식 시장 변화', source: '테스트신문', url: 'https://news.google.com/rss/articles/today', published_at: collected }] });
-    return new Response('', { status: 503 });
+    googleCalls++; return new Response('', { status: 503 });
   });
   const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
-  assert.equal(data.sourceMode, 'relay'); assert.equal(data.stale, true);
+  assert.equal(data.sourceMode, 'scheduled'); assert.equal(data.stale, false); assert.equal(googleCalls, 0);
   assert.equal(data.checkedAt, collected); assert.ok(Date.parse(data.requestedAt) > Date.parse(collected));
 });

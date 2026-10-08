@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
-import { selectVideo, onRequest } from '../functions/api/trend-video.js';
+import { selectVideo, onRequest, refreshSlot } from '../functions/api/trend-video.js';
 const now = Date.now();
 const secret = 'private-youtube-key';
 const request = new Request('https://example.test/api/trend-video');
@@ -35,11 +35,11 @@ function database(saved = {}) {
     } };
   } };
 }
-test('search bounds recent embeddable videos and ranks validated details by views', async t => {
-  const items = [video('aaaaaaaaaaa', 10), video('bbbbbbbbbbb', 500), video('ccccccccccc', 9999, { status: { embeddable: false, privacyStatus: 'public' } }), video('ddddddddddd', 99999, { snippet: { title: 'Old', publishedAt: new Date(now - 31 * 86400000).toISOString() } }), video('eeeeeeeeeee', 999999, { snippet: { title: 'Live', publishedAt: new Date(now - 1000).toISOString(), liveBroadcastContent: 'live' } })];
+test('search bounds recent embeddable videos and ranks validated details by publication date', async t => {
+  const items = [video('aaaaaaaaaaa', 10, { snippet: { title: 'Newest dining trend', publishedAt: new Date(now - 1000).toISOString() } }), video('bbbbbbbbbbb', 500), video('ccccccccccc', 9999, { status: { embeddable: false, privacyStatus: 'public' } }), video('ddddddddddd', 99999, { snippet: { title: 'Old', publishedAt: new Date(now - 31 * 86400000).toISOString() } }), video('eeeeeeeeeee', 999999, { snippet: { title: 'Live', publishedAt: new Date(now - 1000).toISOString(), liveBroadcastContent: 'live' } })];
   const calls = mockYoutube(t, items);
-  assert.equal((await selectVideo(secret, now)).id, 'bbbbbbbbbbb');
-  assert.equal(calls[0].searchParams.get('order'), 'viewCount');
+  assert.equal((await selectVideo(secret, now)).id, 'aaaaaaaaaaa');
+  assert.equal(calls[0].searchParams.get('order'), 'date');
   assert.equal(calls[0].searchParams.get('videoEmbeddable'), 'true');
   assert.equal(calls[0].searchParams.get('publishedAfter'), new Date(now - 30 * 86400000).toISOString());
   assert.equal(calls.length, 2);
@@ -66,7 +66,7 @@ test('shared cache refreshes once and serves fresh result without upstream calls
 test('active lease or retry cooldown serves stale result without extra search', async t => {
   t.mock.method(globalThis, 'fetch', () => { throw new Error('Unexpected fetch'); });
   for (const lock of [{ lease_until: Date.now() + 60000 }, { retry_after: Date.now() + 60000 }]) {
-    const db = database({ payload: JSON.stringify({ id: 'bbbbbbbbbbb' }), fetched_at: Date.now() - 3600000, ...lock });
+    const db = database({ payload: JSON.stringify({ id: 'bbbbbbbbbbb' }), fetched_at: refreshSlot(Date.now()) - 1000, ...lock });
     const result = await (await onRequest({ request, env: { MEMBERS_DB: db, YOUTUBE_API_KEY: secret } })).json();
     assert.equal(result.stale, true);
     assert.equal(result.video.id, 'bbbbbbbbbbb');
@@ -121,7 +121,8 @@ test('missing D1 uses edge cache and isolates key fingerprints without leaking k
   assert.equal((await different.json()).available, true);
   assert.equal(calls.length, 4);
   assert.equal(new Set(edge.keys).size, 2);
-  assert.deepEqual(edge.writes, [1800, 1800]);
+  assert.equal(edge.writes.length, 2);
+  assert.ok(edge.writes.every(ttl => ttl > 0 && ttl <= 43200));
   assert.ok(edge.keys.every(key => !key.includes(secret) && !key.includes('different-private-key')));
 });
 test('edge failures cache a safe reason for five minutes and retry after expiry', async t => {
@@ -269,27 +270,33 @@ test('browser error UI maps only known reasons and never echoes provider message
     await new Promise(resolve => setImmediate(resolve));
     assert.ok(nodes.get('video-status').textContent.includes(expected));
     assert.ok(![...nodes.values()].some(node => node.textContent.includes(secret)));
-    assert.equal(calls[0].url, '/api/trend-video?visit=1'); assert.equal(calls[0].options.cache, 'no-store');
+    assert.equal(calls[0].url, '/api/trend-video'); assert.equal(calls[0].options.cache, 'no-store');
   }
 });
 
-test('visit mode queries fresh on every request with a server cutoff and no-store headers', async t => {
-  let calls = 0;
-  t.mock.method(globalThis, 'fetch', async input => {
-    calls++; const url = new URL(input);
-    if (url.pathname.endsWith('/search')) {
-      assert.ok(url.searchParams.has('publishedBefore'));
-      assert.ok(Date.parse(url.searchParams.get('publishedBefore')) <= Date.now());
-      return Response.json({ items: [{ id: { videoId: 'bbbbbbbbbbb' } }] });
-    }
-    return Response.json({ items: [video('bbbbbbbbbbb', 500)] });
-  });
+test('legacy visit query shares the scheduled cache instead of spending quota on each visit', async t => {
+  const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500)]);
+  const db = database();
   for (let i = 0; i < 2; i++) {
-    const response = await onRequest({ request: new Request('https://example.test/api/trend-video?visit=1'), env: { YOUTUBE_API_KEY: secret } });
-    const data = await response.json();
-    assert.equal(response.headers.get('Cache-Control'), 'no-store, private');
-    assert.equal(data.available, true); assert.equal(data.stale, false);
-    assert.ok(Date.parse(data.checkedAt) >= Date.parse(data.requestedAt));
+    const data = await (await onRequest({ request: new Request(request.url + '?visit=1'),
+      env: { MEMBERS_DB: db, YOUTUBE_API_KEY: secret } })).json();
+    assert.equal(data.available, true);
+    assert.equal(data.stale, false);
   }
-  assert.equal(calls, 4);
+  assert.equal(calls.length, 2);
+});
+test('Korean 09:00 and 21:00 boundaries expire the shared video result', async t => {
+  const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500)]);
+  let mockedNow = Date.now();
+  t.mock.method(Date, 'now', () => mockedNow);
+  for (const boundary of ['2026-10-08T00:00:00Z', '2026-10-08T12:00:00Z']) {
+    const clock = Date.parse(boundary);
+    mockedNow = clock - 1;
+    const db = database({ payload: JSON.stringify({ id: 'aaaaaaaaaaa' }), fetched_at: clock - 1000 });
+    const env = { MEMBERS_DB: db, YOUTUBE_API_KEY: secret };
+    assert.equal((await (await onRequest({ request, env })).json()).video.id, 'aaaaaaaaaaa');
+    mockedNow = clock;
+    assert.equal((await (await onRequest({ request, env })).json()).video.id, 'bbbbbbbbbbb');
+  }
+  assert.equal(calls.length, 4);
 });

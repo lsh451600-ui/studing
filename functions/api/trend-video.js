@@ -1,7 +1,9 @@
-const TTL = 30 * 60 * 1000;
+const PERIOD = 12 * 60 * 60 * 1000;
+// UTC midnight/noon are 09:00/21:00 in Korea.
+export const refreshSlot = now => Math.floor(now / PERIOD) * PERIOD;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 const QUERY = '외식 트렌드|외식 산업|푸드 트렌드';
-const CACHE_KEY = 'dining-30d-v3';
+const CACHE_KEY = 'dining-latest-v4';
 const inFlight = new Map();
 const reasons = new Set(['api_key_invalid', 'api_not_enabled', 'api_key_restricted', 'quota_exceeded', 'youtube_forbidden', 'youtube_unavailable', 'youtube_connection_failed', 'youtube_timeout', 'youtube_response_invalid', 'youtube_redirect_blocked', 'youtube_internal_error', 'no_video']);
 export function classifyYouTubeError(data = {}, status = 0) {
@@ -55,7 +57,7 @@ async function youtube(key, resource, parameters) {
 }
 export async function selectVideo(key, now = Date.now()) {
   const found = await youtube(key, 'search', { part: 'snippet', type: 'video', q: QUERY,
-    order: 'viewCount', publishedAfter: new Date(now - 30 * 86400000).toISOString(), publishedBefore: new Date(now).toISOString(),
+    order: 'date', publishedAfter: new Date(now - 30 * 86400000).toISOString(), publishedBefore: new Date(now).toISOString(),
     regionCode: 'KR', relevanceLanguage: 'ko', safeSearch: 'moderate', videoEmbeddable: 'true', maxResults: '25' });
   const ids = [...new Set((found.items || []).map(item => item?.id?.videoId).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
   if (!ids.length) return null;
@@ -65,7 +67,7 @@ export async function selectVideo(key, now = Date.now()) {
     && Number(video.statistics?.viewCount) >= 0 && typeof video.snippet?.title === 'string'
     && Date.parse(video.snippet.publishedAt) >= now - 30 * 86400000 && Date.parse(video.snippet.publishedAt) <= now
     && !['live', 'upcoming'].includes(video.snippet.liveBroadcastContent));
-  candidates.sort((a, b) => Number(b.statistics.viewCount) - Number(a.statistics.viewCount));
+  candidates.sort((a, b) => Date.parse(b.snippet.publishedAt) - Date.parse(a.snippet.publishedAt) || Number(b.statistics.viewCount) - Number(a.statistics.viewCount));
   if (!candidates.length) return null;
   const top = candidates[0];
   return { id: top.id, title: top.snippet.title, channel: top.snippet.channelTitle || '',
@@ -77,7 +79,7 @@ async function edgeResponse(request, env) {
   if (!cache) return reply({ available: false, reason: 'storage_unavailable' }, 503);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(env.YOUTUBE_API_KEY)));
   const fingerprint = Array.from(digest.slice(0, 12), byte => byte.toString(16).padStart(2, '0')).join('');
-  const key = new Request(new URL('/__video-cache/v3/' + fingerprint, request.url));
+  const key = new Request(new URL('/__video-cache/v4/' + fingerprint + '/' + refreshSlot(Date.now()), request.url));
   let cached;
   try { cached = await cache.match(key); } catch { /* Cache outages must not block video lookup. */ }
   if (cached) return cached;
@@ -90,7 +92,7 @@ async function edgeResponse(request, env) {
         : { available: false, reason: 'no_video' };
     } catch (error) { data = { available: false, reason: safeReason(error) }; }
     const response = reply(data);
-    response.headers.set('Cache-Control', 'public, max-age=' + (data.available ? '1800' : '300'));
+    response.headers.set('Cache-Control', 'public, max-age=' + (data.available ? String(Math.max(1, Math.ceil((refreshSlot(Date.now()) + PERIOD - Date.now()) / 1000))) : '300'));
     try { await cache.put(key, response.clone()); } catch { /* A fetched result can still be displayed. */ }
     return response;
   })();
@@ -101,15 +103,6 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return reply({ available: false }, 405);
   if (!env.YOUTUBE_API_KEY?.trim()) return reply({ available: false, reason: 'setup_required' });
   env = { ...env, YOUTUBE_API_KEY: env.YOUTUBE_API_KEY.trim() };
-  if (new URL(request.url).searchParams.get('visit') === '1') {
-    const now = Date.now(), requestedAt = new Date(now).toISOString();
-    let data;
-    try {
-      const video = await selectVideo(env.YOUTUBE_API_KEY, now);
-      data = video ? { available: true, video, requestedAt, checkedAt: new Date().toISOString(), stale: false } : { available: false, reason: 'no_video', requestedAt };
-    } catch (error) { data = { available: false, reason: safeReason(error), requestedAt }; }
-    const response = reply(data); response.headers.set('Cache-Control', 'no-store, private'); return response;
-  }
   const fallback = async () => {
     try { return await edgeResponse(request, env); }
     catch { return reply({ available: false, reason: 'storage_unavailable' }, 503); }
@@ -131,7 +124,7 @@ export async function onRequest({ request, env }) {
     await db.prepare('CREATE TABLE IF NOT EXISTS dining_video_cache (id TEXT PRIMARY KEY, payload TEXT, fetched_at INTEGER NOT NULL DEFAULT 0, retry_after INTEGER NOT NULL DEFAULT 0, lease_until INTEGER NOT NULL DEFAULT 0)').run();
     await db.prepare('INSERT OR IGNORE INTO dining_video_cache (id) VALUES (?)').bind(CACHE_KEY).run();
     saved = await db.prepare('SELECT * FROM dining_video_cache WHERE id = ?').bind(CACHE_KEY).first();
-    if (previous().available && now - saved.fetched_at < TTL) return reply({ ...previous(), stale: false });
+    if (previous().available && saved.fetched_at >= refreshSlot(now)) return reply({ ...previous(), stale: false });
     if (saved?.retry_after > now) return reply(previous());
     const lease = await db.prepare('UPDATE dining_video_cache SET lease_until = ? WHERE id = ? AND lease_until < ? AND retry_after <= ? RETURNING id')
       .bind(now + 60000, CACHE_KEY, now, now).first();

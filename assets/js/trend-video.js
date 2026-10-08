@@ -24,11 +24,11 @@ const errors = {
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', second: '2-digit', hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 async function update() {
   try {
-    const response = await fetch('/api/trend-video?visit=1', { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(30000) });
+    const response = await fetch('/api/trend-video', { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(30000) });
     const data = await response.json();
     if (!response.ok && !data.reason) throw new Error('unavailable');
     if (!data.available || !/^[A-Za-z0-9_-]{11}$/.test(data.video?.id || '')) {
-      if (!currentId) document.getElementById('video-loading').textContent = data.reason === 'setup_required' ? '인기 영상 연결을 준비하고 있습니다.' : '영상 연결을 확인해 주세요.';
+      if (!currentId) document.getElementById('video-loading').textContent = data.reason === 'setup_required' ? '최신 영상 연결을 준비하고 있습니다.' : '영상 연결을 확인해 주세요.';
       status.textContent = errors[data.reason] || '영상을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
       return;
     }
@@ -53,7 +53,7 @@ async function update() {
     }
     title.textContent = video.title;
     meta.textContent = video.channel + ' · 조회수 ' + new Intl.NumberFormat('ko-KR').format(video.views) + '회';
-    status.textContent = '최근 30일 · 관련 검색 결과 조회수순 · 접속할 때 조회\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
+    status.textContent = '최근 30일 · 최신 발행순 · 매일 오전 9시·오후 9시 자동 갱신\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
     watch.href = 'https://www.youtube.com/watch?v=' + video.id;
   } catch {
     if (!currentId) document.getElementById('video-loading').textContent = '영상을 불러오지 못했습니다.';
@@ -62,3 +62,6 @@ async function update() {
 }
 update();
 globalThis.window?.addEventListener('pageshow', event => { if (event.persisted) update(); });
+
+// Refresh already-open homepages as scheduled content becomes available.
+setInterval(() => { if (!document.hidden) update(); }, 5 * 60 * 1000);
