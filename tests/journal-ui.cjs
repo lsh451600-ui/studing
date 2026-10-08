@@ -32,6 +32,14 @@ const { chromium } = require('playwright');
         await page.goto(origin + path);
         assert.equal(await page.locator('main h1').count(), 1, path);
         assert.equal(await page.locator('.journal-nav').count(), 0);
+        if (width <= 900) {
+          assert.ok(await page.locator('footer').evaluate(el => {
+            const brand = el.querySelector('.footer-brand').getBoundingClientRect();
+            const links = [...el.querySelectorAll('.journal-footer a')].map(a => a.getBoundingClientRect());
+            return links.length > 0 && links.every(r => Math.abs(r.top - links[0].top) < 1) && brand.right <= links[0].left && links[0].top < brand.bottom && links[0].bottom > brand.top && links.at(-1).right <= el.getBoundingClientRect().right + 1;
+          }), path + ' footer stays beside logo at ' + width);
+        }
+
         await page.locator('#menu-open').click();
         assert.ok(!(await page.locator('.menu-group .menu-submenu[href="/guides"]').isVisible()));
         await page.locator('#startup-toggle').click();

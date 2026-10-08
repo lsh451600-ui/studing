@@ -66,12 +66,12 @@ export async function authorized(request, env, role = 'viewer') {
 export const POST_SCHEMA = `CREATE TABLE IF NOT EXISTS recipe_posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, body TEXT NOT NULL,
   category TEXT NOT NULL DEFAULT '미분류', image_base64 TEXT, image_type TEXT,
-  attachment_base64 TEXT, attachment_name TEXT, attachment_type TEXT, created_at TEXT NOT NULL
+  attachment_base64 TEXT, attachment_name TEXT, attachment_type TEXT, downloads INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL
 )`;
 export async function ensurePosts(db) {
   await db.prepare(POST_SCHEMA).run();
   const columns = new Set((await db.prepare('PRAGMA table_info(recipe_posts)').all()).results.map(column => column.name));
-  for (const [name, definition] of [['author_id', 'TEXT'], ['category', "TEXT NOT NULL DEFAULT '미분류'"], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
+  for (const [name, definition] of [['downloads', 'INTEGER NOT NULL DEFAULT 0'], ['author_id', 'TEXT'], ['category', "TEXT NOT NULL DEFAULT '미분류'"], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
     if (columns.has(name)) continue;
     try { await db.prepare(`ALTER TABLE recipe_posts ADD COLUMN ${name} ${definition}`).run(); }
     catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
@@ -89,7 +89,7 @@ export async function rateLimit(request, db, scope, maximum = 10) {
 }
 export async function listPosts(db, before = null, { q = '', category = '', identity = null } = {}) {
   await ensurePosts(db);
-  const fields = 'id, author_id, title, body, category, created_at, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
+  const fields = 'id, author_id, title, body, category, created_at, downloads, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
   const filters = [], values = [];
   if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
   if (category) { filters.push('category = ?'); values.push(category); }

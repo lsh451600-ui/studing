@@ -39,8 +39,9 @@ function renderPosts(posts, append = false) {
     copy.append(category, title);
     const time = document.createElement('time'); time.dateTime = post.created_at;
     time.textContent = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at));
-    const arrow = document.createElement('span'); arrow.className = 'recipe-row-arrow'; arrow.textContent = '+'; arrow.setAttribute('aria-hidden', 'true');
-    summary.append(copy, time, arrow); card.append(summary);
+    const downloads = document.createElement('span'); downloads.className = 'recipe-downloads';
+    downloads.textContent = '다운 ' + (post.downloads || 0);
+    summary.append(copy, downloads, time); card.append(summary);
     const detail = document.createElement('div'); detail.className = 'recipe-detail'; card.append(detail);
     if (post.image_url) {
       const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 레시피 사진'; image.loading = 'lazy'; detail.append(image);
@@ -49,6 +50,23 @@ function renderPosts(posts, append = false) {
     if (post.attachment_url) {
       const attachment = document.createElement('a'); attachment.className = 'recipe-attachment'; attachment.href = post.attachment_url;
       attachment.download = post.attachment_name || ''; attachment.textContent = '첨부파일 받기 · ' + post.attachment_name; detail.append(attachment);
+      const feedback = document.createElement('span'); feedback.setAttribute('role', 'status'); detail.append(feedback);
+      let downloading = false;
+      attachment.addEventListener('click', async event => {
+        event.preventDefault();
+        if (downloading) return;
+        downloading = true; attachment.setAttribute('aria-disabled', 'true'); feedback.textContent = '';
+        try {
+          const response = await fetch(post.attachment_url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000) });
+          if (!response.ok) throw new Error('첨부파일을 다운로드하지 못했습니다. 다시 시도해 주세요.');
+          const blob = await response.blob(), url = URL.createObjectURL(blob);
+          const link = document.createElement('a'); link.href = url; link.download = post.attachment_name || 'attachment';
+          document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+          post.downloads = Number(response.headers.get('X-Recipe-Downloads')) || (post.downloads || 0) + 1;
+          downloads.textContent = '다운 ' + post.downloads;
+        } catch (error) { feedback.textContent = error.message; }
+        finally { downloading = false; attachment.removeAttribute('aria-disabled'); }
+      });
     }
     appendPostActions(detail, post, { endpoint: '/api/recipe-posts', api, refresh: refreshPosts, categories: ['미분류', '한식', '중식', '일식', '양식', '베이커리'] });
   }

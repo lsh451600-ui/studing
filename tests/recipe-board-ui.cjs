@@ -22,10 +22,11 @@ const { chromium } = require('playwright');
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       let submissions = 0, accountWriterMode = false;
-      const posts = [{ canEdit: true, canDelete: true, id: 'first', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
+      const posts = [{ canEdit: true, canDelete: true, id: 'first', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
         if (url.origin !== origin) return route.abort();
+        if (url.pathname === '/api/recipe-file') { posts[0].downloads++; return route.fulfill({ body: '%PDF-1.7 recipe', headers: { 'Content-Type': 'application/octet-stream', 'X-Recipe-Downloads': String(posts[0].downloads) } }); }
         if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated: false } });
         if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: {} } });
         if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
@@ -67,6 +68,26 @@ const { chromium } = require('playwright');
       assert.ok(await page.locator('#recipe-admin-open').isHidden());
       assert.equal(submissions, 0);
       await page.locator('.recipe-row').click(); assert.ok(await page.locator('.recipe-post-body').isVisible());
+      assert.equal(await page.locator('.recipe-row-arrow').count(), 0);
+      for (let theme = 0; theme < 2; theme++) {
+        assert.equal(await page.locator('.recipe-detail').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 255, 255)');
+        assert.equal(await page.locator('.recipe-post-body').evaluate(el => getComputedStyle(el).color), 'rgb(20, 43, 73)');
+        await page.locator('#theme-toggle').click();
+      }
+      const received = page.waitForEvent('download'); await page.locator('.recipe-attachment').click();
+      assert.equal((await received).suggestedFilename(), 'recipe.pdf');
+      await page.waitForFunction(() => document.querySelector('.recipe-downloads').textContent === '다운 1');
+      if (width <= 900) {
+        const footer = await page.locator('footer').evaluate(el => {
+          const brand = el.querySelector('.footer-brand').getBoundingClientRect(), links = [...el.querySelectorAll('.journal-footer a')].map(a => a.getBoundingClientRect());
+          return { brand: { top: brand.top, bottom: brand.bottom, right: brand.right }, links: links.map(r => ({ top: r.top, bottom: r.bottom, left: r.left, right: r.right })), right: el.getBoundingClientRect().right };
+        });
+        assert.ok(footer.brand.right <= footer.links[0].left);
+        assert.ok(footer.links.every(r => Math.abs(r.top - footer.links[0].top) < 1));
+        assert.ok(footer.links[0].top < footer.brand.bottom && footer.links[0].bottom > footer.brand.top);
+        assert.ok(footer.links.at(-1).right <= footer.right + 1);
+      }
+
       await page.locator('.recipe-post-actions').getByRole('button', { name: '수정', exact: true }).click();
       await page.locator('.recipe-inline-edit input').fill('수정한 자료');
       await page.locator('.recipe-inline-edit textarea').fill('수정한 자료 내용');

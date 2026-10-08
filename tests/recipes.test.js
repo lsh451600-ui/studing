@@ -6,7 +6,7 @@ import { onRequest as admin } from '../functions/api/recipe-admin.js';
 import { onRequest as posts } from '../functions/api/recipe-posts.js';
 import { onRequest as image } from '../functions/api/recipe-image.js';
 import { onRequest as file } from '../functions/api/recipe-file.js';
-import { authorized, validatePost, matchesPassword, sessionCookie } from '../src/recipe-server.js';
+import { authorized, validatePost, matchesPassword, sessionCookie, ensurePosts, listPosts } from '../src/recipe-server.js';
 class D1 {
   constructor() { this.sqlite = new DatabaseSync(':memory:'); }
   prepare(sql) {
@@ -97,8 +97,16 @@ test('recipe categories, literal search, and safe non-image downloads persist', 
   const found = await posts({ env, request: request(searchPath, { cookie: viewer }) });
   const result = await found.json(); assert.equal(result.posts.length, 1);
   assert.equal(result.posts[0].category, '베이커리'); assert.equal(result.posts[0].attachment_name, '식빵.pdf');
+  assert.equal(result.posts[0].downloads, 0);
+  assert.equal((await file({ env, request: request('/api/recipe-file?id=' + id) })).status, 403);
   const download = await file({ env, request: request('/api/recipe-file?id=' + id, { cookie: viewer }) });
   assert.equal(download.status, 200); assert.equal(download.headers.get('Content-Type'), 'application/octet-stream');
+  assert.equal(download.headers.get('X-Recipe-Downloads'), '1');
+  const again = await file({ env, request: request('/api/recipe-file?id=' + id, { cookie: viewer }) });
+  assert.equal(again.headers.get('X-Recipe-Downloads'), '2');
+  assert.equal((await file({ env, request: request('/api/recipe-file?id=999999', { cookie: viewer }) })).status, 404);
+  const counted = await posts({ env, request: request(searchPath, { cookie: viewer }) });
+  assert.equal((await counted.json()).posts[0].downloads, 2);
   assert.match(download.headers.get('Content-Disposition'), /filename\*=UTF-8''/); assert.equal(new TextDecoder().decode(await download.arrayBuffer()), '%PDF-1.7\nrecipe attachment');
   assert.throws(() => validatePost({ category: '기타', title: 'x', body: 'y' }));
   assert.throws(() => validatePost({ category: '한식', title: 'x', body: 'y', attachment: { name: 'bad.pdf', type: 'application/pdf', base64: btoa('<html>') } }));
@@ -129,4 +137,16 @@ test('writer password alone cannot publish a recipe without the operator account
   const env = makeEnv(), owner = await loginAdmin(env, await loginViewer(env));
   const response = await posts({ env, request: request('/api/recipe-posts', { method: 'POST', cookie: owner, data: { title: 'Forbidden', body: 'No operator login' } }) });
   assert.equal(response.status, 403);
+});
+
+test('existing recipes gain a persistent download counter without losing content', async () => {
+  const db = new D1();
+  await db.prepare('CREATE TABLE recipe_posts (id INTEGER PRIMARY KEY, title TEXT NOT NULL, body TEXT NOT NULL, image_base64 TEXT, image_type TEXT, created_at TEXT NOT NULL)').run();
+  await db.prepare("INSERT INTO recipe_posts (id,title,body,created_at) VALUES (1,'기존 레시피','재료와 조리법','2026-10-08T00:00:00Z')").run();
+  await ensurePosts(db);
+  assert.equal((await listPosts(db)).posts[0].downloads, 0);
+  await db.prepare('UPDATE recipe_posts SET downloads = downloads + 1 WHERE id = 1').run();
+  await ensurePosts(db);
+  const post = (await listPosts(db)).posts[0];
+  assert.equal(post.downloads, 1); assert.equal(post.title, '기존 레시피'); assert.equal(post.body, '재료와 조리법');
 });
