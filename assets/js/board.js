@@ -30,7 +30,11 @@ async function loadList(append = false) {
   if (!append) { selected = null; byId('board-detail').hidden = true; byId('board-index').hidden = false; }
   byId('board-status').textContent = '게시물을 불러오고 있습니다.';
   try {
-    const data = await api('/api/board-posts' + (append && next ? '?before=' + next : ''));
+    const params = new URLSearchParams();
+    if (append && next) params.set('before', next);
+    const search = byId('board-search-query').value.trim();
+    if (search) params.set('q', search);
+    const data = await api('/api/board-posts' + (params.size ? '?' + params : ''));
     if (version !== generation) return;
     rows(data.posts, append); next = data.next; byId('board-more').hidden = !next; byId('board-status').textContent = '';
   } catch (error) { if (version === generation) byId('board-status').textContent = error.message; }
@@ -48,7 +52,7 @@ async function loadDetail(id, focus = true) {
     byId('board-comments').replaceChildren();
     for (const comment of data.comments) {
       const item = node('li', '', 'board-comment');
-      item.append(node('p', comment.author + ' · ' + date(comment.created_at), 'board-meta'), node('p', comment.body));
+      item.append(node('p', comment.author + ' · ' + date(comment.created_at), 'board-meta'), node('p', comment.body, 'board-comment-body'));
       byId('board-comments').append(item);
     }
     byId('board-comment-empty').hidden = data.comments.length > 0;
@@ -61,6 +65,7 @@ byId('board-write').addEventListener('click', () => {
   if (!authenticated()) byId('login-open').click(); else byId('board-post-title').focus();
 });
 byId('board-login').addEventListener('click', () => byId('login-open').click());
+byId('board-search-form').addEventListener('submit', event => { event.preventDefault(); loadList(); });
 byId('board-back').addEventListener('click', () => { history.pushState(null, '', '/board'); byId('board-comment-form').reset(); loadList(); });
 byId('board-more').addEventListener('click', async () => { byId('board-more').disabled = true; try { await loadList(true); } finally { byId('board-more').disabled = false; } });
 byId('board-post-form').addEventListener('submit', async event => {

@@ -19,8 +19,13 @@ export async function onRequest({ request, env }) {
       }
       const before = params.has('before') ? idOf(params.get('before')) : null;
       if (params.has('before') && !before) return reply(400, '페이지 정보를 확인해 주세요.');
+      const search = (params.get('q') || '').trim();
+      if (search.length > 100) return reply(400, '검색어는 100자 이내로 입력해 주세요.');
       const fields = 'p.id, p.author, p.title, p.created_at, (SELECT COUNT(*) FROM community_comments c WHERE c.post_id = p.id) AS comments';
-      const query = before ? db.prepare('SELECT ' + fields + ' FROM community_posts p WHERE p.id < ? ORDER BY p.id DESC LIMIT 21').bind(before) : db.prepare('SELECT ' + fields + ' FROM community_posts p ORDER BY p.id DESC LIMIT 21');
+      const filters = [], values = [];
+      if (search) { filters.push('(instr(lower(p.title), lower(?)) > 0 OR instr(lower(p.body), lower(?)) > 0)'); values.push(search, search); }
+      if (before) { filters.push('p.id < ?'); values.push(before); }
+      const query = db.prepare('SELECT ' + fields + ' FROM community_posts p' + (filters.length ? ' WHERE ' + filters.join(' AND ') : '') + ' ORDER BY p.id DESC LIMIT 21').bind(...values);
       const rows = (await query.all()).results, posts = rows.slice(0, 20);
       return reply(200, '', { posts, next: rows.length > 20 ? posts.at(-1).id : null });
     }

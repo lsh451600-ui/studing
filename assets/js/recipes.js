@@ -27,27 +27,39 @@ const jsonOptions = body => ({ method: 'POST', headers: { 'Content-Type': 'appli
 function renderPosts(posts, append = false) {
   if (!append) content.replaceChildren();
   if (!posts.length && !append) {
-    const empty = document.createElement('p'); empty.textContent = '아직 등록된 레시피가 없습니다.'; content.append(empty);
+    const empty = document.createElement('p'); empty.textContent = byId('recipe-search-query').value.trim() || byId('recipe-filter-category').value ? '검색 결과가 없습니다.' : '아직 등록된 레시피가 없습니다.'; content.append(empty);
   }
   for (const post of posts) {
     const card = document.createElement('details'); card.className = 'recipe-post';
     const summary = document.createElement('summary'); summary.className = 'recipe-row';
+    const copy = document.createElement('span'); copy.className = 'recipe-row-copy';
+    const category = document.createElement('span'); category.className = 'recipe-category'; category.textContent = post.category || '미분류';
     const title = document.createElement('span'); title.className = 'recipe-row-title'; title.textContent = post.title;
+    copy.append(category, title);
     const time = document.createElement('time'); time.dateTime = post.created_at;
     time.textContent = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at));
     const arrow = document.createElement('span'); arrow.className = 'recipe-row-arrow'; arrow.textContent = '+'; arrow.setAttribute('aria-hidden', 'true');
-    summary.append(title, time, arrow); card.append(summary);
+    summary.append(copy, time, arrow); card.append(summary);
     const detail = document.createElement('div'); detail.className = 'recipe-detail'; card.append(detail);
     if (post.image_url) {
       const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 레시피 사진'; image.loading = 'lazy'; detail.append(image);
     }
     const body = document.createElement('p'); body.className = 'recipe-post-body'; body.textContent = post.body; detail.append(body); content.append(card);
+    if (post.attachment_url) {
+      const attachment = document.createElement('a'); attachment.className = 'recipe-attachment'; attachment.href = post.attachment_url;
+      attachment.download = post.attachment_name || ''; attachment.textContent = '첨부파일 받기 · ' + post.attachment_name; detail.append(attachment);
+    }
   }
   content.hidden = false;
 }
 async function refreshPosts(append = false) {
   const current = generation;
-  const data = await api('/api/recipe-posts' + (append && next ? '?before=' + next : ''));
+  const params = new URLSearchParams();
+  if (append && next) params.set('before', next);
+  const q = byId('recipe-search-query').value.trim(), category = byId('recipe-filter-category').value;
+  if (q) params.set('q', q);
+  if (category) params.set('category', category);
+  const data = await api('/api/recipe-posts' + (params.size ? '?' + params : ''));
   if (current !== generation) return;
   renderPosts(data.posts, append); next = data.next; byId('recipe-more').hidden = !next;
 }
@@ -99,18 +111,44 @@ byId('recipe-admin-exit').addEventListener('click', async () => {
     byId('recipe-admin-open').hidden = false; byId('recipe-admin-exit').hidden = true;
   } catch (error) { byId('recipe-board-status').textContent = error.message; }
 });
+byId('recipe-search-form').addEventListener('submit', async event => {
+  event.preventDefault(); next = null;
+  const button = byId('recipe-search-submit'); button.disabled = true;
+  try { await refreshPosts(); } catch (error) { byId('recipe-board-status').textContent = error.message; }
+  finally { button.disabled = false; }
+});
 byId('recipe-post-image').addEventListener('change', event => {
   clearPreview(); const file = event.target.files[0]; if (!file) return;
+  if (byId('recipe-post-file').files.length) {
+    event.target.value = ''; byId('recipe-post-status').textContent = '사진과 파일은 한 게시물에 하나씩만 첨부할 수 있습니다.'; return;
+  }
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 1048576) {
     event.target.value = ''; byId('recipe-post-status').textContent = 'JPG, PNG, WebP 이미지 1MB 이하만 올릴 수 있습니다.'; return;
   }
   byId('recipe-post-status').textContent = ''; previewURL = URL.createObjectURL(file);
   byId('recipe-image-preview').src = previewURL; byId('recipe-image-preview').hidden = false;
 });
+byId('recipe-post-file').addEventListener('change', event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const extension = file.name.split('.').pop().toLowerCase();
+  if (!['pdf', 'docx', 'xlsx', 'txt', 'csv'].includes(extension) || file.size > 524288) {
+    event.target.value = ''; byId('recipe-post-status').textContent = 'PDF, DOCX, XLSX, TXT, CSV 파일을 512KB 이하로 올려 주세요.'; return;
+  }
+  if (byId('recipe-post-image').files.length) {
+    event.target.value = ''; byId('recipe-post-status').textContent = '사진과 파일은 한 게시물에 하나씩만 첨부할 수 있습니다.'; return;
+  }
+  byId('recipe-post-status').textContent = '';
+});
 function encodeFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader(); reader.onerror = () => reject(new Error('이미지를 읽지 못했습니다.'));
-    reader.onload = () => resolve({ base64: String(reader.result).split(',')[1], type: file.type }); reader.readAsDataURL(file);
+    reader.onload = () => {
+      const types = { pdf: 'application/pdf', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', txt: 'text/plain', csv: 'text/csv' };
+      const extension = file.name.split('.').pop().toLowerCase();
+      resolve({ base64: String(reader.result).split(',')[1], type: file.type || types[extension], name: file.name });
+    };
+    reader.readAsDataURL(file);
   });
 }
 postForm.addEventListener('submit', async event => {
@@ -122,7 +160,10 @@ postForm.addEventListener('submit', async event => {
   try {
     const file = byId('recipe-post-image').files[0];
     if (file && file.size > 1048576) throw new Error('이미지는 1MB 이하로 올려 주세요.');
-    const payload = { title: byId('recipe-post-title').value, body: byId('recipe-post-body').value, image: file ? await encodeFile(file) : null };
+    const attachmentFile = byId('recipe-post-file').files[0];
+    if (file && attachmentFile) throw new Error('사진과 파일은 한 게시물에 하나씩만 첨부할 수 있습니다.');
+    const attachment = attachmentFile ? await encodeFile(attachmentFile) : null;
+    const payload = { category: byId('recipe-post-category').value, title: byId('recipe-post-title').value, body: byId('recipe-post-body').value, image: file ? await encodeFile(file) : null, attachment };
     await api('/api/recipe-posts', jsonOptions(payload)); postForm.reset(); clearPreview();
     postStatus.textContent = '게시물을 올렸습니다.';
     try { await refreshPosts(); } catch { byId('recipe-board-status').textContent = '게시물은 저장됐습니다. 목록을 새로고침해 주세요.'; }
@@ -134,4 +175,3 @@ byId('recipe-more').addEventListener('click', async () => {
   try { await refreshPosts(true); } catch (error) { byId('recipe-board-status').textContent = error.message; }
   finally { button.disabled = false; }
 });
-

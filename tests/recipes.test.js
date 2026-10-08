@@ -5,6 +5,7 @@ import { onRequest as enter } from '../functions/api/recipes.js';
 import { onRequest as admin } from '../functions/api/recipe-admin.js';
 import { onRequest as posts } from '../functions/api/recipe-posts.js';
 import { onRequest as image } from '../functions/api/recipe-image.js';
+import { onRequest as file } from '../functions/api/recipe-file.js';
 import { authorized, validatePost, matchesPassword, sessionCookie } from '../src/recipe-server.js';
 class D1 {
   constructor() { this.sqlite = new DatabaseSync(':memory:'); }
@@ -77,6 +78,23 @@ test('write and owner login reject cross-origin and invalid image payloads', asy
   assert.throws(() => validatePost({ title: 'x', body: 'y', image: { type: 'image/png', base64: btoa('<script>not an image</script>') } }));
   assert.throws(() => validatePost({ title: '', body: 'y' }));
   assert.throws(() => validatePost({ title: 'x', body: 'y', image: { type: 'image/png', base64: 'A'.repeat(1398108) } }));
+});
+test('recipe categories, literal search, and safe non-image downloads persist', async () => {
+  const env = makeEnv(), viewer = await loginViewer(env), owner = await loginAdmin(env, viewer);
+  const pdf = btoa('%PDF-1.7\nrecipe attachment');
+  const created = await posts({ env, request: request('/api/recipe-posts', { method: 'POST', cookie: owner, data: {
+    category: '베이커리', title: '검색 가능한 식빵', body: '밀가루와 우유', attachment: { name: '식빵.pdf', type: 'application/pdf', base64: pdf }
+  } }) });
+  assert.equal(created.status, 201); const id = (await created.json()).id;
+  const searchPath = '/api/recipe-posts?q=' + encodeURIComponent('식빵') + '&category=' + encodeURIComponent('베이커리');
+  const found = await posts({ env, request: request(searchPath, { cookie: viewer }) });
+  const result = await found.json(); assert.equal(result.posts.length, 1);
+  assert.equal(result.posts[0].category, '베이커리'); assert.equal(result.posts[0].attachment_name, '식빵.pdf');
+  const download = await file({ env, request: request('/api/recipe-file?id=' + id, { cookie: viewer }) });
+  assert.equal(download.status, 200); assert.equal(download.headers.get('Content-Type'), 'application/octet-stream');
+  assert.match(download.headers.get('Content-Disposition'), /filename\*=UTF-8''/); assert.equal(new TextDecoder().decode(await download.arrayBuffer()), '%PDF-1.7\nrecipe attachment');
+  assert.throws(() => validatePost({ category: '기타', title: 'x', body: 'y' }));
+  assert.throws(() => validatePost({ category: '한식', title: 'x', body: 'y', attachment: { name: 'bad.pdf', type: 'application/pdf', base64: btoa('<html>') } }));
 });
 test('session tampering, secret rotation and logout are enforced', async () => {
   const env = makeEnv(), viewer = await loginViewer(env);

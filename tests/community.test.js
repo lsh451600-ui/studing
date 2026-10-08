@@ -9,7 +9,7 @@ function database(t) {
 }
 const request = (path, data, signed = false, origin = 'https://example.test') => new Request('https://example.test/api/' + path, { method: data ? 'POST' : 'GET', headers: { Origin: origin, 'Content-Type': 'application/json', Cookie: signed ? '__Host-member-access=verified' : '' }, ...(data ? { body: JSON.stringify(data) } : {}) });
 function env(t) { return { MEMBERS_DB: database(t), SUPABASE_URL: 'https://project.supabase.co', SUPABASE_PUBLISHABLE_KEY: 'public', SUPABASE_SECRET_KEY: 'secret' }; }
-function auth(t) { t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: 'member-id', user_metadata: { username: 'spoofed' } }) : Response.json([{ username: 'verified-author' }])); }
+function auth(t) { t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: 'member-id', user_metadata: { username: 'spoofed' } }) : Response.json([{ username: 'verified-author', nickname: 'verified-nickname' }])); }
 test('anonymous visitors and foreign origins cannot post or comment', async t => {
   const settings = env(t);
   assert.equal((await posts({ env: settings, request: request('board-posts', { title: 'a', body: 'b' }) })).status, 401);
@@ -24,7 +24,7 @@ test('posts and comments persist with verified profile author and public read ne
   const list = await (await posts({ env: settings, request: request('board-posts') })).json();
   assert.equal(list.posts[0].comments, 1);
   const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
-  assert.equal(detail.post.author, 'verified-author'); assert.equal(detail.post.body, '<script>literal</script>');
+  assert.equal(detail.post.author, 'verified-nickname'); assert.equal(detail.post.body, '<script>literal</script>');
   assert.equal(detail.comments[0].body, '좋은 경험입니다.'); assert.ok(!JSON.stringify(detail).includes('member-id'));
 });
 test('missing storage, invalid IDs and content, nonexistent comment targets and flooding fail safely', async t => {

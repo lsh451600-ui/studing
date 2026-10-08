@@ -1,5 +1,21 @@
-const triggers = document.querySelectorAll('[data-share-page]');
+let triggers = [...document.querySelectorAll('[data-share-page]')];
+if (!triggers.length) {
+  const floating = document.createElement('button');
+  floating.type = 'button';
+  floating.dataset.sharePage = '';
+  floating.setAttribute('aria-label', '이 페이지 공유');
+  floating.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4"/></svg>';
+  document.body.append(floating);
+  triggers = [floating];
+}
 if (triggers.length) {
+  for (const trigger of triggers) {
+    trigger.classList.add('share-floating-button');
+    trigger.setAttribute('aria-label', '이 페이지 공유');
+    trigger.title = '이 페이지 공유';
+    trigger.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.7 10.7 6.6-4.4m-6.6 7 6.6 4.4"/></svg>';
+    document.body.append(trigger);
+  }
   const canonical = document.querySelector('link[rel="canonical"]')?.href || `${location.origin}${location.pathname}`;
   const title = document.querySelector('meta[property="og:title"]')?.content || document.title;
   const description = document.querySelector('meta[property="og:description"]')?.content || document.querySelector('meta[name="description"]')?.content || '';

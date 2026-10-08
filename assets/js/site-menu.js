@@ -53,3 +53,5 @@ window.addEventListener('scroll', updateBackToTop, { passive: true });
 window.addEventListener('resize', updateBackToTop);
 window.addEventListener('pageshow', updateBackToTop);
 updateBackToTop();
+
+if (!document.querySelector('script[src*="/assets/js/share.js"]')) import('./share.js');

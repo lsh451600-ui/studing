@@ -64,9 +64,18 @@ export async function authorized(request, env, role = 'viewer') {
 }
 export const POST_SCHEMA = `CREATE TABLE IF NOT EXISTS recipe_posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, body TEXT NOT NULL,
-  image_base64 TEXT, image_type TEXT, created_at TEXT NOT NULL
+  category TEXT NOT NULL DEFAULT '미분류', image_base64 TEXT, image_type TEXT,
+  attachment_base64 TEXT, attachment_name TEXT, attachment_type TEXT, created_at TEXT NOT NULL
 )`;
-export async function ensurePosts(db) { await db.prepare(POST_SCHEMA).run(); }
+export async function ensurePosts(db) {
+  await db.prepare(POST_SCHEMA).run();
+  const columns = new Set((await db.prepare('PRAGMA table_info(recipe_posts)').all()).results.map(column => column.name));
+  for (const [name, definition] of [['category', "TEXT NOT NULL DEFAULT '미분류'"], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
+    if (columns.has(name)) continue;
+    try { await db.prepare(`ALTER TABLE recipe_posts ADD COLUMN ${name} ${definition}`).run(); }
+    catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
+  }
+}
 export async function rateLimit(request, db, scope, maximum = 10) {
   if (!db) return true;
   await db.prepare('CREATE TABLE IF NOT EXISTS recipe_limits (key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires_at INTEGER NOT NULL)').run();
@@ -77,20 +86,28 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   await db.prepare('DELETE FROM recipe_limits WHERE expires_at < ?').bind(now).run();
   return row.attempts <= maximum;
 }
-export async function listPosts(db, before = null) {
+export async function listPosts(db, before = null, { q = '', category = '' } = {}) {
   await ensurePosts(db);
-  const fields = 'id, title, body, created_at, (image_type IS NOT NULL) AS has_image';
-  const query = before ? db.prepare(`SELECT ${fields} FROM recipe_posts WHERE id < ? ORDER BY id DESC LIMIT 21`).bind(before)
-    : db.prepare(`SELECT ${fields} FROM recipe_posts ORDER BY id DESC LIMIT 21`);
+  const fields = 'id, title, body, category, created_at, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
+  const filters = [], values = [];
+  if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
+  if (category) { filters.push('category = ?'); values.push(category); }
+  if (before) { filters.push('id < ?'); values.push(before); }
+  const query = db.prepare(`SELECT ${fields} FROM recipe_posts${filters.length ? ' WHERE ' + filters.join(' AND ') : ''} ORDER BY id DESC LIMIT 21`).bind(...values);
   const { results } = await query.all();
-  const posts = results.slice(0, 20).map(post => ({ ...post, image_url: post.has_image ? `/api/recipe-image?id=${post.id}` : null }));
+  const posts = results.slice(0, 20).map(post => ({ ...post,
+    image_url: post.has_image ? `/api/recipe-image?id=${post.id}` : null,
+    attachment_url: post.has_attachment ? `/api/recipe-file?id=${post.id}` : null }));
   return { posts, next: results.length > 20 ? posts[posts.length - 1].id : null };
 }
 export function validatePost(data) {
   if (!data || typeof data.title !== 'string' || typeof data.body !== 'string') throw new Error('제목과 내용을 입력해 주세요.');
   const title = data.title.trim(), body = data.body.trim();
   if (!title || title.length > 120 || !body || body.length > 20000) throw new Error('제목은 120자, 내용은 20,000자 이내로 입력해 주세요.');
-  let imageBase64 = null, imageType = null;
+  const categories = ['한식', '중식', '일식', '양식', '베이커리'];
+  const category = data.category === undefined ? '미분류' : data.category;
+  if (typeof category !== 'string' || !categories.includes(category) && category !== '미분류') throw new Error('분류를 선택해 주세요.');
+  let imageBase64 = null, imageType = null, attachmentBase64 = null, attachmentName = null, attachmentType = null;
   if (data.image) {
     if (typeof data.image.base64 !== 'string' || data.image.base64.length > 1398104 || !/^[A-Za-z0-9+/]*={0,2}$/.test(data.image.base64)) throw new Error('이미지는 1MB 이하로 올려 주세요.');
     let bytes;
@@ -103,5 +120,29 @@ export function validatePost(data) {
     if (data.image.type !== imageType) throw new Error('이미지 형식을 확인해 주세요.');
     imageBase64 = data.image.base64;
   }
-  return { title, body, imageBase64, imageType };
+  if (data.attachment) {
+    if (imageBase64) throw new Error('사진과 파일은 한 게시물에 하나씩만 첨부할 수 있습니다.');
+    const item = data.attachment;
+    if (typeof item.base64 !== 'string' || item.base64.length > 699052 || !/^[A-Za-z0-9+/]*={0,2}$/.test(item.base64)) throw new Error('첨부 파일은 512KB 이하로 올려 주세요.');
+    let bytes;
+    try { bytes = Uint8Array.from(atob(item.base64), c => c.charCodeAt(0)); } catch { throw new Error('첨부 파일 형식을 확인해 주세요.'); }
+    if (!bytes.length || bytes.length > 524288 || typeof item.name !== 'string' || item.name.length > 180) throw new Error('첨부 파일은 512KB 이하로 올려 주세요.');
+    const cleanName = item.name.replace(/[\\/\u0000-\u001f\u007f]/g, '_').trim().slice(-120);
+    const extension = cleanName.split('.').pop().toLowerCase();
+    const genericType = !item.type || item.type === 'application/octet-stream';
+    const isPdf = extension === 'pdf' && (item.type === 'application/pdf' || genericType) && String.fromCharCode(...bytes.slice(0, 5)) === '%PDF-';
+    const isZip = bytes[0] === 0x50 && bytes[1] === 0x4b && [0x03, 0x05, 0x07].includes(bytes[2]) && [0x04, 0x06, 0x08].includes(bytes[3]);
+    const isOffice = isZip && ((extension === 'docx' && (item.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || genericType))
+      || (extension === 'xlsx' && (item.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || genericType)));
+    const isText = ['txt', 'csv'].includes(extension) && (['text/plain', 'text/csv', 'application/vnd.ms-excel'].includes(item.type) || genericType);
+    if (isText) {
+      try { if (new TextDecoder('utf-8', { fatal: true }).decode(bytes).includes('\0')) throw new Error('binary'); }
+      catch { throw new Error('TXT 또는 CSV 파일은 UTF-8 텍스트만 올릴 수 있습니다.'); }
+    }
+    if (!isPdf && !isOffice && !isText) throw new Error('PDF, DOCX, XLSX, TXT, CSV 파일만 올릴 수 있습니다.');
+    attachmentBase64 = item.base64;
+    attachmentName = cleanName;
+    attachmentType = extension === 'pdf' ? 'application/pdf' : extension === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : extension === 'xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : extension === 'csv' ? 'text/csv' : 'text/plain';
+  }
+  return { title, body, category, imageBase64, imageType, attachmentBase64, attachmentName, attachmentType };
 }

@@ -42,6 +42,11 @@ byId('nickname-form').addEventListener('submit', async event => {
     const data = await result.json();
     if (!result.ok) throw new Error(data.message || '닉네임을 저장하지 못했습니다.');
     byId('account-nickname').value = data.nickname;
+    try {
+      const sessionResponse = await fetch('/api/session', { credentials: 'same-origin', cache: 'no-store' });
+      const session = await sessionResponse.json();
+      if (sessionResponse.ok && session.authenticated && session.user) window.dispatchEvent(new CustomEvent('member-authenticated', { detail: session.user }));
+    } catch { /* The saved profile is reloaded on the next page visit. */ }
     feedback.textContent = '닉네임을 저장했습니다. 새로 작성하는 글과 댓글에 적용됩니다.';
   } catch (error) { feedback.textContent = error.message || '닉네임을 저장하지 못했습니다. 다시 시도해 주세요.'; feedback.dataset.error = 'true'; }
   finally { pending = false; byId('nickname-submit').disabled = false; }
