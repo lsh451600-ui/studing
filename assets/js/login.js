@@ -129,6 +129,8 @@ async function checkSession({ force = false } = {}) {
   }
   if (data.authenticated && data.needsProfile && !byId('profile-dialog').open) {
     if (dialog.open) dialog.close();
+    if (byId('signup-dialog').open) byId('signup-dialog').close();
+    byId('profile-status').textContent = '';
     byId('profile-dialog').showModal();
   }
   return data;
@@ -203,12 +205,12 @@ const initialSession = checkSession({ force: navigationType === 'reload' || para
 });
 if (params.has('login_required')) {
   initialSession.then(data => {
-    if (data?.authenticated && protectedNext) { try { sessionStorage.removeItem('member-login-next'); } catch {} location.replace(protectedNext); return; }
+    if (data?.authenticated && !data.needsProfile && !data.profileUnavailable && protectedNext) { try { sessionStorage.removeItem('member-login-next'); } catch {} location.replace(protectedNext); return; }
     if (data?.available) openLogin();
     else if (data) byId('member-feedback').textContent = '로그인 서비스를 준비 중입니다. 잠시 후 다시 시도해 주세요.';
   });
 } else if (params.has('auth') && protectedNext) {
-  initialSession.then(data => { if (data?.authenticated) { try { sessionStorage.removeItem('member-login-next'); } catch {} location.replace(protectedNext); } });
+  initialSession.then(data => { if (data?.authenticated && !data.needsProfile && !data.profileUnavailable) { try { sessionStorage.removeItem('member-login-next'); } catch {} location.replace(protectedNext); } });
 }
 if (params.has('auth')) {
   const messages = {
@@ -219,6 +221,10 @@ if (params.has('auth')) {
     kakao_link_failed: '카카오 계정을 연결하지 못했습니다. 이미 다른 계정에 연결되어 있는지 확인해 주세요.',
     confirmed: '이메일 인증이 완료되었습니다.', social: '소셜 로그인 인증이 완료되었습니다.',
     social_failed: '소셜 로그인을 완료하지 못했습니다. 다시 시도해 주세요.',
+    google_cancelled: '구글 인증이 취소되었습니다. 로그인 버튼에서 다시 시작해 주세요.',
+    google_member_setup: '구글 회원 정보를 저장하지 못했습니다. 회원가입 데이터베이스 설정 확인이 필요합니다. (GOOGLE-01)',
+    google_exchange_failed: '구글 인증 정보를 로그인 상태로 연결하지 못했습니다. 로그인 버튼에서 다시 시작해 주세요. (GOOGLE-02)',
+    google_provider_failed: '구글에서 인증 요청을 처리하지 못했습니다. 구글 연결 설정 확인이 필요합니다. (GOOGLE-03)',
     kakao_flow_expired: '로그인 요청이 만료되었거나 다른 창에서 변경되었습니다. 로그인 버튼을 눌러 다시 시작해 주세요. (KAKAO-01)',
     kakao_cancelled: '카카오 로그인이 취소되었습니다. 원하시면 다시 로그인해 주세요.',
     kakao_config_required: '카카오 로그인 설정 확인이 필요합니다. (KAKAO-02)',
@@ -258,6 +264,14 @@ function socialStatus(message) {
 }
 byId('signup-open').addEventListener('click', loadProviders);
 let providerLookup = null, socialPending = false;
+window.addEventListener('pageshow', event => {
+  if (!event.persisted) return;
+  socialPending = false;
+  providerLookup = null;
+  document.querySelectorAll('[data-social]').forEach(button => { button.disabled = false; button.textContent = socialLabel(button); });
+  loadProviders();
+  checkSession({ force: true }).catch(() => {});
+});
 function socialLabel(button, ready = true) {
   const name = button.dataset.social === 'google' ? '구글' : '카카오';
   return name + (button.dataset.mode === 'signup' ? (ready ? '로 가입하기' : ' 가입 · 연결 준비 중') : (ready ? '로 계속하기' : ' 로그인 · 연결 준비 중'));
@@ -313,7 +327,11 @@ byId('profile-form').addEventListener('submit', async event => {
     const data = await api('/api/member-profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
     showUser(data.user); byId('profile-dialog').close(); form.reset();
     byId('member-feedback').textContent = '';
-    await checkSession({ force: true });
+    const completed = await checkSession({ force: true });
+    if (completed?.authenticated && !completed.needsProfile && !completed.profileUnavailable && protectedNext) {
+      try { sessionStorage.removeItem('member-login-next'); } catch {}
+      location.replace(protectedNext);
+    }
   } catch (error) { byId('profile-status').textContent = error.message; }
   finally { byId('profile-submit').disabled = false; byId('profile-logout').disabled = false; }
 });

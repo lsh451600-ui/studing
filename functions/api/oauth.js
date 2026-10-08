@@ -1,4 +1,4 @@
-import { settings, reply, sameOrigin, readJSON, limitAttempts, currentSession } from '../../src/member-auth.js';
+import { settings, reply, sameOrigin, readJSON, limitAttempts, currentSession, upstream } from '../../src/member-auth.js';
 import { providers, createFlow, kakaoNonce } from '../../src/social-auth.js';
 export async function onRequest({ request, env }) {
   if (!['GET', 'POST'].includes(request.method)) return reply(405, '지원하지 않는 요청입니다.');
@@ -6,7 +6,14 @@ export async function onRequest({ request, env }) {
   if (!settings(env).ready) return reply(503, '소셜 로그인을 준비 중입니다.');
   try {
     const enabled = await providers(env);
-    if (request.method === 'GET') return reply(200, '', { providers: enabled });
+    if (request.method === 'GET') {
+      if (new URL(request.url).searchParams.get('diagnostics') !== '1') return reply(200, '', { providers: enabled });
+      // No JWT/user ID is supplied: this probe cannot create or modify a profile.
+      const probe = await upstream(env, '/rest/v1/rpc/complete_member_profile', { method: 'POST', privileged: true,
+        body: { requested_username: null, requested_phone: null } });
+      const profileSetup = probe.data.code === 'PGRST202' ? 'required' : probe.data.code === '42501' ? 'ready' : 'unknown';
+      return reply(200, '', { providers: enabled, profileSetup });
+    }
     const data = await readJSON(request);
     if (!['google', 'kakao'].includes(data?.provider)) return reply(400, '로그인 방법을 확인해 주세요.');
     if (!enabled[data.provider]) return reply(503, '이 로그인 방법은 연결 준비 중입니다.');

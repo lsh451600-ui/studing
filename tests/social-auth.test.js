@@ -11,13 +11,33 @@ const tokens={access_token:'access-test',refresh_token:'refresh-test',expires_in
 function req(path,body,headers={}){return new Request('https://studing.pages.dev'+path,{method:body===undefined?'GET':'POST',headers:{Origin:'https://studing.pages.dev','Content-Type':'application/json',...headers},...(body===undefined?{}:{body:JSON.stringify(body)})});}
 function mock(t,steps){let calls=0;t.mock.method(globalThis,'fetch',async(url,options)=>{const step=steps[calls++];assert.ok(step,'unexpected fetch');assert.ok(url.includes(step.path),url);step.check?.(options);return new Response(JSON.stringify(step.data??{}),{status:step.status??200});});return()=>assert.equal(calls,steps.length);}
 const settings={path:'/settings',data:{external:{google:true,kakao:true}}};
+test('diagnostics distinguish missing profile RPC without creating or authenticating any user',async t=>{
+  const done=mock(t,[settings,{path:'complete_member_profile',status:404,data:{code:'PGRST202'},check:o=>{
+    assert.equal(o.headers.Authorization,undefined);
+    assert.deepEqual(JSON.parse(o.body),{requested_username:null,requested_phone:null});
+  }}]);
+  const r=await oauth({env,request:req('/api/oauth?diagnostics=1')});
+  assert.equal((await r.json()).profileSetup,'required');done();
+});
+test('site-root fallback code still requires the matching HttpOnly PKCE verifier and remote user validation',async t=>{
+  const flow=await createFlow();
+  const done=mock(t,[{path:'grant_type=pkce',data:tokens,check:o=>assert.equal(JSON.parse(o.body).code_verifier,flow.verifier)},{path:'/user',data:user}]);
+  const r=await callback({env,request:req('/api/oauth-callback?code=root-return',undefined,{Cookie:flow.cookie})});
+  assert.equal(r.headers.get('Location'),'/?auth=social');done();
+});
+test('new-user database errors receive a safe Google category without exposing provider text',async t=>{
+  const done=mock(t,[]);
+  const r=await callback({env,request:req('/api/oauth-callback?error=server_error&error_description=Database+error+saving+new+user+private-data')});
+  assert.equal(r.headers.get('Location'),'/?auth=google_member_setup');
+  assert.ok(!r.headers.get('Location').includes('private-data'));done();
+});
 test('provider readiness reflects Supabase configuration',async t=>{mock(t,[{path:'/settings',data:{external:{google:true,kakao:false}}}]);const r=await oauth({env,request:req('/api/oauth')});assert.deepEqual((await r.json()).providers,{google:true,kakao:false});});
 test('disabled provider cannot start login',async t=>{const done=mock(t,[{path:'/settings',data:{external:{google:false}}}]);assert.equal((await oauth({env,request:req('/api/oauth',{provider:'google'})})).status,503);done();});
 test('OAuth initiation rejects foreign origin and missing settings',async()=>{assert.equal((await oauth({env,request:req('/api/oauth',{provider:'google'},{Origin:'https://evil.example'})})).status,403);assert.equal((await oauth({env:{},request:req('/api/oauth')})).status,503);});
 for(const provider of ['google']) test(provider+' uses PKCE and HttpOnly flow cookie',async t=>{mock(t,[settings,{path:'member_auth_limit',data:true}]);const r=await oauth({env,request:req('/api/oauth',{provider})});assert.equal(r.status,200);const data=await r.json(),url=new URL(data.url);assert.equal(url.origin,env.SUPABASE_URL);assert.equal(url.searchParams.get('provider'),provider);assert.equal(url.searchParams.get('code_challenge_method'),'s256');assert.ok(url.searchParams.get('code_challenge').length>40);const cookie=r.headers.getSetCookie()[0];assert.ok(cookie.includes('HttpOnly; SameSite=Lax'));const flow=readFlow(req('/',undefined,{Cookie:cookie.split(';')[0]}));assert.ok(flow);assert.ok(!data.url.includes(flow.verifier));assert.ok(!data.url.includes(env.SUPABASE_SECRET_KEY));});
 test('callback with missing or wrong flow never exchanges code',async t=>{const done=mock(t,[]);let r=await callback({env,request:req('/api/oauth-callback?code=test&flow=wrong')});assert.equal(r.headers.get('Location'),'/?auth=social_failed');const flow=await createFlow();r=await callback({env,request:req('/api/oauth-callback?code=test&flow=wrong',undefined,{Cookie:flow.cookie})});assert.equal(r.headers.get('Location'),'/?auth=social_failed');done();});
 test('callback exchanges PKCE code, verifies user and sets secure cookies',async t=>{const flow=await createFlow();const done=mock(t,[{path:'grant_type=pkce',data:tokens,check:o=>{const body=JSON.parse(o.body);assert.equal(body.auth_code,'test-code');assert.equal(body.code_verifier.length,64);}},{path:'/user',data:user}]);const r=await callback({env,request:req('/api/oauth-callback?code=test-code&flow='+flow.nonce,undefined,{Cookie:flow.cookie})});assert.equal(r.status,303);assert.equal(r.headers.get('Location'),'/?auth=social');assert.equal(r.headers.getSetCookie().length,3);assert.equal(r.headers.get('Referrer-Policy'),'no-referrer');done();});
-test('provider rejection creates no member session',async t=>{const flow=await createFlow();const done=mock(t,[]);const r=await callback({env,request:req('/api/oauth-callback?error=access_denied&flow='+flow.nonce,undefined,{Cookie:flow.cookie})});assert.equal(r.headers.get('Location'),'/?auth=social_failed');assert.equal(r.headers.getSetCookie().length,1);done();});
+test('provider rejection creates no member session',async t=>{const flow=await createFlow();const done=mock(t,[]);const r=await callback({env,request:req('/api/oauth-callback?error=access_denied&flow='+flow.nonce,undefined,{Cookie:flow.cookie})});assert.equal(r.headers.get('Location'),'/?auth=google_cancelled');assert.equal(r.headers.getSetCookie().length,1);done();});
 test('first social session requests profile completion',async t=>{mock(t,[{path:'/user',data:user},{path:'/member_profiles',data:[]}]);const r=await session({env,request:req('/api/session',undefined,{Cookie:'__Host-member-access=test'})});const b=await r.json();assert.equal(b.authenticated,true);assert.equal(b.needsProfile,true);});
 test('profile completion requires authenticated user',async t=>{const done=mock(t,[]);assert.equal((await profile({env,request:req('/api/member-profile',{username:'tester',phone:'01012345678'})})).status,401);done();});
 test('profile saves using user bearer token, never supplied user id',async t=>{const done=mock(t,[{path:'/user',data:user},{path:'complete_member_profile',data:'tester',check:o=>{assert.equal(o.headers.Authorization,'Bearer test');assert.deepEqual(JSON.parse(o.body),{requested_username:'tester',requested_phone:'01012345678'});}}]);const r=await profile({env,request:req('/api/member-profile',{username:'tester',phone:'010-1234-5678',id:'other-person'},{Cookie:'__Host-member-access=test'})});assert.equal(r.status,200);assert.equal((await r.json()).user.id,user.id);done();});

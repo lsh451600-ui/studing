@@ -152,20 +152,24 @@ def update(xml, now):
         for article in [*data.get('history', []), *data.get('articles', [])]:
             if article.get('url') and article.get('title') and not any(old['url'] == article['url'] for old in history):
                 history.append({key: article[key] for key in ('url', 'title', 'published_at')})
-    articles = collect(xml, now, history)
-    # Never rotate previously unseen but older stories into a latest-news feed.
-    cutoff = max((a['published_at'] for a in history), default='')
-    articles = [a for a in articles if a['published_at'] > cutoff]
-    new_count = len(articles)
-    if articles:
-        resolve_publishers(articles)
-    else:
-        articles = previous.get('articles', [])
-        if not articles:
-            raise ValueError('No new articles and no previous collection available')
-        print('No unseen newer articles; preserving the displayed collection.')
-    if not new_count:
-        resolve_publishers(articles)
+    unseen = collect(xml, now, history)
+    # Keep current cards while filling open slots with never-published articles.
+    # A partial update must not shrink six cards to only the new arrivals.
+    candidates = sorted([*unseen, *previous.get('articles', [])],
+                        key=lambda article: datetime.fromisoformat(article['published_at']), reverse=True)
+    articles = []
+    for article in candidates:
+        if not now - timedelta(days=30) <= datetime.fromisoformat(article['published_at']) <= now:
+            continue
+        if not any(same_article(article, old) for old in articles):
+            articles.append(article)
+        if len(articles) == 6:
+            break
+    if not articles:
+        raise ValueError('No valid recent articles available')
+    new_urls = {a['url'] for a in unseen}
+    new_count = sum(a['url'] in new_urls for a in articles)
+    resolve_publishers(articles)
     for article in articles:
         if not photo_url(article.get('image', '')):
             for key in ('image', 'image_source', 'image_alt'):

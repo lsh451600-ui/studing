@@ -18,6 +18,22 @@ def feed(*stories):
         for key, title in stories) + '</channel></rss>'
 
 class NewsDeduplication(unittest.TestCase):
+    def test_one_new_article_does_not_shrink_six_cards_or_recycle_history(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers'):
+            root = Path(folder)
+            (root / 'src').mkdir()
+            (root / 'index.html').write_text('<section id="trends"></section>')
+            titles = ['외식 혼밥 소비 확산과 테이블 좌석 설계', '프랜차이즈 식재료 물가 상승 비용 부담', '음식점 배달 시장 성장에 포장재 선택 변화', '레스토랑 브랜드 산업 가성비 메뉴 전략', '외식 커피 시장 감소와 카페 디저트 변화', '식당 점심 소비 증가와 지역 상권 변화']
+            news.update(feed(*[(str(i), title) for i, title in enumerate(titles)]), NOW)
+            self.assertEqual(len(json.loads((root / 'news.json').read_text())['articles']), 6)
+            xml = feed(('new', '음식점 예약 산업 증가와 온라인 서비스 확산'))
+            news.update(xml, NOW)
+            result = json.loads((root / 'news.json').read_text())
+            self.assertEqual(len(result['articles']), 6)
+            self.assertEqual(result['new_articles'], 1)
+            self.assertEqual(len({a['url'] for a in result['articles']}), 6)
+            self.assertEqual(len(result['history']), 7)
+
     def test_publisher_photo_is_linked_with_credit_without_downloading_image(self):
         response = io.BytesIO(b'<meta property="og:image" content="/photos/menu.jpg">')
         response.url = 'https://publisher.test/article/123'

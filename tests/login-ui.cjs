@@ -149,7 +149,7 @@ const { chromium } = require('playwright');
           });
           assert.ok(boxes.identifier.bottom <= boxes.password.top, 'ID must be above password');
           assert.ok(boxes.password.bottom <= boxes.submit.top, 'password must be above submit');
-          assert.ok(boxes.kakao.bottom <= boxes.identifier.top, 'social buttons appear before password form');
+          assert.ok(boxes.submit.bottom <= boxes.google.top, 'social buttons appear below the password form');
           assert.ok(boxes.google.bottom <= boxes.kakao.top, 'Google must appear first');
           assert.equal(boxes.float, 'none', 'article dialog float must not leak into login');
           for (const key of ['dialog', 'identifier', 'password', 'submit', 'kakao', 'google']) {

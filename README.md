@@ -11,3 +11,5 @@ Cloudflare Pages는 저장소 루트를 배포합니다. `guides.html`과 `guide
 운영 및 개인정보 문의는 `/inquiry`에서 접수합니다. 운영자의 공식 연락처, 제공업체의 실제 프로젝트 리전·보존 설정 등은 확인된 정보로만 정책에 반영해야 합니다. 관련 안내는 `/about`, `/editorial`, `/privacy`, `/terms`에 있습니다.
 
 검증: `node --test tests/journal.test.js` 및 `python tests/test_update_news.py`. 브라우저 검증은 Playwright Chromium을 설치한 뒤 `node tests/journal-ui.cjs`로 실행합니다. 기존 회원·게시판 검증과 배포 후 공개 페이지 확인은 `.github/workflows/check-member-auth.yml`에서 실행합니다.
+
+뉴스 카드 목표는 6개입니다. 새 기사만으로 화면을 교체하지 않고 현재 노출 중인 유효 기사와 합쳐 발행일순 6개를 유지합니다. 과거 노출 후 내려간 기사는 이력으로 제외하며 동일·유사 기사를 중복 카드로 만들지 않습니다.

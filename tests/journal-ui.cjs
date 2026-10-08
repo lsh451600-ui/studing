@@ -28,7 +28,7 @@ const { chromium } = require('playwright');
       });
       const page = await context.newPage();
       const errors = []; page.on('pageerror', error => errors.push(error.message));
-      for (const path of ['/guides', '/guides/menu-margin', '/guides/break-even', '/guides/solo-dining', '/guides/menu-complexity', '/about', '/editorial', '/privacy', '/terms']) {
+      for (const path of ['/', '/guides', '/guides/menu-margin', '/guides/break-even', '/guides/solo-dining', '/guides/menu-complexity', '/about', '/editorial', '/privacy', '/terms', '/404']) {
         await page.goto(origin + path);
         assert.equal(await page.locator('main h1').count(), 1, path);
         assert.equal(await page.locator('.journal-nav').count(), 0);
@@ -36,6 +36,11 @@ const { chromium } = require('playwright');
         assert.ok(await page.locator('.menu-group .menu-submenu[href="/guides"]').isVisible());
         await page.keyboard.press('Escape');
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), path + ' overflow at ' + width);
+        if (path === '/') {
+          const widths = await page.evaluate(() => ({ intro: document.querySelector('.home-introduction').getBoundingClientRect().width, main: document.querySelector('main').getBoundingClientRect().width, footer: document.querySelector('footer').getBoundingClientRect().width }));
+          assert.ok(Math.abs(widths.intro - widths.main) < 1 && Math.abs(widths.footer - widths.main) < 1, 'introduction and divider use the full page width');
+          if (width === 1280 && theme === 'light') await page.screenshot({ path: '/tmp/studing-home-unified.png', fullPage: true });
+        }
         if (path.endsWith('menu-margin')) {
           await page.locator('[data-guide-tool] button').click();
           assert.match(await page.locator('output').textContent(), /5,800원/);
@@ -55,6 +60,6 @@ const { chromium } = require('playwright');
       if (width === 320 && theme === 'light') await page.screenshot({ path: '/tmp/studing-journal-mobile.png', fullPage: true });
       await context.close();
     }
-    console.log('54 public page/viewport/theme checks and calculator interactions passed.');
+    console.log('66 public page/viewport/theme checks, full-width introduction and calculator interactions passed.');
   } finally { await browser?.close(); await new Promise(done => server.close(done)); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
