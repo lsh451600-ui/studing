@@ -23,6 +23,7 @@ const { chromium } = require('playwright');
     for (const width of [360, 768, 1280]) for (const theme of ['light', 'dark']) {
       const context = await browser.newContext({ viewport: { width, height: 960 } });
       const user = { id: 'member-one', username: 'test_member', kakaoLinked: true };
+      let nickname = '기존 닉네임';
       let authenticated = true, resetCalls = 0, forgotCalls = 0, deleteCalls = 0;
       const errors = [];
       await context.addInitScript(theme => localStorage.setItem('dining-theme', theme), theme);
@@ -35,11 +36,14 @@ const { chromium } = require('playwright');
         if (url.pathname === '/api/trend-video') return route.fulfill({ json: { available: false, reason: 'no_video' } });
         if (url.pathname === '/api/trend-news') return route.fulfill({ status: 503, json: {} });
         if (url.pathname === '/api/account') {
-          if (req.method() === 'GET') return route.fulfill({ json: { account: { username: user.username, email: 'test@example.com', phone: '01012345678', createdAt: '2026-10-08T01:00:00Z', providers: ['email', 'kakao'], passwordRequired: true } } });
+          if (req.method() === 'GET') return route.fulfill({ json: { account: { username: user.username, nickname, email: 'test@example.com', phone: '01012345678', createdAt: '2026-10-08T01:00:00Z', providers: ['email', 'kakao'], passwordRequired: true } } });
           deleteCalls++; const data = req.postDataJSON();
           if (data.confirmation !== '회원탈퇴') return route.fulfill({ status: 400, json: { message: '확인란에 회원탈퇴를 입력해 주세요.' } });
           assert.equal(data.password, 'current-password'); authenticated = false;
           return route.fulfill({ json: { authenticated: false, message: '회원탈퇴가 완료되었습니다.' } });
+        }
+        if (url.pathname === '/api/nickname') {
+          nickname = req.postDataJSON().nickname.trim(); return route.fulfill({ json: { nickname } });
         }
         if (url.pathname === '/api/forgot-password') {
           forgotCalls++; assert.equal(req.postDataJSON().identifier, 'test_member');
@@ -63,6 +67,12 @@ const { chromium } = require('playwright');
       assert.ok(await nicknamePanel.evaluate(panel => [...document.querySelectorAll('.account-panel')].every(item => item.getBoundingClientRect().width === panel.getBoundingClientRect().width)));
       assert.equal(await page.locator('#account-nickname').getAttribute('pattern'), null);
       assert.equal(await page.locator('#account-nickname').getAttribute('maxlength'), '40');
+      await page.locator('#account-nickname').fill('새 닉네임 🍜');
+      await page.locator('#nickname-submit').click();
+      await page.waitForFunction(() => document.querySelector('#nickname-status').textContent.includes('저장했습니다'));
+      await page.reload();
+      await page.locator('#account-content').waitFor({ state: 'visible' });
+      assert.equal(await page.locator('#account-nickname').inputValue(), '새 닉네임 🍜');
       await fits();
       await page.locator('#menu-open').click(); assert.ok(await page.locator('#menu-profile-link').isVisible()); await page.keyboard.press('Escape');
       await page.locator('#withdrawal-open').click();

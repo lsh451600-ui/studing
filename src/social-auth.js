@@ -1,3 +1,4 @@
+import { savedNickname } from './member-nicknames.js';
 import { upstream } from './member-auth.js';
 export async function providers(env) {
   const result = await upstream(env, '/auth/v1/settings');
@@ -30,12 +31,18 @@ export function readFlow(request, kind = 'google') {
 }
 export async function memberProfile(env, session) {
   const result = await upstream(env, '/rest/v1/member_profiles?select=username,nickname,phone&id=eq.' + encodeURIComponent(session.user.id), { token: session.access });
-  if (result.ok && Array.isArray(result.data)) return result.data[0] || null;
+  if (result.ok && Array.isArray(result.data)) {
+    const profile = result.data[0];
+    if (!profile) return null;
+    return { ...profile, nickname: await savedNickname(env.MEMBERS_DB, session.user.id) || profile.nickname };
+  }
   if (result.status !== 400) throw new Error('profile_unavailable');
   // Keep login and account pages available while an existing deployment awaits the SQL migration.
   const legacy = await upstream(env, '/rest/v1/member_profiles?select=username,phone&id=eq.' + encodeURIComponent(session.user.id), { token: session.access });
   if (!legacy.ok || !Array.isArray(legacy.data)) throw new Error('profile_unavailable');
-  return legacy.data[0] || null;
+  const profile = legacy.data[0];
+  if (!profile) return null;
+  return { ...profile, nickname: await savedNickname(env.MEMBERS_DB, session.user.id) || profile.nickname };
 }
 
 export async function kakaoNonce(verifier) {

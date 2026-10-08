@@ -5,6 +5,7 @@ on:
     paths:
       - 'functions/api/*.js'
       - 'src/member-auth.js'
+      - 'src/member-nicknames.js'
       - 'src/account-auth.js'
       - 'src/community.js'
       - 'src/board-permissions.js'

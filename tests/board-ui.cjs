@@ -68,6 +68,12 @@ const { chromium } = require('playwright');
       assert.equal(await page.locator('.board-post-card').evaluate(element => getComputedStyle(element).backgroundColor), await page.locator('#board-comment-form').evaluate(element => getComputedStyle(element).backgroundColor));
       assert.equal(await page.locator('.board-title-box #board-author').count(), 1);
       assert.equal(await page.locator('#board-author').evaluate(element => getComputedStyle(element).textAlign), 'right');
+      assert.equal(await page.locator('.board-title-line #board-title').count(), 0);
+      assert.equal(await page.locator('.board-title-line #board-author').count(), 1);
+      assert.ok(await page.locator('#board-author').evaluate(element => {
+        const author = element.getBoundingClientRect(), title = document.querySelector('#board-title').getBoundingClientRect();
+        return author.bottom <= title.top && Math.abs(author.right - title.right) < 1;
+      }));
       assert.equal(await page.locator('#board-back').count(), 0);
       assert.equal(await page.title(), '외모Check-자유게시판');
       assert.equal(await page.locator('#board-body').evaluate(element => getComputedStyle(element).backgroundColor), 'rgb(255, 255, 255)');
