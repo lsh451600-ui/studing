@@ -14,7 +14,21 @@ export async function member(request, env) {
   if (!session.user) return { response: reply(401, '로그인 후 작성할 수 있습니다.', {}, session.cookies) };
   const profile = await memberProfile(env, session);
   if (!profile) return { response: reply(403, '회원 정보를 입력한 뒤 작성해 주세요.', {}, session.cookies) };
-  return { session, author: profile.nickname || '회원' };
+  return { session, author: profile.nickname || '회원', isAdmin: profile.username?.toLowerCase() === 'lsh451600' };
+}
+export async function postPermissions(request, env, authorId) {
+  const denied = { canEdit: false, canDelete: false, permissionsUnavailable: false };
+  if (!settings(env).ready) return denied;
+  try {
+    const session = await currentSession(request, env);
+    if (!session.user) return denied;
+    if (session.user.id === authorId) return { ...denied, canEdit: true, canDelete: true };
+    const profile = await memberProfile(env, session);
+    const isAdmin = profile?.username?.toLowerCase() === 'lsh451600';
+    return { ...denied, canEdit: isAdmin, canDelete: isAdmin };
+  } catch {
+    return { ...denied, permissionsUnavailable: true };
+  }
 }
 export async function allowWrite(db, user, scope) {
   const now = Date.now(), period = Math.floor(now / 600000);

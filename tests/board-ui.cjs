@@ -13,23 +13,26 @@ const { chromium } = require('playwright');
   });
   await new Promise(done => server.listen(0, '127.0.0.1', done));
   const origin = 'http://127.0.0.1:' + server.address().port;
+  const privateMarkup = await readFile(resolve(root, 'private.html'), 'utf8');
+  assert.match(privateMarkup, /<a href="\/recipes"><span class="menu-number">03<\/span><span>레시피<\/span>/);
   const browser = await chromium.launch();
   try {
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      let authenticated = false, missing = false, commentWrites = 0, postWrites = 0;
+      let authenticated = false, missing = false, commentWrites = 0;
       const posts = [{ id: 1, title: '외식 이야기', body: '<script>window.injected = true</script>', author: '회원', created_at: '2026-10-07T01:00:00Z', comments: 0 }], comments = [];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
         if (url.origin !== origin) return route.abort();
-        if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated: false } });
+        if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated, user: authenticated ? { id: 'member', username: 'member' } : null } });
         if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
         if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: {} } });
         if (url.pathname === '/api/visitors') return route.fulfill({ json: { available: true, today: 1, total: 2 } });
         if (url.pathname === '/api/board-posts') {
           if (missing) return route.fulfill({ status: 503, json: { message: '게시판 저장소 연결이 필요합니다.' } });
-          if (req.method() === 'POST') { assert.ok(authenticated); const data = req.postDataJSON(); postWrites++; posts.unshift({ ...data, id: 2, author: '회원', created_at: '2026-10-07T02:00:00Z', comments: 0 }); return route.fulfill({ json: { id: 2 } }); }
-          return route.fulfill({ json: url.searchParams.has('id') ? { post: posts.find(p => p.id === Number(url.searchParams.get('id'))), comments } : { posts, next: null } });
+          if (req.method() === 'PATCH') { assert.ok(authenticated); Object.assign(posts[0], req.postDataJSON()); return route.fulfill({ json: { id: 1 } }); }
+          if (req.method() === 'DELETE') { assert.ok(authenticated); posts.splice(0, posts.length); return route.fulfill({ json: { id: 1 } }); }
+          return route.fulfill({ json: url.searchParams.has('id') ? { post: posts.find(p => p.id === Number(url.searchParams.get('id'))), comments, permissions: authenticated ? { canEdit: true, canDelete: true } : { canEdit: false, canDelete: false } } : { posts, next: null } });
         }
         if (url.pathname === '/api/board-comments') {
           assert.ok(authenticated); const data = req.postDataJSON(); assert.equal(data.postId, 1); commentWrites++;
@@ -41,8 +44,11 @@ const { chromium } = require('playwright');
       const page = await context.newPage(); await page.goto(origin + '/board');
       await page.waitForSelector('.board-row'); await page.locator('.board-row').click();
       await page.waitForSelector('#board-detail:not([hidden])');
-      assert.ok(await page.locator('#board-search-form').isHidden());
-      assert.equal(await page.locator('#board-title').evaluate(element => getComputedStyle(element).color), 'rgb(35, 93, 222)');
+      assert.equal(await page.locator('#board-search-form').count(), 0);
+      assert.equal(await page.locator('#board-write').count(), 0);
+      assert.equal(await page.locator('#board-title').textContent(), '외식 이야기');
+      assert.equal(await page.locator('#board-title').evaluate(element => getComputedStyle(element).color), 'rgb(255, 255, 255)');
+      assert.equal(await page.locator('#board-back').textContent(), '자유게시판');
       assert.equal(await page.locator('#board-body').evaluate(element => getComputedStyle(element).backgroundColor), 'rgb(255, 255, 255)');
       assert.ok(await page.locator('#board-back').evaluate(element => Math.abs(element.getBoundingClientRect().right - element.parentElement.getBoundingClientRect().right) < 1));
       assert.equal(await page.locator('#board-body').textContent(), posts[0].body);
@@ -54,10 +60,20 @@ const { chromium } = require('playwright');
       await page.locator('#board-comment-body').fill('좋은 이야기입니다.'); await page.locator('#board-comment-submit').click();
       await page.waitForFunction(() => document.querySelectorAll('.board-comment').length === 1); assert.equal(commentWrites, 1);
       await page.locator('#board-back').click();
-      await page.waitForFunction(() => !document.querySelector('#board-index').hidden && !document.querySelector('#board-search-form').hidden);
-      await page.locator('#board-write').click();
-      await page.locator('#board-post-title').fill('새 이야기'); await page.locator('#board-post-body').fill('내용을 나눕니다.'); await page.locator('#board-post-submit').click();
-      await page.waitForFunction(() => document.querySelector('#board-title').textContent === '새 이야기'); assert.equal(postWrites, 1);
+      await page.waitForSelector('.board-row');
+      assert.equal(new URL(page.url()).pathname, '/board');
+      await page.locator('.board-row').click();
+      await page.waitForSelector('#board-detail:not([hidden])');
+      await page.locator('#board-edit-open').click();
+      await page.locator('#board-edit-title').fill('수정한 이야기');
+      await page.locator('#board-edit-body').fill('수정한 내용');
+      await page.locator('#board-edit-submit').click();
+      await page.waitForFunction(() => document.querySelector('#board-title').textContent === '수정한 이야기');
+      assert.equal(posts[0].body, '수정한 내용');
+      page.once('dialog', dialog => dialog.accept());
+      await page.locator('#board-delete').click();
+      await page.waitForFunction(() => !document.querySelector('#board-index').hidden);
+      assert.equal(posts.length, 0);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       missing = true; await page.goto(origin + '/board');
       await page.waitForFunction(() => document.querySelector('#board-status').textContent.includes('저장소'));

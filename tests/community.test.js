@@ -3,13 +3,14 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { onRequest as posts } from '../functions/api/board-posts.js';
 import { onRequest as comments } from '../functions/api/board-comments.js';
+import { initialize } from '../src/community.js';
 function database(t) {
   const sql = new DatabaseSync(':memory:'); t.after(() => sql.close());
   const db = { prepare(query) { const q = { values: [], bind(...v) { this.values = v; return this; }, async run() { const r = sql.prepare(query).run(...this.values); return { meta: { last_row_id: Number(r.lastInsertRowid) } }; }, async first() { return sql.prepare(query).get(...this.values) || null; }, async all() { return { results: sql.prepare(query).all(...this.values) }; } }; return q; }, async batch(queries) { const out = []; for (const q of queries) out.push(await q.run()); return out; } }; return db;
 }
-const request = (path, data, signed = false, origin = 'https://example.test') => new Request('https://example.test/api/' + path, { method: data ? 'POST' : 'GET', headers: { Origin: origin, 'Content-Type': 'application/json', Cookie: signed ? '__Host-member-access=verified' : '' }, ...(data ? { body: JSON.stringify(data) } : {}) });
+const request = (path, data, signed = false, origin = 'https://example.test', method = data ? 'POST' : 'GET') => new Request('https://example.test/api/' + path, { method, headers: { Origin: origin, 'Content-Type': 'application/json', Cookie: signed ? '__Host-member-access=verified' : '' }, ...(data ? { body: JSON.stringify(data) } : {}) });
 function env(t) { return { MEMBERS_DB: database(t), SUPABASE_URL: 'https://project.supabase.co', SUPABASE_PUBLISHABLE_KEY: 'public', SUPABASE_SECRET_KEY: 'secret' }; }
-function auth(t) { t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: 'member-id', user_metadata: { username: 'spoofed' } }) : Response.json([{ username: 'verified-author', nickname: 'verified-nickname' }])); }
+function auth(t, { id = 'member-id', username = 'verified-author', nickname = 'verified-nickname' } = {}) { t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id, user_metadata: { username: 'spoofed' } }) : Response.json([{ username, nickname }])); }
 test('anonymous visitors and foreign origins cannot post or comment', async t => {
   const settings = env(t);
   assert.equal((await posts({ env: settings, request: request('board-posts', { title: 'a', body: 'b' }) })).status, 401);
@@ -35,4 +36,41 @@ test('missing storage, invalid IDs and content, nonexistent comment targets and 
   assert.equal((await comments({ env: settings, request: request('board-comments', { postId: 999, body: 'x' }, true) })).status, 404);
   for (let i = 0; i < 5; i++) assert.equal((await posts({ env: settings, request: request('board-posts', { title: 'title', body: 'body' }, true) })).status, 201);
   assert.equal((await posts({ env: settings, request: request('board-posts', { title: 'title', body: 'body' }, true) })).status, 429);
+});
+test('authors can update and delete their own posts, and deletion removes associated comments', async t => {
+  auth(t); const settings = env(t);
+  const created = await posts({ env: settings, request: request('board-posts', { title: 'Before', body: 'Before body' }, true) });
+  const id = (await created.json()).id;
+  await comments({ env: settings, request: request('board-comments', { postId: id, body: 'Comment' }, true) });
+  const updated = await posts({ env: settings, request: request('board-posts?id=' + id, { title: 'After', body: 'After body' }, true, undefined, 'PATCH') });
+  assert.equal(updated.status, 200);
+  let detail = await (await posts({ env: settings, request: request('board-posts?id=' + id, null, true) })).json();
+  assert.equal(detail.post.title, 'After');
+  assert.deepEqual(detail.permissions, { canEdit: true, canDelete: true, permissionsUnavailable: false });
+  const removed = await posts({ env: settings, request: request('board-posts?id=' + id, null, true, undefined, 'DELETE') });
+  assert.equal(removed.status, 200);
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id) })).status, 404);
+  assert.equal((await settings.MEMBERS_DB.prepare('SELECT id FROM community_comments WHERE post_id = ?').bind(id).all()).results.length, 0);
+});
+test('the verified lsh451600 login can update and delete another member post', async t => {
+  const settings = env(t); await initialize(settings.MEMBERS_DB);
+  const owner = async (id, title) => {
+    const result = await settings.MEMBERS_DB.prepare('INSERT INTO community_posts (author_id, author, title, body, created_at) VALUES (?, ?, ?, ?, ?)').bind(id, 'member', title, 'Body', new Date().toISOString()).run();
+    return result.meta.last_row_id;
+  };
+  const id = await owner('someone-else', 'Original');
+  auth(t, { id: 'admin-id', username: 'lsh451600', nickname: 'Operator' });
+  const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id, null, true) })).json();
+  assert.deepEqual(detail.permissions, { canEdit: true, canDelete: true, permissionsUnavailable: false });
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: 'Moderated', body: 'Edited' }, true, undefined, 'PATCH') })).status, 200);
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, null, true, undefined, 'DELETE') })).status, 200);
+});
+test('a different member cannot edit or delete someone else post', async t => {
+  auth(t); const settings = env(t); await initialize(settings.MEMBERS_DB);
+  const result = await settings.MEMBERS_DB.prepare('INSERT INTO community_posts (author_id, author, title, body, created_at) VALUES (?, ?, ?, ?, ?)').bind('other-id', 'Other', 'Title', 'Body', new Date().toISOString()).run();
+  const id = result.meta.last_row_id;
+  for (const method of ['PATCH', 'DELETE']) {
+    const response = await posts({ env: settings, request: request('board-posts?id=' + id, method === 'PATCH' ? { title: 'Changed', body: 'Changed' } : null, true, undefined, method) });
+    assert.equal(response.status, 403);
+  }
 });
