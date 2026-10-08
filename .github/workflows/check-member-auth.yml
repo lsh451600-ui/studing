@@ -39,6 +39,9 @@ on:
       - 'guides/*.html'
       - 'assets/css/journal.css'
       - 'assets/js/guide-tools.js'
+      - 'scripts/publish_weekly_guide.py'
+      - 'tests/test_weekly_guide.py'
+      - '.github/workflows/publish-weekly-guide.yml'
       - 'tests/journal.test.js'
       - 'tests/journal-ui.cjs'
       - 'tests/google-ui.cjs'
@@ -62,6 +65,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -p 'test_weekly_guide.py'
       - run: node --test tests/journal.test.js tests/account.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
       - run: python tests/test_update_news.py
 

@@ -17,7 +17,7 @@ test('unprofitable orders and invalid input cannot produce a misleading break-ev
 });
 test('public guides are substantive static pages with resolvable navigation and matching canonicals', () => {
   const pages = readdirSync('guides').filter(p => p.endsWith('.html')).map(p => 'guides/' + p);
-  assert.equal(pages.length, 4);
+  assert.ok(pages.length >= 4);
   for (const file of [...pages, 'guides.html', 'about.html', 'editorial.html', 'privacy.html', 'terms.html', 'index.html']) {
     const html = readFileSync(file, 'utf8');
     assert.equal((html.match(/<main\b/g) || []).length, 1, file);

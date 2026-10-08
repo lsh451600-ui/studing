@@ -33,9 +33,21 @@ const { chromium } = require('playwright');
         assert.equal(await page.locator('main h1').count(), 1, path);
         assert.equal(await page.locator('.journal-nav').count(), 0);
         await page.locator('#menu-open').click();
+        assert.ok(!(await page.locator('.menu-group .menu-submenu[href="/guides"]').isVisible()));
+        await page.locator('#startup-toggle').click();
+        assert.equal(await page.locator('#startup-toggle').getAttribute('aria-expanded'), 'true');
         assert.ok(await page.locator('.menu-group .menu-submenu[href="/guides"]').isVisible());
         await page.keyboard.press('Escape');
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), path + ' overflow at ' + width);
+        if (await page.evaluate(() => document.documentElement.scrollHeight - innerHeight > 170)) {
+        await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+        await page.waitForFunction(() => !document.querySelector('#back-to-top').hidden);
+        const arrow = await page.locator('#back-to-top').boundingBox();
+        assert.ok(Math.abs(arrow.x + arrow.width / 2 - width / 2) < 1, 'back to top centered');
+        await page.locator('#back-to-top').click();
+        await page.waitForFunction(() => scrollY === 0);
+        assert.ok(await page.locator('#back-to-top').isHidden());
+        }
         if (path === '/') {
           const widths = await page.evaluate(() => ({ intro: document.querySelector('.home-introduction').getBoundingClientRect().width, main: document.querySelector('main').getBoundingClientRect().width, footer: document.querySelector('footer').getBoundingClientRect().width }));
           assert.ok(Math.abs(widths.intro - widths.main) < 1 && Math.abs(widths.footer - widths.main) < 1, 'introduction and divider use the full page width');

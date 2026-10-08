@@ -1,0 +1,48 @@
+name: Publish weekly practical guide
+on:
+  schedule:
+    # Monday 09:00 Asia/Seoul. GitHub may delay scheduled runs.
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: weekly-practical-guide
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test weekly publication
+        run: python -m unittest discover -s tests -p 'test_weekly_guide.py'
+      - name: Write one original guide for this Korean week
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_GUIDE_MODEL: ${{ vars.OPENAI_GUIDE_MODEL }}
+        run: python scripts/publish_weekly_guide.py
+      - name: Check public pages before publication
+        run: node --test tests/journal.test.js
+      - name: Commit and publish
+        run: |
+          if git diff --quiet -- guides guides.html sitemap.xml && test -z "$(git ls-files --others --exclude-standard guides/)"; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add guides/ guides.html sitemap.xml
+          git commit -m 'Publish weekly original dining practical guide'
+          for attempt in 1 2 3; do
+            git pull --rebase origin main
+            node --test tests/journal.test.js
+            if git push origin main; then exit 0; fi
+            sleep 5
+          done
+          exit 1

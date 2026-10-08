@@ -27,3 +27,29 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 window.addEventListener('pageshow', updateMasthead);
 updateMasthead();
+
+const startupToggle = document.getElementById('startup-toggle');
+const startupSubmenu = document.getElementById('startup-submenu');
+startupToggle.addEventListener('click', () => {
+  const expanded = startupToggle.getAttribute('aria-expanded') !== 'true';
+  startupToggle.setAttribute('aria-expanded', String(expanded));
+  startupSubmenu.hidden = !expanded;
+});
+menu.addEventListener('close', () => {
+  startupToggle.setAttribute('aria-expanded', 'false');
+  startupSubmenu.hidden = true;
+});
+const backToTop = document.getElementById('back-to-top');
+function updateBackToTop() {
+  const remaining = document.documentElement.scrollHeight - innerHeight - scrollY;
+  backToTop.hidden = scrollY < 160 || remaining > innerHeight;
+}
+backToTop.addEventListener('click', () => {
+  document.querySelector('header .brand').focus({ preventScroll: true });
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  updateBackToTop();
+});
+window.addEventListener('scroll', updateBackToTop, { passive: true });
+window.addEventListener('resize', updateBackToTop);
+window.addEventListener('pageshow', updateBackToTop);
+updateBackToTop();

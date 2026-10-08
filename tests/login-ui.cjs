@@ -83,7 +83,7 @@ const { chromium } = require('playwright');
             assert.ok(await page.locator('.ribbon').evaluate(el => getComputedStyle(el).borderTopStyle === 'solid' && parseFloat(getComputedStyle(el).borderTopWidth) >= 1));
           }
           assert.deepEqual(await page.locator('#site-menu .menu-number').allTextContents(), ['01', '02', '03', '04', '05', '06']);
-          assert.equal(await page.locator('#site-menu a[href="/startup"] span').nth(1).textContent(), '창업의 모든것');
+          assert.equal(await page.locator('#startup-toggle span').nth(1).textContent(), '창업의 모든것');
           assert.equal(await page.locator('#site-menu a[href="/about"] span').nth(1).textContent(), '사이트소개');
           assert.equal(await page.locator('.journal-nav').count(), 0);
           const menuBox = await page.locator('#site-menu').boundingBox();
