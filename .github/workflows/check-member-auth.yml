@@ -47,6 +47,9 @@ on:
       - 'tests/google-ui.cjs'
       - 'robots.txt'
       - 'sitemap.xml'
+      - 'feed.xml'
+      - 'scripts/build_feed.py'
+      - 'tests/seo.test.js'
       - 'tests/signup.test.js'
       - 'tests/account.test.js'
       - 'tests/account-ui.cjs'
@@ -69,7 +72,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m unittest discover -s tests -p 'test_weekly_guide.py'
-      - run: node --test tests/journal.test.js tests/account.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/seo.test.js tests/journal.test.js tests/account.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
       - run: python tests/test_update_news.py
 
   browser:

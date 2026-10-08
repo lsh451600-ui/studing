@@ -1,8 +1,8 @@
 project_id = "studing-membership"
 
 [auth]
-site_url = "https://studing.pages.dev"
-additional_redirect_urls = ["https://studing.pages.dev/api/auth-confirm", "https://studing.pages.dev/api/oauth-callback**"]
+site_url = "https://dining.win"
+additional_redirect_urls = ["https://dining.win/api/auth-confirm", "https://dining.win/api/oauth-callback**", "https://dining.win/reset-password", "https://studing.pages.dev/api/auth-confirm", "https://studing.pages.dev/api/oauth-callback**"]
 minimum_password_length = 12
 
 [auth.email]

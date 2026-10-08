@@ -31,17 +31,17 @@ jobs:
           OPENAI_GUIDE_MODEL: ${{ vars.OPENAI_GUIDE_MODEL }}
         run: python scripts/publish_weekly_guide.py
       - name: Check public pages before publication
-        run: node --test tests/journal.test.js
+        run: node --test tests/seo.test.js tests/journal.test.js
       - name: Commit and publish
         run: |
-          if git diff --quiet -- guides guides.html sitemap.xml && test -z "$(git ls-files --others --exclude-standard guides/)"; then exit 0; fi
+          if git diff --quiet -- guides guides.html sitemap.xml feed.xml && test -z "$(git ls-files --others --exclude-standard guides/)"; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add guides/ guides.html sitemap.xml
+          git add guides/ guides.html sitemap.xml feed.xml
           git commit -m 'Publish weekly original dining practical guide'
           for attempt in 1 2 3; do
             git pull --rebase origin main
-            node --test tests/journal.test.js
+            node --test tests/seo.test.js tests/journal.test.js
             if git push origin main; then exit 0; fi
             sleep 5
           done

@@ -1,5 +1,6 @@
+
 User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://studing.pages.dev/sitemap.xml
+Sitemap: https://dining.win/sitemap.xml

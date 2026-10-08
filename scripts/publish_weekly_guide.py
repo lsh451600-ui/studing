@@ -11,6 +11,8 @@ from datetime import datetime
 from difflib import SequenceMatcher
 from html import escape, unescape
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_feed import build as build_feed
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
@@ -99,7 +101,7 @@ def publish(root, now, data):
     e = escape
     date = now.astimezone(KST).date().isoformat()
     route = '/guides/' + slug
-    url = 'https://studing.pages.dev' + route
+    url = 'https://dining.win' + route
     shell = (root / 'guides/menu-complexity.html').read_text()
     shell = re.sub(r'<title>.*?</title>', '<title>' + e(data['title']) + ' · 외·모Check</title>', shell, count=1)
     for name, value in [('description', data['summary']), ('og:title', data['title']), ('og:description', data['summary']), ('og:url', url)]:
@@ -107,6 +109,12 @@ def publish(root, now, data):
     shell = re.sub(r'(<link rel="canonical" href=")[^"]*', lambda m: m[1] + url, shell, count=1)
     metadata = {'@context': 'https://schema.org', '@type': 'Article', 'headline': data['title'], 'description': data['summary'], 'url': url, 'inLanguage': 'ko', 'datePublished': date, 'dateModified': date, 'author': {'@type': 'Organization', 'name': '외·모Check'}}
     shell = re.sub(r'<script type="application/ld\+json">.*?</script>', lambda m: '<script type="application/ld+json">' + json.dumps(metadata, ensure_ascii=False).replace('<', '\\u003c') + '</script>', shell, count=1, flags=re.S)
+    breadcrumb = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+        {'@type': 'ListItem', 'position': 1, 'name': '홈', 'item': 'https://dining.win/'},
+        {'@type': 'ListItem', 'position': 2, 'name': '실무 가이드', 'item': 'https://dining.win/guides'},
+        {'@type': 'ListItem', 'position': 3, 'name': data['title'], 'item': url}]}
+    shell = re.sub(r'(<script type="application/ld\+json" id="breadcrumb-schema">).*?(</script>)',
+                   lambda m: m[1] + json.dumps(breadcrumb, ensure_ascii=False).replace('<', '\\u003c') + m[2], shell, flags=re.S)
     article = '<article><p><a href="/guides">실무 가이드</a> / ' + e(data['category']) + '</p><h1>' + e(data['title']) + '</h1><p class="meta">외·모Check · ' + date + ' 발행 · AI 보조 자동 작성 · <a href="/editorial">작성 원칙</a></p><div class="note">예시 숫자와 매장은 설명용 가정입니다. 실제 취재 또는 검증된 성과가 아닙니다. 이 글은 AI 보조 자동 작성 자료이며 전문가 검수를 거친 지침이 아닙니다.</div><p class="lead">' + e(data['summary']) + '</p>'
     for section in data['sections']:
         article += '<h2>' + e(section['heading']) + '</h2>' + ''.join('<p>' + e(p) + '</p>' for p in section['paragraphs'])
@@ -127,6 +135,7 @@ def publish(root, now, data):
     target.write_text(shell)
     hub_path.write_text(hub)
     sitemap_path.write_text(sitemap)
+    (root / "feed.xml").write_text(build_feed(root))
     return True
 
 

@@ -39,11 +39,13 @@ class WeeklyGuideTests(unittest.TestCase):
             path = root / 'guides/weekly-2026-42.html'
             content = path.read_text()
             self.assertIn('<h1>포장 수령 안내를 바꾸는 작은 시험</h1>', content)
-            self.assertIn('https://studing.pages.dev/guides/weekly-2026-42', content)
+            self.assertIn('https://dining.win/guides/weekly-2026-42', content)
             self.assertEqual(content.count('gtag/js?id=G-QMRKZWCG2X'), 1)
             self.assertEqual(content.count('yuj1decb23'), 1)
             self.assertIn('id="startup-toggle"', content)
             self.assertIn('id="back-to-top"', content)
+            self.assertIn('https://dining.win/guides/weekly-2026-42', (root / 'feed.xml').read_text())
+            self.assertIn('https://dining.win/guides/weekly-2026-42', content.split('id="breadcrumb-schema"')[1])
             self.assertNotIn('메뉴를 줄이기 전에: 재료와 조리 병목 지도', content)
             for file in ['guides.html', 'sitemap.xml']:
                 self.assertEqual((root / file).read_text().count('/guides/weekly-2026-42'), 1)

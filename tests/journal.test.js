@@ -23,7 +23,7 @@ test('public guides are substantive static pages with resolvable navigation and 
     assert.equal((html.match(/<main\b/g) || []).length, 1, file);
     assert.ok(html.includes('href="/privacy"') && html.includes('href="/guides"'), file);
     const route = file === 'index.html' ? '/' : '/' + file.replace(/\.html$/, '');
-    assert.ok(html.includes('rel="canonical" href="https://studing.pages.dev' + route + '"'), file);
+    assert.ok(html.includes('rel="canonical" href="https://dining.win' + route + '"'), file);
     assert.ok(!html.includes('name="robots" content="noindex'), file);
     if (file.startsWith('guides/')) {
       assert.ok(html.includes('AI 보조') && html.includes('예시'), file);
