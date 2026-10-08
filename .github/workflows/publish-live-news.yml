@@ -23,24 +23,29 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install googlenewsdecoder==0.1.7 selectolax==0.4.12 beautifulsoup4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - name: Refresh the shared homepage video cache
         run: |
-          python - <<'PYVIDEO'
-          import json, time, urllib.request
-          for attempt in range(3):
-              try:
-                  request = urllib.request.Request('https://studing.pages.dev/api/trend-video', headers={'Cache-Control': 'no-cache'})
-                  with urllib.request.urlopen(request, timeout=45) as response:
-                      data = json.load(response)
-                  if not data.get('available') or data.get('stale'):
-                      raise RuntimeError('Video refresh failed: ' + data.get('reason', 'stale'))
-                  print('Video refreshed:', data['video']['title'], data['checkedAt'])
-                  break
-              except Exception:
-                  if attempt == 2:
-                      raise
-                  time.sleep(10)
-          PYVIDEO
+          node --input-type=module <<'JS'
+          for (let attempt = 0; attempt < 3; attempt++) {
+            try {
+              const response = await fetch('https://studing.pages.dev/api/trend-video?scheduled=1', {
+                headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
+                signal: AbortSignal.timeout(45000), cache: 'no-store'
+              });
+              if (!response.ok) throw new Error('Video endpoint HTTP ' + response.status);
+              const data = await response.json();
+              if (!data.available || data.stale) throw new Error('Video refresh failed: ' + (data.reason || 'stale'));
+              console.log('Video refreshed:', data.video.title, data.checkedAt);
+              break;
+            } catch (error) {
+              if (attempt === 2) throw error;
+              await new Promise(resolve => setTimeout(resolve, 10000));
+            }
+          }
+          JS
       - name: Collect Google news with original article images
         id: news
         if: ${{ !cancelled() }}
