@@ -1,7 +1,9 @@
 import { settings, reply, sameOrigin, readJSON, currentSession, upstream } from '../../src/member-auth.js';
 
 const validNickname = value => typeof value === 'string'
-  && /^[가-힣A-Za-z0-9_]{2,20}$/.test(value.trim());
+  && Array.from(value.trim()).length >= 1
+  && Array.from(value.trim()).length <= 40
+  && !/[\u0000-\u001f\u007f-\u009f]/u.test(value);
 
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return reply(405, '지원하지 않는 요청입니다.');
@@ -13,7 +15,7 @@ export async function onRequest({ request, env }) {
     if (!session.user) return reply(401, '로그인 후 이용해 주세요.', {}, session.cookies);
     let data;
     try { data = await readJSON(request); } catch { return reply(400, '닉네임을 확인해 주세요.', {}, session.cookies); }
-    if (!validNickname(data?.nickname)) return reply(400, '닉네임은 한글, 영문, 숫자, 밑줄(_)로 2~20자 입력해 주세요.', {}, session.cookies);
+    if (!validNickname(data?.nickname)) return reply(400, '닉네임은 공백이 아닌 1~40자로 입력해 주세요.', {}, session.cookies);
     const nickname = data.nickname.trim();
     const result = await upstream(env, '/rest/v1/rpc/update_member_nickname', {
       method: 'POST', token: session.access, body: { requested_nickname: nickname }

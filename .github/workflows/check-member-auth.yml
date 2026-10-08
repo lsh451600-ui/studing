@@ -58,6 +58,8 @@ on:
       - 'tests/signup.test.js'
       - 'tests/account.test.js'
       - 'tests/account-ui.cjs'
+      - 'tests/nickname.test.js'
+      - 'supabase/migrations/*.sql'
       - 'assets/js/account.js'
       - 'assets/js/password-recovery.js'
       - 'assets/css/account.css'
@@ -77,7 +79,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m unittest discover -s tests -p 'test_weekly_guide.py'
-      - run: node --test tests/seo.test.js tests/journal.test.js tests/account.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/seo.test.js tests/journal.test.js tests/account.test.js tests/nickname.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
       - run: python tests/test_update_news.py
 
   browser:
