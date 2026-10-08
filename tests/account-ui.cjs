@@ -60,7 +60,7 @@ const { chromium } = require('playwright');
       await page.locator('.member-profile-link').waitFor({ state: 'visible' });
       assert.equal(await page.locator('.member-profile-link').getAttribute('href'), '/mypage');
       await fits();
-      await page.locator('#menu-open').click(); assert.ok(await page.locator('#mypage-link').isVisible()); await page.keyboard.press('Escape');
+      await page.locator('#menu-open').click(); assert.ok(await page.locator('#menu-profile-link').isVisible()); await page.keyboard.press('Escape');
       await page.locator('#withdrawal-open').click();
       await page.locator('#withdrawal-confirmation').fill('wrong'); await page.locator('#withdrawal-password').fill('current-password');
       await page.locator('#withdrawal-submit').click(); await page.waitForFunction(() => document.getElementById('withdrawal-status').textContent.includes('확인란'));

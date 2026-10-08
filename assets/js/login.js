@@ -60,9 +60,6 @@ linkButton.addEventListener('click', async () => {
     location.assign(data.url);
   } catch (error) { showAuthError(error.message); linkButton.disabled = false; }
 });
-const myPageLink = document.createElement('a');
-myPageLink.id = 'mypage-link'; myPageLink.href = '/mypage'; myPageLink.textContent = '마이페이지'; myPageLink.hidden = true;
-document.querySelector('#site-menu .menu-footer').prepend(myPageLink);
 const forgotLink = document.createElement('a');
 forgotLink.className = 'forgot-password-link'; forgotLink.href = '/forgot-password'; forgotLink.textContent = '비밀번호 찾기';
 form.after(forgotLink);
@@ -76,8 +73,14 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   currentUser = user || null;
-  myPageLink.hidden = !user;
-  byId('menu-account-status').textContent = user ? user.username + '님' : '로그인하지 않았습니다.';
+  byId('menu-account-status').textContent = user ? '' : '로그인하지 않았습니다.';
+  if (user) {
+    const profile = document.createElement('a');
+    profile.id = 'menu-profile-link'; profile.href = '/mypage';
+    profile.textContent = user.username + '님';
+    profile.setAttribute('aria-label', user.username + '님 마이페이지');
+    byId('menu-account-status').append(profile);
+  }
   byId('menu-account-status').dataset.state = user ? 'authenticated' : 'anonymous';
   byId('menu-account-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '로그인하지 않았습니다.');
   byId('menu-account-status').title = user ? user.username + '님' : '';

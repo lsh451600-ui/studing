@@ -1,6 +1,12 @@
 import { snapshot } from '../../src/news-snapshot.js';
-// Only source links and metadata leave this endpoint; publisher photos are not republished.
-const metadataOnly = ({ image, image_source, image_alt, ...article }) => article;
+// Representative photos remain on the publisher's server.
+const metadataOnly = ({ image, image_source, image_alt, ...article }) => {
+  try {
+    const url = new URL(image);
+    if (url.protocol === 'https:' && !url.username && !url.password) return { ...article, image: url.href, image_alt: typeof image_alt === 'string' ? image_alt : article.title, image_source: article.original_url || article.url };
+  } catch {}
+  return article;
+};
 const QUERY = '외식 (트렌드 OR 소비 OR 가성비 OR 혼밥 OR 물가 OR 시장) -아카데미 -교육 -모집 when:30d';
 function decode(value) {
   return value.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (all, code) => {

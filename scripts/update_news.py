@@ -10,6 +10,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
+from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,15 +74,51 @@ def collect(xml, now, history=()):
     return unique[:6]
 
 
+def photo_url(value, base=''):
+    url = urllib.parse.urljoin(base, html.unescape(value))
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme == 'http':
+        url = urllib.parse.urlunparse(parsed._replace(scheme='https'))
+        parsed = urllib.parse.urlparse(url)
+    return url if parsed.scheme == 'https' and parsed.hostname and not parsed.username and not parsed.password else None
+
+
+class PublisherPhoto(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.images = {}
+
+    def handle_starttag(self, tag, attrs):
+        data = dict(attrs)
+        if tag == 'meta':
+            key = (data.get('property') or data.get('name') or '').lower()
+            if key in ('og:image', 'twitter:image') and data.get('content'):
+                self.images.setdefault(key, data['content'])
+
+
 def resolve_publishers(articles):
-    """Resolve the original link without copying publishers' text or photos."""
-    from googlenewsdecoder import gnewsdecoder
+    """Link to publishers' representative photos; do not download/rehost files."""
     for article in articles:
         try:
-            result = gnewsdecoder(article['url'], interval=1)
-            original = result.get('decoded_url', '')
+            original = article.get('original_url', '')
+            if not original:
+                from googlenewsdecoder import gnewsdecoder
+                result = gnewsdecoder(article['url'], interval=1)
+                original = result.get('decoded_url', '')
             if urllib.parse.urlparse(original).scheme in ('https', 'http'):
                 article['original_url'] = original
+                if photo_url(article.get('image', '')):
+                    continue
+                request = urllib.request.Request(original, headers={'User-Agent': 'Mozilla/5.0 (compatible; DiningTrendJournal/1.0)'})
+                with urllib.request.urlopen(request, timeout=12) as response:
+                    markup = response.read(2 * 1024 * 1024).decode('utf-8', errors='replace')
+                    parser = PublisherPhoto()
+                    parser.feed(markup)
+                    image = photo_url(parser.images.get('og:image') or parser.images.get('twitter:image') or '', response.url)
+                    if image and (parser.images.get('og:image') or parser.images.get('twitter:image')):
+                        article['image'] = image
+                        article['image_alt'] = article['title'] + ' · ' + article['source'] + ' 제공 사진'
+                        article['image_source'] = original
         except Exception as error:
             print(f'Publisher link unavailable: {type(error).__name__}')
 
@@ -91,7 +128,12 @@ def render(articles, now):
     cards = []
     for article in articles[:6]:
         published = datetime.fromisoformat(article['published_at']).astimezone(KST)
+        photo = '<div class="news-photo">대표 사진 미제공 · 원문에서 확인</div>'
+        image = photo_url(article.get('image', ''))
+        if image:
+            photo = f'<div class="news-photo"><img src="{escape(image, quote=True)}" alt="{escape(article.get("image_alt", article["title"]), quote=True)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="640" height="400"></div><p class="news-photo-credit">사진 출처: {escape(article["source"])}</p>'
         cards.append(f'''<a class="card" href="{escape(article.get('original_url', article['url']), quote=True)}" target="_blank" rel="noopener noreferrer">
+{photo}
 <p class="cat">{escape(article['source'])}</p><h3>{escape(article['title'])}</h3>
 <p class="desc"><time datetime="{escape(article['published_at'])}">{published:%Y.%m.%d %H:%M}</time> · 한국 시간</p>
 <div class="read"><span>기사 원문 읽기</span><span aria-hidden="true">↗</span></div></a>''')
@@ -122,9 +164,12 @@ def update(xml, now):
         if not articles:
             raise ValueError('No new articles and no previous collection available')
         print('No unseen newer articles; preserving the displayed collection.')
+    if not new_count:
+        resolve_publishers(articles)
     for article in articles:
-        for key in ('image', 'image_source', 'image_alt'):
-            article.pop(key, None)
+        if not photo_url(article.get('image', '')):
+            for key in ('image', 'image_source', 'image_alt'):
+                article.pop(key, None)
         if not any(old['url'] == article['url'] for old in history):
             history.append({key: article[key] for key in ('url', 'title', 'published_at')})
     history = [a for a in history if datetime.fromisoformat(a['published_at']) >= now - timedelta(days=60)]

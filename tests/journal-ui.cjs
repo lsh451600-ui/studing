@@ -31,7 +31,10 @@ const { chromium } = require('playwright');
       for (const path of ['/guides', '/guides/menu-margin', '/guides/break-even', '/guides/solo-dining', '/guides/menu-complexity', '/about', '/editorial', '/privacy', '/terms']) {
         await page.goto(origin + path);
         assert.equal(await page.locator('main h1').count(), 1, path);
-        assert.ok(await page.locator('.journal-nav a[href="/guides"]').isVisible());
+        assert.equal(await page.locator('.journal-nav').count(), 0);
+        await page.locator('#menu-open').click();
+        assert.ok(await page.locator('.menu-group .menu-submenu[href="/guides"]').isVisible());
+        await page.keyboard.press('Escape');
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), path + ' overflow at ' + width);
         if (path.endsWith('menu-margin')) {
           await page.locator('[data-guide-tool] button').click();

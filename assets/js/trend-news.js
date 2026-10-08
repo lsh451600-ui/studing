@@ -2,6 +2,11 @@ const section = document.getElementById('trends');
 const stamp = document.getElementById('news-status');
 const kst = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(value));
 const safeURL = value => { try { const u = new URL(value, location.origin); return ['http:', 'https:'].includes(u.protocol) ? u.href : null; } catch { return null; } };
+for (const image of section.querySelectorAll('.news-photo img')) {
+  const fallback = () => image.parentElement?.replaceChildren(document.createTextNode('사진을 불러올 수 없습니다. 원문에서 확인해 주세요.'));
+  image.addEventListener('error', fallback, { once: true });
+  if (image.complete && !image.naturalWidth) fallback();
+}
 async function loadNews() {
   try {
     const response = await fetch('/api/trend-news', { cache: 'no-store', credentials: 'omit', signal: AbortSignal.timeout(20000) });
@@ -12,6 +17,17 @@ async function loadNews() {
     for (const article of data.articles.slice(0, 6)) {
       const url = safeURL(article.original_url || article.url); if (!url) continue;
       const card = document.createElement('a'); card.className = 'card'; card.href = url; card.target = '_blank'; card.rel = 'noopener noreferrer';
+      const imageURL = safeURL(article.image);
+      if (imageURL && new URL(imageURL).protocol === 'https:' && article.image) {
+        const photo = document.createElement('div'); photo.className = 'news-photo';
+        const image = document.createElement('img'); image.src = imageURL; image.alt = article.image_alt || article.title;
+        image.loading = 'lazy'; image.decoding = 'async'; image.referrerPolicy = 'no-referrer'; image.width = 640; image.height = 400;
+        image.addEventListener('error', () => photo.replaceChildren(document.createTextNode('사진을 불러올 수 없습니다. 원문에서 확인해 주세요.')), { once: true });
+        photo.append(image); card.append(photo);
+        const credit = document.createElement('p'); credit.className = 'news-photo-credit'; credit.textContent = '사진 출처: ' + article.source; card.append(credit);
+      } else {
+        const photo = document.createElement('div'); photo.className = 'news-photo'; photo.textContent = '대표 사진 미제공 · 원문에서 확인'; card.append(photo);
+      }
       const source = document.createElement('p'); source.className = 'cat'; source.textContent = article.source;
       const title = document.createElement('h3'); title.textContent = article.title;
       const published = document.createElement('p'); published.className = 'desc'; published.textContent = kst(article.published_at) + ' · 한국 시간';

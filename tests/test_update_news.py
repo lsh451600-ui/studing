@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import tempfile
+import io
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,6 +18,20 @@ def feed(*stories):
         for key, title in stories) + '</channel></rss>'
 
 class NewsDeduplication(unittest.TestCase):
+    def test_publisher_photo_is_linked_with_credit_without_downloading_image(self):
+        response = io.BytesIO(b'<meta property="og:image" content="/photos/menu.jpg">')
+        response.url = 'https://publisher.test/article/123'
+        article = {'title': '외식 메뉴 변화', 'source': '신문', 'url': 'https://news.google.com/rss/articles/a', 'original_url': response.url, 'published_at': NOW.isoformat()}
+        with patch.object(news.urllib.request, 'urlopen', return_value=response) as fetch:
+            news.resolve_publishers([article])
+        self.assertEqual(fetch.call_count, 1)
+        self.assertEqual(article['image'], 'https://publisher.test/photos/menu.jpg')
+        rendered = news.render([article], NOW)
+        self.assertIn('사진 출처: 신문', rendered)
+        self.assertIn('referrerpolicy="no-referrer"', rendered)
+        self.assertIsNone(news.photo_url('javascript:alert(1)'))
+        self.assertIsNone(news.photo_url('/assets/news/old.jpg'))
+
     def test_same_url_and_republished_similar_title_are_excluded(self):
         title = '외식 시장 가성비 소비 증가로 프랜차이즈 산업 변화'
         history = [{'url': 'https://news.google.com/rss/articles/old', 'title': title}]
@@ -41,7 +56,7 @@ class NewsDeduplication(unittest.TestCase):
             self.assertEqual(second['new_articles'], 0)
             self.assertEqual(len(second['history']), 1)
 
-    def test_retained_collection_strips_photos_and_preserves_original_guide_section(self):
+    def test_retained_collection_rejects_local_photo_paths_and_preserves_guides(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers'):
             root = Path(folder)
             (root / 'src').mkdir()
