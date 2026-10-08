@@ -35,6 +35,8 @@ Google Fonts 원격 `@import`를 제거해 첫 렌더링을 막던 글꼴 요청
 
 HTTPS Strict-Transport-Security 헤더는 1년 유효기간으로 설정했습니다. SPF는 DNS와 발신 이메일 제공업체에 맞는 TXT 값이 필요합니다. 현재 도메인에 SPF/MX 레코드가 없고 이 사이트는 자체 도메인 발신 메일을 구성하지 않았으므로 임의의 SPF 값을 게시하지 않습니다. 메일 발신을 설정할 때 제공업체가 지정한 SPF 값을 DNS에 등록하세요.
 
+AI 검색 및 GEO 관련 외부 글은 사용자에게 유용한 원본 콘텐츠, 구체적인 상황을 반영한 질문·답변, 읽기 쉬운 구조, 시각 자료, 사실에 맞는 최신 정보를 강조합니다. 이를 반영해 각 실무 가이드에 실제 계산과 관찰 절차에 근거한 질문·답변을 추가했습니다. 후기·외부 추천·브랜드 언급은 실제 이용자와 독립된 출처에서 생겨야 하며 사이트가 임의로 만들지 않습니다. structured data도 화면에 보이는 내용과 일치시키고, GEO 적용이 노출이나 추천을 보장한다고 설명하지 않습니다. Google은 별도의 AI 검색 최적화 기술 요건보다 기본 검색 크롤링·색인 요건과 사람 중심의 독창적인 콘텐츠, 페이지 경험, 표시 콘텐츠와 구조화 데이터의 일치를 강조합니다.
+
 검색 반영과 순위는 검색엔진이 결정합니다. 구조 검사는 콘텐츠의 전문성·사실성이나 검색 상위 노출을 보증하지 않습니다. 실제 매장 경험과 검증 가능한 근거를 갖춘 콘텐츠를 지속적으로 보완하고 수집/색인/검색어 실적을 관찰합니다.
 
-참고: [Google SEO 기본 가이드](https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=ko), [네이버 검색엔진 최적화의 목적](https://searchadvisor.naver.com/guide/seo-basic-intro).
+참고: [Google AI 검색 콘텐츠 안내](https://developers.google.com/search/blog/2025/05/succeeding-in-ai-search), [토스페이먼츠 GEO 이커머스 글](https://www.tosspayments.com/blog/articles/39461), [Google SEO 기본 가이드](https://developers.google.com/search/docs/fundamentals/seo-starter-guide?hl=ko), [네이버 검색엔진 최적화의 목적](https://searchadvisor.naver.com/guide/seo-basic-intro).
