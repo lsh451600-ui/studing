@@ -32,7 +32,7 @@ const { chromium } = require('playwright');
             const url = new URL(route.request().url());
             if (url.origin !== origin) return route.abort();
             if (url.pathname === '/api/visitors') return route.fulfill({ json: { available: true, today: 12, total: 345 } });
-            if (url.pathname === '/api/trend-video') { assert.equal(url.searchParams.get('visit'), '1'); return route.fulfill({ json: trend }); }
+            if (url.pathname === '/api/trend-video') { assert.equal(url.searchParams.get('visit'), null); return route.fulfill({ json: trend }); }
             if (url.pathname === '/api/trend-news') return route.fulfill({ json: { available: true, requestedAt: '2026-10-07T15:01:00Z', checkedAt: '2026-10-07T15:01:01Z', stale: false, articles: Array.from({ length: 6 }, (_, i) => ({ title: '외식 시장 변화 ' + i, source: '테스트신문', url: 'https://news.google.com/rss/articles/test' + i, published_at: '2026-10-07T14:00:00Z' })) } });
             if (url.pathname === '/api/session') return route.fulfill({ json: state });
             if (url.pathname === '/api/oauth') {
@@ -194,7 +194,7 @@ const { chromium } = require('playwright');
             const headerDot = getComputedStyle(document.querySelector('#member-status'), '::before');
             return dot.backgroundColor === headerDot.backgroundColor && dot.width === headerDot.width && dot.content === '""';
           }), 'drawer and masthead share the same green login indicator');
-          assert.equal(await page.locator('#site-menu .menu-footer a').getAttribute('href'), '/inquiry');
+          assert.equal(await page.locator('#site-menu .menu-footer .menu-inquiry').getAttribute('href'), '/inquiry');
           const linkBox = await page.locator('#kakao-link-button').boundingBox();
           assert.ok(linkBox.x >= 0 && linkBox.x + linkBox.width <= width && linkBox.height >= 44, 'Kakao link must fit viewport and touch target');
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'unlinked account page must fit viewport');

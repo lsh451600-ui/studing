@@ -3,7 +3,12 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return new Response(null, { status: 405 });
   const headers = new Headers({ 'Cache-Control': 'no-store, private', 'Referrer-Policy': 'no-referrer' });
   let confirmed = false;
-  const token = new URL(request.url).searchParams.get('token_hash');
+  const url = new URL(request.url);
+  const token = url.searchParams.get('token_hash');
+  if (url.searchParams.get('type') === 'recovery') {
+    headers.set('Location', '/reset-password' + (token && /^[a-zA-Z0-9_-]{20,256}$/.test(token) ? '?token_hash=' + encodeURIComponent(token) : ''));
+    return new Response(null, { status: 303, headers });
+  }
   try {
     if (settings(env).ready && token && /^[a-zA-Z0-9_-]{20,256}$/.test(token)) {
       const result = await upstream(env, '/auth/v1/verify', { method: 'POST', body: { token_hash: token, type: 'signup' } });

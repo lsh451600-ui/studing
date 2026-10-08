@@ -1,9 +1,24 @@
+// Default Supabase recovery emails may return to the configured site root.
+const recoveryFragment = new URLSearchParams(location.hash.slice(1));
+const recoveryQuery = new URLSearchParams(location.search);
+if (!location.pathname.startsWith('/reset-password') && recoveryFragment.get('type') === 'recovery') {
+  const fragment = location.hash;
+  history.replaceState(null, '', location.pathname + location.search);
+  location.replace('/reset-password' + fragment);
+} else if (!location.pathname.startsWith('/reset-password') && recoveryFragment.get('error_code') === 'otp_expired') {
+  const fragment = location.hash; history.replaceState(null, '', location.pathname + location.search);
+  location.replace('/reset-password' + fragment);
+} else if (!location.pathname.startsWith('/reset-password') && recoveryQuery.get('type') === 'recovery' && recoveryQuery.get('token_hash')) {
+  const tokenHash = recoveryQuery.get('token_hash');
+  history.replaceState(null, '', location.pathname);
+  location.replace('/reset-password?token_hash=' + encodeURIComponent(tokenHash));
+}
 const byId = id => document.getElementById(id);
 const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('login-status');
 const params = new URLSearchParams(location.search);
 const SESSION_CACHE_KEY = 'member-session-v1';
 const SESSION_CACHE_MS = 120000;
-const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/startup', '/startup.html', '/private', '/private.html']);
+const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/startup', '/startup.html', '/private', '/private.html', '/mypage', '/mypage.html']);
 const protectedNext = (() => {
   let next = params.get('next');
   try { next ||= sessionStorage.getItem('member-login-next'); } catch {}
@@ -45,6 +60,12 @@ linkButton.addEventListener('click', async () => {
     location.assign(data.url);
   } catch (error) { showAuthError(error.message); linkButton.disabled = false; }
 });
+const myPageLink = document.createElement('a');
+myPageLink.id = 'mypage-link'; myPageLink.href = '/mypage'; myPageLink.textContent = '마이페이지'; myPageLink.hidden = true;
+document.querySelector('#site-menu .menu-footer').prepend(myPageLink);
+const forgotLink = document.createElement('a');
+forgotLink.className = 'forgot-password-link'; forgotLink.href = '/forgot-password'; forgotLink.textContent = '비밀번호 찾기';
+form.after(forgotLink);
 let pending = false, opener, currentUser = null;
 async function api(path, options = {}) {
   const response = await fetch(path, { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(15000), ...options });
@@ -55,6 +76,7 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   currentUser = user || null;
+  myPageLink.hidden = !user;
   byId('menu-account-status').textContent = user ? user.username + '님' : '로그인하지 않았습니다.';
   byId('menu-account-status').dataset.state = user ? 'authenticated' : 'anonymous';
   byId('menu-account-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '로그인하지 않았습니다.');
@@ -68,7 +90,12 @@ function showUser(user) {
   if (!user && byId('profile-dialog').open) byId('profile-dialog').close();
   byId('login-open').hidden = Boolean(user); byId('signup-open').hidden = Boolean(user);
   byId('member-status').hidden = !user; byId('logout-button').hidden = !user;
-  byId('member-status').textContent = user ? user.username + '님' : '';
+  byId('member-status').textContent = '';
+  if (user) {
+    const profile = document.createElement('a'); profile.href = '/mypage'; profile.className = 'member-profile-link';
+    profile.textContent = user.username + '님'; profile.setAttribute('aria-label', user.username + '님 마이페이지');
+    byId('member-status').append(profile);
+  }
   byId('member-status').title = user ? '로그인 중 · ' + user.username + '님' : '';
   byId('member-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '회원 상태');
   byId('member-status').closest('.member-controls').dataset.state = user ? 'authenticated' : 'anonymous';
@@ -150,12 +177,12 @@ form.addEventListener('submit', async event => {
 byId('logout-button').addEventListener('click', async () => {
   byId('logout-button').disabled = true;
   byId('logout-button').textContent = '로그아웃 중…';
-  try { await api('/api/logout', { method: 'POST' }); clearSessionCache(); writeSessionCache({ available: true, authenticated: false, user: null }); try { sessionStorage.removeItem('member-login-next'); } catch {} showUser(null); byId('member-feedback').textContent = ''; }
+  try { await api('/api/logout', { method: 'POST' }); clearSessionCache(); writeSessionCache({ available: true, authenticated: false, user: null }); try { sessionStorage.removeItem('member-login-next'); } catch {} showUser(null); byId('member-feedback').textContent = ''; if (['/mypage', '/mypage.html'].includes(location.pathname)) location.replace('/'); }
   catch (error) { showAuthError(error.message); }
   finally { byId('logout-button').disabled = false; byId('logout-button').textContent = '로그아웃'; }
 });
 window.addEventListener('member-authenticated', event => {
-  writeSessionCache({ available: true, authenticated: true, user: event.detail });
+  writeSessionCache({ available: true, authenticated: Boolean(event.detail), user: event.detail || null });
   showUser(event.detail); byId('member-feedback').textContent = '';
 });
 const navigationType = performance.getEntriesByType('navigation')[0]?.type;

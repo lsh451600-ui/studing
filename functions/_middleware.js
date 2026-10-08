@@ -5,6 +5,7 @@ const protectedPages = new Set([
   '/board', '/board.html',
   '/startup', '/startup.html',
   '/private', '/private.html',
+  '/mypage', '/mypage.html',
 ]);
 
 function withCookies(response, cookies = []) {

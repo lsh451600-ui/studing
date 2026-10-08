@@ -5,6 +5,7 @@ on:
     paths:
       - 'functions/api/*.js'
       - 'src/member-auth.js'
+      - 'src/account-auth.js'
       - 'src/community.js'
       - 'tests/community.test.js'
       - 'tests/board-ui.cjs'
@@ -36,6 +37,11 @@ on:
       - 'assets/css/signup.css'
       - '*.html'
       - 'tests/signup.test.js'
+      - 'tests/account.test.js'
+      - 'tests/account-ui.cjs'
+      - 'assets/js/account.js'
+      - 'assets/js/password-recovery.js'
+      - 'assets/css/account.css'
       - '.github/workflows/check-member-auth.yml'
   workflow_dispatch:
 permissions:
@@ -48,7 +54,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: node --test tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/account.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
 
   browser:
     runs-on: ubuntu-latest
@@ -64,7 +70,46 @@ jobs:
           /tmp/login-browser-check/node_modules/.bin/playwright install --with-deps chromium
       - name: Verify login layout and account controls in Chromium
         run: |
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/account-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/recipe-board-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/private-board-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/board-ui.cjs
+
+  production-account:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify deployed account pages and anonymous access restrictions
+        run: |
+          node --input-type=module <<'JS'
+          const origin = 'https://studing.pages.dev';
+          const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+          let verified = false;
+          for (let attempt = 0; attempt < 24; attempt++) {
+            try {
+              for (const [path, marker] of [['/forgot-password', 'id="forgot-password-form"'], ['/reset-password', 'id="reset-password-form"']]) {
+                const response = await fetch(origin + path, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+                if (!response.ok || !(await response.text()).includes(marker)) throw new Error('Page not deployed: ' + path);
+              }
+              const page = await fetch(origin + '/mypage', { redirect: 'manual', signal: AbortSignal.timeout(15000) });
+              if (page.status !== 302 || !page.headers.get('location')?.includes('login_required=1')) throw new Error('Mypage access restriction failed');
+              const account = await fetch(origin + '/api/account', { signal: AbortSignal.timeout(15000) });
+              if (account.status !== 401) throw new Error('Anonymous account access was not rejected');
+              for (const path of ['/api/forgot-password', '/api/reset-password']) {
+                const response = await fetch(origin + path, { method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: '{}', signal: AbortSignal.timeout(15000) });
+                if (response.status !== 400) throw new Error('Invalid input was not rejected: ' + path);
+              }
+              console.log('Production account pages, login protection, and recovery validation verified. No email sent or account modified.');
+              verified = true; break;
+            } catch (error) {
+              console.log('Awaiting production update:', error.message);
+              await pause(10000);
+            }
+          }
+          if (!verified) throw new Error('Production account verification did not pass');
+          JS

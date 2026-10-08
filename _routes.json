@@ -5,7 +5,8 @@
     "/recipes*",
     "/board*",
     "/startup*",
-    "/private*"
+    "/private*",
+    "/mypage*"
   ],
   "exclude": []
 }

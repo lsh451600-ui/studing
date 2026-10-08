@@ -45,3 +45,21 @@ Confirm signup 이메일 템플릿의 인증 링크를 다음과 같이 설정�
 자동 테스트는 Supabase API 응답을 모의하여 검증하며 실제 프로젝트 연결과 SQL 적용은 별도로 필요합니다. 환경 변수만으로는 테이블 및 RPC 존재 여부를 확인할 수 없으므로 SQL 적용도 완료해야 합니다.
 
 공식 CLI 안내: https://supabase.com/docs/reference/cli/introduction
+
+## 마이페이지 · 비밀번호 찾기 · 회원탈퇴
+
+- `/mypage`: 로그인한 회원 본인의 아이디, 이메일, 전화번호, 가입일, 로그인 방식을 표시합니다. `/api/account`가 서버에서 세션을 검증합니다.
+- `/forgot-password`: 아이디 또는 이메일로 비밀번호 재설정 메일을 요청합니다. 등록 여부나 계정 이메일은 응답에 노출하지 않습니다.
+- `/reset-password`: 이메일 링크의 인증 정보를 검증한 뒤 12~128자의 새 비밀번호를 설정합니다. 성공하면 재로그인을 안내하고 기존 세션의 종료를 요청합니다.
+- Supabase URL Configuration → Redirect URLs에 `https://studing.pages.dev/reset-password`를 추가하면 재설정 화면으로 직접 이동합니다. 설정하지 않아 기본 Site URL로 돌아오는 표준 recovery 링크도 홈페이지에서 재설정 화면으로 연결합니다.
+- Reset Password 이메일 템플릿은 기본 `{{ .ConfirmationURL }}` 링크를 사용할 수 있습니다. 토큰 해시 방식으로 직접 연결하려면 아래 링크를 사용합니다. 해시는 GET에서 소비하지 않고 새 비밀번호를 제출할 때 검증합니다.
+
+```html
+<a href="{{ .SiteURL }}/reset-password?token_hash={{ .TokenHash }}">새 비밀번호 설정</a>
+```
+
+메일 발송은 기존 Supabase 이메일 발송 설정을 사용합니다. 운영용 수신자에게 보내려면 Supabase의 SMTP 설정과 발송 제한을 확인합니다. 계정 조회·탈퇴에는 기존 서버용 Secret Key를 사용하며 신규 테이블이나 마이그레이션은 필요하지 않습니다.
+
+회원탈퇴는 `회원탈퇴` 문구 입력 및 이메일 회원의 현재 비밀번호 확인을 요구합니다. 소셜 전용 회원은 10분 이내에 로그인한 상태에서 진행합니다. 서버가 검증한 본인 계정만 Auth Admin API로 삭제하며 `member_profiles`는 기존 외래 키의 ON DELETE CASCADE로 함께 삭제됩니다. 게시판의 기존 게시글·댓글은 유지되며 탈퇴 화면에서도 안내합니다. API나 화면에서는 비밀번호·인증 토큰을 저장하거나 로그에 남기지 않습니다.
+
+검증: `node --test tests/account.test.js`, `NODE_PATH=<playwright 경로> node tests/account-ui.cjs`.
