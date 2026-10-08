@@ -14,7 +14,7 @@ test('all indexable pages agree on the dining.win canonical, metadata and crawla
   assert.equal((html.match(/name="description"/g)||[]).length,1,file);
   assert.ok(!/name="robots" content="[^"]*noindex/.test(html),file);
   assert.ok(html.includes('property="og:url" content="'+origin+path+'"'),file);
-  assert.ok(html.includes('property="og:image" content="'+origin+'/assets/image.png"'),file);
+  assert.ok(html.includes('property="og:image" content="'+origin+'/assets/image.webp"'),file);
   assert.ok(html.includes('type="application/rss+xml"'),file);
   assert.ok(html.includes('<h1') && html.includes('href="/guides"'),file);
   for(const [,json] of html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs)) assert.ok(JSON.parse(json));
