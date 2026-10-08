@@ -1,5 +1,5 @@
 export const snapshot = {
-  "updated_at": "2026-10-07T13:23:52.985861+00:00",
+  "updated_at": "2026-10-08T00:05:03.831953+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A30d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -14,13 +14,13 @@ export const snapshot = {
     },
     {
       "title": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령!",
-      "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1wUTh3VUdfenp1d2x1ZEp1Rml4by1Kb2gxUktuOUU4OWtkLTgzY2I2WHNEXzVVZ1lnT09sYW1NY2QxRldIcGVGYWhQRXVkQWtpazdxV3RBVTFxbktFWFE?oc=5",
-      "source": "YTN",
-      "published_at": "2026-10-04T10:25:00+00:00",
-      "image": "assets/news/33706f0981f006ee4964e5a1.jpg",
-      "image_source": "https://image.ytn.co.kr/special/jpg/global_common/2026/202610041925261824_h.jpg",
-      "image_alt": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령! · 기사 사진",
-      "original_url": "https://www.ytn.co.kr/_ln/1230_202610041925261824"
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9ucGIzdnRpT1VBZXZyN25zTGdGcVdGQkYwb1UyZG1JeHBZc3Zkejg2aGg3SnozazltOFhRVE1xNmJxalZzeGh0MGdpX3dDRHNtTjNB?oc=5",
+      "source": "네이트",
+      "published_at": "2026-10-04T10:36:00+00:00",
+      "original_url": "https://news.nate.com/view/20261004n12948",
+      "image": "assets/news/71b1d3c6317551dba6cfa293.jpg",
+      "image_source": "https://thumbnews.nateimg.co.kr/view610///news.nateimg.co.kr/orgImg/yn/2026/10/04/202610041925261824_t.jpg",
+      "image_alt": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령! · 기사 사진"
     },
     {
       "title": "교촌치킨, 중국 장쑤성 우시에 신규 매장 ‘우시점’ 오픈... 중국 시장 공략 박차",
