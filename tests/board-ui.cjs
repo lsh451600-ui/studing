@@ -19,7 +19,7 @@ const { chromium } = require('playwright');
   try {
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      let authenticated = false, missing = false, commentWrites = 0;
+      let authenticated = false, missing = false, commentWrites = 0, postWrites = 0;
       const posts = [{ id: 1, title: '외식 이야기', body: '<script>window.injected = true</script>', author: '회원', created_at: '2026-10-07T01:00:00Z', comments: 0 }], comments = [];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
@@ -30,6 +30,11 @@ const { chromium } = require('playwright');
         if (url.pathname === '/api/visitors') return route.fulfill({ json: { available: true, today: 1, total: 2 } });
         if (url.pathname === '/api/board-posts') {
           if (missing) return route.fulfill({ status: 503, json: { message: '게시판 저장소 연결이 필요합니다.' } });
+          if (req.method() === 'POST') {
+            assert.ok(authenticated); const data = req.postDataJSON(); postWrites++;
+            posts.unshift({ ...data, id: 2, author: '회원', created_at: '2026-10-07T02:00:00Z', comments: 0 });
+            return route.fulfill({ json: { id: 2 } });
+          }
           if (req.method() === 'PATCH') { assert.ok(authenticated); Object.assign(posts[0], req.postDataJSON()); return route.fulfill({ json: { id: 1 } }); }
           if (req.method() === 'DELETE') { assert.ok(authenticated); posts.splice(0, posts.length); return route.fulfill({ json: { id: 1 } }); }
           return route.fulfill({ json: url.searchParams.has('id') ? { post: posts.find(p => p.id === Number(url.searchParams.get('id'))), comments, permissions: authenticated ? { canEdit: true, canDelete: true } : { canEdit: false, canDelete: false } } : { posts, next: null } });
@@ -45,7 +50,8 @@ const { chromium } = require('playwright');
       await page.waitForSelector('.board-row'); await page.locator('.board-row').click();
       await page.waitForSelector('#board-detail:not([hidden])');
       assert.equal(await page.locator('#board-search-form').count(), 0);
-      assert.equal(await page.locator('#board-write').count(), 0);
+      assert.ok(await page.locator('#board-write').isHidden());
+      assert.ok(await page.locator('#board-post-form').isHidden());
       assert.equal(await page.locator('#board-title').textContent(), '외식 이야기');
       assert.equal(await page.locator('#board-title').evaluate(element => getComputedStyle(element).color), 'rgb(255, 255, 255)');
       assert.equal(await page.locator('#board-back').textContent(), '자유게시판');
@@ -74,6 +80,12 @@ const { chromium } = require('playwright');
       await page.locator('#board-delete').click();
       await page.waitForFunction(() => !document.querySelector('#board-index').hidden);
       assert.equal(posts.length, 0);
+      await page.locator('#board-write').click();
+      await page.locator('#board-post-title').fill('새 게시글');
+      await page.locator('#board-post-body').fill('새 게시글 본문');
+      await page.locator('#board-post-submit').click();
+      await page.waitForFunction(() => document.querySelector('#board-title').textContent === '새 게시글');
+      assert.equal(postWrites, 1);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       missing = true; await page.goto(origin + '/board');
       await page.waitForFunction(() => document.querySelector('#board-status').textContent.includes('저장소'));
