@@ -45,3 +45,11 @@ test('ads are excluded from service, private, recovery, policy and error screens
   for (const path of ['mypage', 'reset-password', 'private', 'board', 'sites/']) assert.ok(!sitemap.includes(path));
   assert.ok(readFileSync('sites/dining-trends/dist/index.html', 'utf8').includes('noindex,follow'));
 });
+test('every page including the active startup page shares the requested menu structure', () => {
+  for (const file of [...readdirSync('.').filter(p => p.endsWith('.html') && p !== '404.html'), ...readdirSync('guides').map(p => 'guides/' + p)]) {
+    const html = readFileSync(file, 'utf8');
+    assert.ok(!html.includes('class="journal-nav"'), file);
+    assert.equal((html.match(/class="menu-submenu" href="\/guides"/g) || []).length, 1, file);
+    assert.ok(html.includes('<span>사이트소개</span>'), file);
+  }
+});
