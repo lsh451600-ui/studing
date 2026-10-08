@@ -254,26 +254,51 @@ function socialStatus(message) {
   for (const id of ['social-status', 'signup-social-status']) { if (byId(id)) byId(id).textContent = message; }
 }
 byId('signup-open').addEventListener('click', loadProviders);
+let providerLookup = null, socialPending = false;
+function socialLabel(button, ready = true) {
+  const name = button.dataset.social === 'google' ? '구글' : '카카오';
+  return name + (button.dataset.mode === 'signup' ? (ready ? '로 가입하기' : ' 가입 · 연결 준비 중') : (ready ? '로 계속하기' : ' 로그인 · 연결 준비 중'));
+}
 async function loadProviders() {
-  document.querySelectorAll('[data-social]').forEach(button => { button.disabled = true; });
-  socialStatus('간편 로그인 연결을 확인하고 있습니다.');
+  // A slow readiness lookup must not block Google's actual authorization request.
+  if (socialPending) return;
+  if (providerLookup) return providerLookup;
+  providerLookup = updateProviders();
+  try { await providerLookup; } finally { providerLookup = null; }
+}
+async function updateProviders() {
   try {
     const data = await api('/api/oauth');
+    if (socialPending) return;
     document.querySelectorAll('[data-social]').forEach(button => {
       const ready = data.providers?.[button.dataset.social] === true;
       button.disabled = !ready;
-      button.textContent = button.dataset.mode === 'signup' ? (ready ? '카카오로 가입하기' : '카카오 가입 · 연결 준비 중') : (button.dataset.social === 'google' ? '구글' : '카카오') + (ready ? '로 계속하기' : ' 로그인 · 연결 준비 중');
+      button.textContent = socialLabel(button, ready);
     });
     socialStatus('');
-  } catch { socialStatus('간편 로그인 연결을 확인하지 못했습니다.'); }
+  } catch {
+    if (socialPending) return;
+    // POST /api/oauth checks provider readiness again on the server.
+    document.querySelectorAll('[data-social]').forEach(button => { button.disabled = false; button.textContent = socialLabel(button); });
+    socialStatus('연결 상태 확인이 지연됩니다. 가입·로그인 버튼을 눌러 다시 연결할 수 있습니다.');
+  }
 }
 document.querySelectorAll('[data-social]').forEach(button => button.addEventListener('click', async () => {
+  if (socialPending) return;
+  socialPending = true;
   document.querySelectorAll('[data-social]').forEach(b => { b.disabled = true; });
   socialStatus('로그인 화면으로 이동하고 있습니다.');
   try {
     const data = await api('/api/oauth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: button.dataset.social }) });
+    const target = new URL(data.url);
+    if (target.protocol !== 'https:') throw new Error('인증 주소를 확인하지 못했습니다. 다시 시도해 주세요.');
     location.assign(data.url);
-  } catch (error) { await loadProviders(); showAuthError(error.message); }
+  } catch (error) {
+    socialPending = false;
+    document.querySelectorAll('[data-social]').forEach(b => { b.disabled = false; b.textContent = socialLabel(b); });
+    socialStatus(error.message);
+    showAuthError(error.message);
+  }
 }));
 byId('profile-dialog').addEventListener('cancel', event => event.preventDefault());
 byId('profile-logout').addEventListener('click', () => byId('logout-button').click());

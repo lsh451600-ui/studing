@@ -140,12 +140,12 @@ const { chromium } = require('playwright');
           await page.waitForFunction(() => !document.querySelector('#login-dialog [data-social="kakao"]').disabled);
           const boxes = await page.evaluate(() => {
             const rect = id => { const r = document.querySelector(id).getBoundingClientRect(); return { top: r.top, bottom: r.bottom, left: r.left, right: r.right }; };
-            return { dialog: rect('#login-dialog'), identifier: rect('#login-identifier'), password: rect('#login-password'), submit: rect('#login-submit'), kakao: rect('#login-dialog [data-social="kakao"]'), google: rect('[data-social="google"]'), float: getComputedStyle(document.querySelector('#login-dialog [data-social="kakao"]')).float, width: innerWidth };
+            return { dialog: rect('#login-dialog'), identifier: rect('#login-identifier'), password: rect('#login-password'), submit: rect('#login-submit'), kakao: rect('#login-dialog [data-social="kakao"]'), google: rect('#login-dialog [data-social="google"]'), float: getComputedStyle(document.querySelector('#login-dialog [data-social="kakao"]')).float, width: innerWidth };
           });
           assert.ok(boxes.identifier.bottom <= boxes.password.top, 'ID must be above password');
           assert.ok(boxes.password.bottom <= boxes.submit.top, 'password must be above submit');
-          assert.ok(boxes.submit.bottom <= boxes.kakao.top, 'social buttons must be below password form');
-          assert.ok(boxes.kakao.bottom <= boxes.google.top, 'Kakao must be above Google');
+          assert.ok(boxes.kakao.bottom <= boxes.identifier.top, 'social buttons appear before password form');
+          assert.ok(boxes.google.bottom <= boxes.kakao.top, 'Google must appear first');
           assert.equal(boxes.float, 'none', 'article dialog float must not leak into login');
           for (const key of ['dialog', 'identifier', 'password', 'submit', 'kakao', 'google']) {
             assert.ok(boxes[key].left >= 0 && boxes[key].right <= boxes.width, key + ' must fit viewport');
