@@ -22,7 +22,7 @@ const { chromium } = require('playwright');
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       let submissions = 0, accountWriterMode = false;
-      const posts = [{ canEdit: true, canDelete: true, id: 'first', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
+      const posts = [{ canEdit: true, canDelete: true, id: 'first', category: '베이커리', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
         if (url.origin !== origin) return route.abort();
@@ -51,7 +51,7 @@ const { chromium } = require('playwright');
             posts.unshift({ ...payload, id: 'new', created_at: '2026-10-07T02:00:00Z' }); submissions++;
             return route.fulfill({ json: { success: true } });
           }
-          return route.fulfill({ json: { posts, next: null } });
+          return route.fulfill({ json: { posts: url.searchParams.get('category') ? posts.filter(p => p.category === url.searchParams.get('category')) : posts, next: null } });
         }
         return route.continue();
       });
@@ -71,12 +71,14 @@ const { chromium } = require('playwright');
       assert.equal(await page.locator('.recipe-row-arrow').count(), 0);
       for (let theme = 0; theme < 2; theme++) {
         assert.equal(await page.locator('.recipe-detail').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 255, 255)');
+        assert.equal(await page.locator('.recipe-row').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 255, 255)');
+        assert.equal(await page.locator('.recipe-row').evaluate(el => getComputedStyle(el).borderBottomStyle), 'solid');
         assert.equal(await page.locator('.recipe-post-body').evaluate(el => getComputedStyle(el).color), 'rgb(20, 43, 73)');
         await page.locator('#theme-toggle').click();
       }
       const received = page.waitForEvent('download'); await page.locator('.recipe-attachment').click();
       assert.equal((await received).suggestedFilename(), 'recipe.pdf');
-      await page.waitForFunction(() => document.querySelector('.recipe-downloads').textContent === '다운 1');
+      await page.waitForFunction(() => document.querySelector('.recipe-downloads').textContent === '1');
       if (width <= 900) {
         const footer = await page.locator('footer').evaluate(el => {
           const brand = el.querySelector('.footer-brand').getBoundingClientRect(), links = [...el.querySelectorAll('.journal-footer a')].map(a => a.getBoundingClientRect());
@@ -88,6 +90,23 @@ const { chromium } = require('playwright');
         assert.ok(footer.links.at(-1).right <= footer.right + 1);
       }
 
+      const alignment = await page.evaluate(() => {
+        const heading = document.querySelector('.recipe-list-heading').children[2].getBoundingClientRect();
+        const count = document.querySelector('.recipe-downloads').getBoundingClientRect();
+        return Math.abs((heading.left + heading.right) / 2 - (count.left + count.right) / 2);
+      });
+      assert.ok(alignment < 1, 'download numbers centered below header');
+      await page.locator('#recipe-category-menu summary').click();
+      assert.deepEqual(await page.locator('#recipe-category-menu button').allTextContents(), ['모두보기', '베이커리', '한식', '중식', '일식', '양식']);
+      await page.locator('#recipe-category-menu button[data-category="한식"]').click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 0);
+      assert.equal(await page.locator('#recipe-filter-category').inputValue(), '한식');
+      await page.locator('#recipe-category-menu summary').click();
+      await page.locator('#recipe-category-menu button[data-category="베이커리"]').click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
+      await page.locator('#recipe-category-menu summary').click();
+      await Promise.all([page.waitForResponse(response => response.url().endsWith('/api/recipe-posts')), page.locator('#recipe-category-menu button[data-category=""]').click()]);
+      await page.locator('.recipe-row').click();
       await page.locator('.recipe-post-actions').getByRole('button', { name: '수정', exact: true }).click();
       await page.locator('.recipe-inline-edit input').fill('수정한 자료');
       await page.locator('.recipe-inline-edit textarea').fill('수정한 자료 내용');

@@ -33,15 +33,13 @@ function renderPosts(posts, append = false) {
   for (const post of posts) {
     const card = document.createElement('details'); card.className = 'recipe-post';
     const summary = document.createElement('summary'); summary.className = 'recipe-row';
-    const copy = document.createElement('span'); copy.className = 'recipe-row-copy';
     const category = document.createElement('span'); category.className = 'recipe-category'; category.textContent = post.category || '미분류';
     const title = document.createElement('span'); title.className = 'recipe-row-title'; title.textContent = post.title;
-    copy.append(category, title);
     const time = document.createElement('time'); time.dateTime = post.created_at;
     time.textContent = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at));
     const downloads = document.createElement('span'); downloads.className = 'recipe-downloads';
-    downloads.textContent = '다운 ' + (post.downloads || 0);
-    summary.append(copy, downloads, time); card.append(summary);
+    downloads.textContent = String(post.downloads || 0);
+    summary.append(category, title, downloads, time); card.append(summary);
     const detail = document.createElement('div'); detail.className = 'recipe-detail'; card.append(detail);
     if (post.image_url) {
       const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 레시피 사진'; image.loading = 'lazy'; detail.append(image);
@@ -63,7 +61,7 @@ function renderPosts(posts, append = false) {
           const link = document.createElement('a'); link.href = url; link.download = post.attachment_name || 'attachment';
           document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
           post.downloads = Number(response.headers.get('X-Recipe-Downloads')) || (post.downloads || 0) + 1;
-          downloads.textContent = '다운 ' + post.downloads;
+          downloads.textContent = String(post.downloads);
         } catch (error) { feedback.textContent = error.message; }
         finally { downloading = false; attachment.removeAttribute('aria-disabled'); }
       });
@@ -123,6 +121,15 @@ byId('recipe-heading-link').addEventListener('click', async event => {
 window.addEventListener('member-session-change', () => {
   // A changed login must recheck publishing rights before the editor is shown again.
   if (gate.hidden) resetView();
+});
+byId('recipe-category-menu').addEventListener('click', async event => {
+  const button = event.target.closest('button[data-category]');
+  if (!button) return;
+  byId('recipe-filter-category').value = button.dataset.category;
+  byId('recipe-category-menu').open = false;
+  generation++; next = null;
+  try { await refreshPosts(); }
+  catch (error) { byId('recipe-board-status').textContent = error.message; }
 });
 byId('recipe-search-form').addEventListener('submit', async event => {
   event.preventDefault(); next = null;
