@@ -1,5 +1,6 @@
 """Collect Google News results and render dated source links into the homepage."""
 import html
+import hashlib
 import json
 import os
 from difflib import SequenceMatcher
@@ -71,7 +72,7 @@ def collect(xml, now, history=()):
             unique.append(article)
     if not articles:
         raise ValueError('No valid recent articles. Preserve the previous homepage.')
-    return unique[:6]
+    return unique[:18]
 
 
 def photo_url(value, base=''):
@@ -83,10 +84,36 @@ def photo_url(value, base=''):
     return url if parsed.scheme == 'https' and parsed.hostname and not parsed.username and not parsed.password else None
 
 
+def local_photo(value):
+    return isinstance(value, str) and bool(re.fullmatch(r'/assets/news/[a-f0-9]{24}\.(jpg|png|webp)', value))
+
+
+def image_extension(data):
+    if data.startswith(b'\xff\xd8\xff'): return 'jpg'
+    if data.startswith(b'\x89PNG\r\n\x1a\n'): return 'png'
+    if data[:4] == b'RIFF' and data[8:12] == b'WEBP': return 'webp'
+    raise ValueError('Not a supported article photo')
+
+
+def store_photo(url, original):
+    request = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0', 'Referer': original})
+    with urllib.request.urlopen(request, timeout=12) as response:
+        data = response.read(8 * 1024 * 1024 + 1)
+    if len(data) < 128 or len(data) > 8 * 1024 * 1024:
+        raise ValueError('Article photo size out of range')
+    extension = image_extension(data)
+    name = hashlib.sha256(data).hexdigest()[:24] + '.' + extension
+    folder = ROOT / 'assets/news'; folder.mkdir(parents=True, exist_ok=True)
+    (folder / name).write_bytes(data)
+    return '/assets/news/' + name
+
+
 class PublisherPhoto(HTMLParser):
     def __init__(self):
         super().__init__()
         self.images = {}
+        self.body_images = []
+        self.stack = []
 
     def handle_starttag(self, tag, attrs):
         data = dict(attrs)
@@ -94,31 +121,58 @@ class PublisherPhoto(HTMLParser):
             key = (data.get('property') or data.get('name') or '').lower()
             if key in ('og:image', 'twitter:image') and data.get('content'):
                 self.images.setdefault(key, data['content'])
+        marker = data.get('id', '') + ' ' + data.get('class', '')
+        inside = tag in ('article', 'figure') or bool(re.search(r'article[-_]?view[-_]?content|article[-_]?body|news[-_]?body|article[-_]?content', marker, re.I))
+        if tag == 'img' and any(active for _, active in self.stack):
+            value = data.get('data-src') or data.get('data-original') or data.get('src', '')
+            if value and not re.search(r'logo|banner|icon|avatar|profile|advert|pixel', value, re.I):
+                self.body_images.append(value)
+        if tag not in ('img', 'meta', 'link', 'input', 'br', 'hr', 'source', 'area', 'embed', 'wbr'):
+            self.stack.append((tag, inside))
+
+    def handle_endtag(self, tag):
+        for i in range(len(self.stack) - 1, -1, -1):
+            if self.stack[i][0] == tag:
+                del self.stack[i:]; break
 
 
 def resolve_publishers(articles):
-    """Link to publishers' representative photos; do not download/rehost files."""
+    """Save verified photos from the same publisher article, including body photos."""
     for article in articles:
+        if local_photo(article.get('image')) and (ROOT / article['image'].lstrip('/')).is_file():
+            continue
         try:
             original = article.get('original_url', '')
             if not original:
                 from googlenewsdecoder import gnewsdecoder
-                result = gnewsdecoder(article['url'], interval=1)
-                original = result.get('decoded_url', '')
-            if urllib.parse.urlparse(original).scheme in ('https', 'http'):
-                article['original_url'] = original
-                if photo_url(article.get('image', '')):
-                    continue
+                original = gnewsdecoder(article['url'], interval=1).get('decoded_url', '')
+            original = photo_url(original)
+            if not original:
+                continue
+            # Some publisher AMP pages omit metadata or reject HTTP requests.
+            original = original.replace('articleViewAmp.html', 'articleView.html')
+            article['original_url'] = original
+            candidates = []
+            existing = photo_url(article.get('image', ''))
+            if existing: candidates.append(existing)
+            try:
                 request = urllib.request.Request(original, headers={'User-Agent': 'Mozilla/5.0 (compatible; DiningTrendJournal/1.0)'})
                 with urllib.request.urlopen(request, timeout=12) as response:
                     markup = response.read(2 * 1024 * 1024).decode('utf-8', errors='replace')
-                    parser = PublisherPhoto()
-                    parser.feed(markup)
-                    image = photo_url(parser.images.get('og:image') or parser.images.get('twitter:image') or '', response.url)
-                    if image and (parser.images.get('og:image') or parser.images.get('twitter:image')):
-                        article['image'] = image
-                        article['image_alt'] = article['title'] + ' · ' + article['source'] + ' 제공 사진'
-                        article['image_source'] = original
+                    parser = PublisherPhoto(); parser.feed(markup)
+                    candidates.extend(photo_url(value, response.url) for value in [parser.images.get('og:image', ''), parser.images.get('twitter:image', ''), *parser.body_images] if value)
+            except Exception as error:
+                print(f'Publisher page unavailable: {type(error).__name__}')
+            for image in dict.fromkeys(candidates):
+                if not image or re.search(r'/[^/]*(logo|banner|icon)[^/]*$', image, re.I): continue
+                try:
+                    article['image'] = store_photo(image, original)
+                    article['image_original'] = image
+                    article['image_alt'] = article['title'] + ' · ' + article['source'] + ' 제공 사진'
+                    article['image_source'] = original
+                    break
+                except Exception as error:
+                    print(f'Publisher photo unavailable: {type(error).__name__}')
         except Exception as error:
             print(f'Publisher link unavailable: {type(error).__name__}')
 
@@ -128,10 +182,9 @@ def render(articles, now):
     cards = []
     for article in articles[:6]:
         published = datetime.fromisoformat(article['published_at']).astimezone(KST)
-        photo = '<div class="news-photo">대표 사진 미제공 · 원문에서 확인</div>'
-        image = photo_url(article.get('image', ''))
-        if image:
-            photo = f'<div class="news-photo"><img src="{escape(image, quote=True)}" alt="{escape(article.get("image_alt", article["title"]), quote=True)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="640" height="400"></div><p class="news-photo-credit">사진 출처: {escape(article["source"])}</p>'
+        image = article.get('image') if local_photo(article.get('image')) else photo_url(article.get('image', ''))
+        if not image: continue
+        photo = f'<div class="news-photo"><img src="{escape(image, quote=True)}" alt="{escape(article.get("image_alt", article["title"]), quote=True)}" data-fallback="{escape(article.get("image_original", ""), quote=True)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="640" height="400"></div><p class="news-photo-credit">사진 출처: {escape(article["source"])}</p>'
         cards.append(f'''<a class="card" href="{escape(article.get('original_url', article['url']), quote=True)}" target="_blank" rel="noopener noreferrer">
 {photo}
 <p class="cat">{escape(article['source'])}</p><h3>{escape(article['title'])}</h3>
@@ -163,17 +216,21 @@ def update(xml, now):
             continue
         if not any(same_article(article, old) for old in articles):
             articles.append(article)
-        if len(articles) == 6:
-            break
+
     if not articles:
         raise ValueError('No valid recent articles available')
     new_urls = {a['url'] for a in unseen}
-    new_count = sum(a['url'] in new_urls for a in articles)
-    resolve_publishers(articles)
+    with_photos = []
     for article in articles:
-        if not photo_url(article.get('image', '')):
-            for key in ('image', 'image_source', 'image_alt'):
-                article.pop(key, None)
+        resolve_publishers([article])
+        if local_photo(article.get('image')) and (ROOT / article['image'].lstrip('/')).is_file():
+            with_photos.append(article)
+        if len(with_photos) == 6: break
+    articles = with_photos
+    if not articles:
+        raise ValueError('No verified article photos available; preserve the previous homepage')
+    new_count = sum(a['url'] in new_urls for a in articles)
+    for article in articles:
         if not any(old['url'] == article['url'] for old in history):
             history.append({key: article[key] for key in ('url', 'title', 'published_at')})
     history = [a for a in history if datetime.fromisoformat(a['published_at']) >= now - timedelta(days=60)]

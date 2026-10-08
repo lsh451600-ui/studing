@@ -8,9 +8,10 @@ export const snapshot = {
       "source": "부산일보",
       "published_at": "2026-10-08T08:41:40+00:00",
       "original_url": "https://mobile.busan.com/view/bstoday/view.php?code=2026100817394251223",
-      "image": "https://www.busan.com/nas/wcms/wcms_data/photos/2026/10/08/2026100817394003363_l.jpg",
+      "image": "/assets/news/febc6011757bd18cfeef1a04.jpg",
       "image_alt": "외식 프랜차이즈 줄줄이 가격인상… 소비자 부담 커진다 · 부산일보 제공 사진",
-      "image_source": "https://mobile.busan.com/view/bstoday/view.php?code=2026100817394251223"
+      "image_source": "https://mobile.busan.com/view/bstoday/view.php?code=2026100817394251223",
+      "image_original": "https://www.busan.com/nas/wcms/wcms_data/photos/2026/10/08/2026100817394003363_l.jpg"
     },
     {
       "title": "소비 트렌드 다변화 속 외식·유통가, '고품질·체험·절약' 고객 공략",
@@ -18,16 +19,21 @@ export const snapshot = {
       "source": "데일리팝",
       "published_at": "2026-10-08T07:25:00+00:00",
       "original_url": "https://www.dailypop.kr/news/articleView.html?idxno=103193",
-      "image": "https://www.dailypop.kr/news/thumbnail/202610/103193_171051_209_v150.jpg",
+      "image": "/assets/news/6cef4cad093dacf7fcb0d7ce.jpg",
       "image_alt": "소비 트렌드 다변화 속 외식·유통가, '고품질·체험·절약' 고객 공략 · 데일리팝 제공 사진",
-      "image_source": "https://www.dailypop.kr/news/articleView.html?idxno=103193"
+      "image_source": "https://www.dailypop.kr/news/articleView.html?idxno=103193",
+      "image_original": "https://www.dailypop.kr/news/thumbnail/202610/103193_171051_209_v150.jpg"
     },
     {
       "title": "[경제+] 스크린 넘어 관광·외식까지...中 국경절 '영화+' 소비시장 들썩",
       "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9hRTlRR1JiNWJLdlduYVpLaFB0VDF3UlZjUHE5cmNXUlp3VWR5YnFwdjV6REhPSjFUdVpmV3JXVDdPZi1SVVpqamtTS2FpQ21PS21NNnJ5Yy1pczIwVy1CRUxpSXhMZVlFdUJlNl9mNnnSAXBBVV95cUxPYUU5UUdSYjViS3ZXbmFaS2hQdFQxd1JWY1BxOXJjV1Jad1VkeWJxcHY1ekRIT0oxVHVaZldyV1Q3T2YtUlVaamprU0thaUNtT0ttTTZyeWMtaXMyMFctQkVMaUl4TGVZRXVCZTZfZjZ5?oc=5",
       "source": "내외뉴스통신",
       "published_at": "2026-10-08T01:59:28+00:00",
-      "original_url": "http://www.nbnnews.co.kr/news/articleViewAmp.html?idxno=1061097"
+      "original_url": "https://www.nbnnews.co.kr/news/articleView.html?idxno=1061097",
+      "image": "/assets/news/6e70ed706c398c18a2e472e6.jpg",
+      "image_original": "https://cdn.nbnnews.co.kr/news/thumbnail/202610/1061097_1116013_2032_v150.jpg",
+      "image_alt": "[경제+] 스크린 넘어 관광·외식까지...中 국경절 '영화+' 소비시장 들썩 · 내외뉴스통신 제공 사진",
+      "image_source": "https://www.nbnnews.co.kr/news/articleView.html?idxno=1061097"
     },
     {
       "title": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령!",
@@ -35,9 +41,10 @@ export const snapshot = {
       "source": "YTN",
       "published_at": "2026-10-04T10:25:00+00:00",
       "original_url": "https://www.ytn.co.kr/_ln/1230_202610041925261824",
-      "image": "https://image.ytn.co.kr/special/jpg/global_common/2026/202610041925261824_h.jpg",
+      "image": "/assets/news/33706f0981f006ee4964e5a1.jpg",
       "image_alt": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령! · YTN 제공 사진",
-      "image_source": "https://www.ytn.co.kr/_ln/1230_202610041925261824"
+      "image_source": "https://www.ytn.co.kr/_ln/1230_202610041925261824",
+      "image_original": "https://image.ytn.co.kr/special/jpg/global_common/2026/202610041925261824_h.jpg"
     },
     {
       "title": "교촌치킨, 중국 장쑤성 우시에 신규 매장 ‘우시점’ 오픈... 중국 시장 공략 박차",
@@ -45,15 +52,21 @@ export const snapshot = {
       "source": "식품외식경제",
       "published_at": "2026-10-02T08:37:10+00:00",
       "original_url": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607",
-      "image": "https://www.foodbank.co.kr/news/thumbnail/202610/68607_30138_3642_v150.jpg",
+      "image": "/assets/news/7116b8aaa28c8ed422b956fa.jpg",
       "image_alt": "교촌치킨, 중국 장쑤성 우시에 신규 매장 ‘우시점’ 오픈... 중국 시장 공략 박차 · 식품외식경제 제공 사진",
-      "image_source": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607"
+      "image_source": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607",
+      "image_original": "https://www.foodbank.co.kr/news/thumbnail/202610/68607_30138_3642_v150.jpg"
     },
     {
       "title": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력”",
       "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42VTVTTXM0RWJBMkExVFNfeDgxU3VVWGNPbVRTTmd2WWdoS1RiVGFaTUcyaXRTR3FjT255YmF1UVJfTTRkX0F5UEpmbXFvc0Ezcm5EOXdmaWFrT2hXNzFIRjZBT0FOOVI3OFgxYmlB?oc=5",
       "source": "식품저널 foodnews",
-      "published_at": "2026-10-02T02:31:09+00:00"
+      "published_at": "2026-10-02T02:31:09+00:00",
+      "original_url": "https://www.foodnews.co.kr/news/articleView.html?idxno=120398",
+      "image": "/assets/news/b26171f6ad61c7780c2ae5ca.jpg",
+      "image_original": "https://cdn.foodnews.co.kr/news/thumbnail/202610/120398_86820_2438_v150.jpg",
+      "image_alt": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력” · 식품저널 foodnews 제공 사진",
+      "image_source": "https://www.foodnews.co.kr/news/articleView.html?idxno=120398"
     }
   ],
   "history": [

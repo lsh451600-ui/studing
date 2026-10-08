@@ -1,11 +1,15 @@
 import { snapshot } from '../../src/news-snapshot.js';
-// Representative photos remain on the publisher's server.
-const metadataOnly = ({ image, image_source, image_alt, ...article }) => {
-  try {
-    const url = new URL(image);
-    if (url.protocol === 'https:' && !url.username && !url.password) return { ...article, image: url.href, image_alt: typeof image_alt === 'string' ? image_alt : article.title, image_source: article.original_url || article.url };
-  } catch {}
-  return article;
+const localPhoto = value => typeof value === 'string' && /^\/assets\/news\/[a-f0-9]{24}\.(jpg|png|webp)$/.test(value);
+const safePhoto = value => {
+  if (localPhoto(value)) return value;
+  try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password ? url.href : null; } catch { return null; }
+};
+const metadataOnly = ({ image, image_source, image_alt, image_original, image_fallback, ...article }) => {
+  const saved = snapshot.articles.find(a => a.url === article.url);
+  const primary = safePhoto(saved?.image) || safePhoto(image);
+  const fallback = safePhoto(image_original) || safePhoto(saved?.image_original);
+  return primary ? { ...article, original_url: saved?.original_url || article.original_url, image: primary, image_alt: image_alt || saved?.image_alt || article.title,
+    image_source: article.original_url || saved?.original_url || article.url, image_fallback: fallback } : article;
 };
 const QUERY = '외식 (트렌드 OR 소비 OR 가성비 OR 혼밥 OR 물가 OR 시장) -아카데미 -교육 -모집 when:30d';
 function decode(value) {
@@ -45,7 +49,7 @@ async function loadRelay(now) {
     if (!Number.isFinite(checked) || checked > now || now - checked > 86400000 || !Array.isArray(data.articles)) return null;
     const articles = data.articles.filter(a => {
       try { const url = new URL(a.url); return url.protocol === 'https:' && url.hostname === 'news.google.com' && typeof a.title === 'string' && typeof a.source === 'string' && Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000; } catch { return false; }
-    }).sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at)).slice(0, 6).map(metadataOnly);
+    }).sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at)).map(metadataOnly).filter(a => a.image).slice(0, 6);
     return articles.length ? { articles, checkedAt: data.updated_at } : null;
   } catch { return null; }
 }
@@ -99,7 +103,7 @@ export async function onRequest({ request }) {
     stage = 'parse';
     const xml = await response.text(); if (xml.length > 2000000 || !/<rss\b/i.test(xml)) throw new Error('format');
     stage = 'filter';
-    const articles = collect(xml, now); if (!articles.length) throw new Error('empty');
+    const articles = collect(xml, now).filter(a => a.image); if (!articles.length) throw new Error('empty');
     return Response.json({ version, available: true, articles, requestedAt, checkedAt: new Date().toISOString(), stale: false }, { headers });
   } catch (error) {
     upstreamStatus = error?.upstreamStatus || upstreamStatus;
@@ -108,7 +112,7 @@ export async function onRequest({ request }) {
     const failureCode = ['TimeoutError', 'AbortError'].includes(error?.name) ? 'NEWS-02' : upstreamStatus && upstreamStatus !== 200 ? 'NEWS-03' : stage === 'parse' ? 'NEWS-04' : stage === 'filter' ? 'NEWS-05' : 'NEWS-01';
     console.warn('news_fetch_failed', { stage, failureCode, upstreamStatus, ...details });
     if (relay) return Response.json({ version, available: true, ...relay, requestedAt, stale: true, sourceMode: 'relay', reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
-    const articles = snapshot.articles.filter(a => Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000).slice(0, 6).map(metadataOnly);
+    const articles = snapshot.articles.filter(a => Date.parse(a.published_at) <= now && Date.parse(a.published_at) >= now - 30 * 86400000).map(metadataOnly).filter(a => a.image).slice(0, 6);
     return Response.json({ version, ...details, available: articles.length > 0, articles, requestedAt, checkedAt: snapshot.updated_at, stale: true, reason: 'news_unavailable', failureCode, upstreamStatus }, { headers });
   }
 }

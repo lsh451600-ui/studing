@@ -10,6 +10,13 @@ from unittest.mock import patch
 spec = importlib.util.spec_from_file_location('update_news', Path(__file__).resolve().parents[1] / 'scripts/update_news.py')
 news = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(news)
+def cached_photos(articles):
+    folder = news.ROOT / 'assets/news'; folder.mkdir(parents=True, exist_ok=True)
+    for article in articles:
+        name = news.hashlib.sha256(article['url'].encode()).hexdigest()[:24] + '.jpg'
+        (folder / name).write_bytes(b'\xff\xd8\xff' + b'x' * 128)
+        article.update(image='/assets/news/' + name, image_source='https://publisher.test/article', image_alt=article['title'])
+
 NOW = datetime(2026, 10, 8, 12, tzinfo=timezone.utc)
 
 def feed(*stories):
@@ -19,7 +26,7 @@ def feed(*stories):
 
 class NewsDeduplication(unittest.TestCase):
     def test_one_new_article_does_not_shrink_six_cards_or_recycle_history(self):
-        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers'):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers', side_effect=cached_photos):
             root = Path(folder)
             (root / 'src').mkdir()
             (root / 'index.html').write_text('<section id="trends"></section>')
@@ -34,19 +41,33 @@ class NewsDeduplication(unittest.TestCase):
             self.assertEqual(len({a['url'] for a in result['articles']}), 6)
             self.assertEqual(len(result['history']), 7)
 
-    def test_publisher_photo_is_linked_with_credit_without_downloading_image(self):
-        response = io.BytesIO(b'<meta property="og:image" content="/photos/menu.jpg">')
-        response.url = 'https://publisher.test/article/123'
-        article = {'title': '외식 메뉴 변화', 'source': '신문', 'url': 'https://news.google.com/rss/articles/a', 'original_url': response.url, 'published_at': NOW.isoformat()}
-        with patch.object(news.urllib.request, 'urlopen', return_value=response) as fetch:
-            news.resolve_publishers([article])
-        self.assertEqual(fetch.call_count, 1)
-        self.assertEqual(article['image'], 'https://publisher.test/photos/menu.jpg')
-        rendered = news.render([article], NOW)
-        self.assertIn('사진 출처: 신문', rendered)
-        self.assertIn('referrerpolicy="no-referrer"', rendered)
-        self.assertIsNone(news.photo_url('javascript:alert(1)'))
-        self.assertIsNone(news.photo_url('/assets/news/old.jpg'))
+    def test_publisher_photo_is_downloaded_with_credit_and_validated(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)):
+            response = io.BytesIO(b'<meta property="og:image" content="/photos/menu.jpg">')
+            response.url = 'https://publisher.test/article/123'
+            photo = io.BytesIO(b'\xff\xd8\xff' + b'x' * 256)
+            article = {'title': '외식 메뉴 변화', 'source': '신문', 'url': 'https://news.google.com/rss/articles/a', 'original_url': response.url, 'published_at': NOW.isoformat()}
+            with patch.object(news.urllib.request, 'urlopen', side_effect=[response, photo]) as fetch:
+                news.resolve_publishers([article])
+            self.assertEqual(fetch.call_count, 2)
+            self.assertTrue(news.local_photo(article['image']))
+            self.assertTrue((Path(folder) / article['image'].lstrip('/')).is_file())
+            self.assertEqual(article['image_original'], 'https://publisher.test/photos/menu.jpg')
+            self.assertIn('사진 출처: 신문', news.render([article], NOW))
+            self.assertIsNone(news.photo_url('javascript:alert(1)'))
+            self.assertFalse(news.local_photo('/assets/news/../../secret.jpg'))
+            with self.assertRaises(ValueError): news.image_extension(b'<html>not a photo</html>')
+
+    def test_missing_or_broken_metadata_falls_back_to_same_article_body_photo(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)):
+            response = io.BytesIO(b'<meta property="og:image" content="/broken.jpg"><img src="/banner.jpg"><article><figure><img data-src="/actual.jpg"></figure></article>')
+            response.url = 'https://publisher.test/article/123'
+            article = {'title': '외식 변화', 'source': '신문', 'url': 'https://news.google.com/rss/articles/a', 'original_url': response.url}
+            with patch.object(news.urllib.request, 'urlopen', side_effect=[response, io.BytesIO(b'not image'), io.BytesIO(b'\xff\xd8\xff' + b'x' * 256)]) as fetch:
+                news.resolve_publishers([article])
+            self.assertEqual(fetch.call_count, 3)
+            self.assertTrue(news.local_photo(article['image']))
+            self.assertEqual(article['image_original'], 'https://publisher.test/actual.jpg')
 
     def test_same_url_and_republished_similar_title_are_excluded(self):
         title = '외식 시장 가성비 소비 증가로 프랜차이즈 산업 변화'
@@ -59,7 +80,7 @@ class NewsDeduplication(unittest.TestCase):
         self.assertEqual(len(news.collect(feed(('a', title), ('b', '[뉴스] ' + title)), NOW)), 1)
 
     def test_next_run_keeps_display_and_history_when_no_unseen_story_exists(self):
-        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers'):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers', side_effect=cached_photos):
             root = Path(folder)
             (root / 'src').mkdir()
             (root / 'index.html').write_text('<section id="trends"></section>')
@@ -72,22 +93,29 @@ class NewsDeduplication(unittest.TestCase):
             self.assertEqual(second['new_articles'], 0)
             self.assertEqual(len(second['history']), 1)
 
-    def test_retained_collection_rejects_local_photo_paths_and_preserves_guides(self):
-        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers'):
-            root = Path(folder)
-            (root / 'src').mkdir()
-            (root / 'index.html').write_text('<section class="guide-feature">Original guides</section><section id="trends"></section>')
-            xml = feed(('a', '외식 시장 가성비 소비 증가로 프랜차이즈 산업 변화'))
-            news.update(xml, NOW)
+    def test_new_article_without_photo_does_not_replace_six_cached_articles(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)):
+            root = Path(folder); (root / 'src').mkdir(); (root / 'index.html').write_text('<section id="trends"></section>')
+            titles = ['외식 시장 소비 변화 ' + str(i) for i in range(6)]
+            with patch.object(news, 'resolve_publishers', side_effect=cached_photos):
+                news.update(feed(*[(str(i), title) for i, title in enumerate(titles)]), NOW)
             previous = json.loads((root / 'news.json').read_text())
-            previous['articles'][0].update(image='assets/news/old.jpg', image_source='https://publisher.test/photo.jpg', image_alt='Photo')
-            (root / 'news.json').write_text(json.dumps(previous))
-            news.update(xml, NOW)
+            with patch.object(news, 'resolve_publishers'):
+                news.update(feed(('missing', '외식 혼밥 산업 증가와 온라인 서비스 확산')), NOW)
             result = json.loads((root / 'news.json').read_text())
-            self.assertNotIn('image', result['articles'][0])
-            self.assertNotIn('image_source', result['articles'][0])
-            self.assertNotIn('<img', (root / 'index.html').read_text())
-            self.assertIn('Original guides', (root / 'index.html').read_text())
+            self.assertEqual(result['articles'], previous['articles'])
+            self.assertEqual(result['new_articles'], 0)
+            self.assertEqual((root / 'index.html').read_text().count('<img'), 6)
+
+    def test_no_verified_photo_preserves_existing_homepage(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers'):
+            root = Path(folder); (root / 'src').mkdir()
+            original = '<section class="guide-feature">Original guides</section><section id="trends">Previous cards</section>'
+            (root / 'index.html').write_text(original)
+            with self.assertRaises(ValueError):
+                news.update(feed(('a', '외식 시장 가성비 소비 증가로 프랜차이즈 산업 변화')), NOW)
+            self.assertEqual((root / 'index.html').read_text(), original)
+            self.assertFalse((root / 'news.json').exists())
 
 if __name__ == '__main__':
     unittest.main()

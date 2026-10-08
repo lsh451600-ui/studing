@@ -34,6 +34,7 @@ on:
       - 'assets/js/trend-video.js'
       - 'assets/js/trend-news.js'
       - 'tests/visit-news.test.js'
+      - 'tests/trend-news-ui.cjs'
       - 'src/news-snapshot.js'
       - 'assets/css/page-layout.css'
       - 'tests/trend-video.test.js'
@@ -100,6 +101,7 @@ jobs:
       - name: Verify login layout and account controls in Chromium
         run: |
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/google-ui.cjs
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/trend-news-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/journal-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/account-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
