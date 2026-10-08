@@ -1,3 +1,4 @@
+import { boardIdentity } from '../../src/board-permissions.js';
 import { reply, sameOrigin, readJSON, matchesPassword, sessionCookie, clearCookie, rateLimit, listPosts, adminReady } from '../../src/recipe-server.js';
 export { matchesPassword } from '../../src/recipe-server.js';
 export async function onRequest({ request, env }) {
@@ -13,7 +14,7 @@ export async function onRequest({ request, env }) {
     if (!await rateLimit(request, env.MEMBERS_DB, 'viewer')) return reply(429, { message: '입력 시도가 많습니다. 15분 후 다시 시도해 주세요.' });
     const canWrite = adminReady(env) && await matchesPassword(data.password, env.RECIPE_ADMIN_PASSWORD);
     if (!canWrite && !await matchesPassword(data.password, env.RECIPE_PASSWORD)) return reply(401, { message: '비밀번호가 맞지 않습니다. 다시 입력해 주세요.' });
-    const listing = env.MEMBERS_DB ? await listPosts(env.MEMBERS_DB) : { posts: [], next: null };
+    const listing = env.MEMBERS_DB ? await listPosts(env.MEMBERS_DB, null, { identity: await boardIdentity(request, env) }) : { posts: [], next: null };
     return reply(200, { title: '레시피', ...listing, storageAvailable: Boolean(env.MEMBERS_DB), adminConfigured: adminReady(env), canWrite }, [await sessionCookie(env, 'viewer'), canWrite ? await sessionCookie(env, 'admin') : clearCookie('admin')]);
   } catch { return reply(503, { message: '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' }); }
 }

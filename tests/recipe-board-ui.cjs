@@ -22,7 +22,7 @@ const { chromium } = require('playwright');
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       let admin = false, submissions = 0;
-      const posts = [{ id: 'first', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
+      const posts = [{ canEdit: true, canDelete: true, id: 'first', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
         if (url.origin !== origin) return route.abort();
@@ -40,6 +40,14 @@ const { chromium } = require('playwright');
           admin = true; return route.fulfill({ json: { authenticated: true } });
         }
         if (url.pathname === '/api/recipe-posts') {
+          if (req.method() === 'PATCH') {
+            Object.assign(posts.find(p => p.id === url.searchParams.get('id')), req.postDataJSON());
+            return route.fulfill({ json: {} });
+          }
+          if (req.method() === 'DELETE') {
+            const index = posts.findIndex(p => p.id === url.searchParams.get('id')); assert.ok(index >= 0); posts.splice(index, 1);
+            return route.fulfill({ json: {} });
+          }
           if (req.method() === 'POST') {
             assert.ok(admin, 'only authenticated owner submits a post');
             const payload = req.postDataJSON(); assert.equal(payload.title, '새 레시피'); assert.equal(payload.body, '새 레시피 조리 순서');
@@ -63,6 +71,12 @@ const { chromium } = require('playwright');
       assert.ok(await page.locator('#recipe-editor').isVisible());
       assert.equal(submissions, 0);
       await page.locator('.recipe-row').click(); assert.ok(await page.locator('.recipe-post-body').isVisible());
+      await page.locator('.recipe-post-actions').getByRole('button', { name: '수정', exact: true }).click();
+      await page.locator('.recipe-inline-edit input').fill('수정한 자료');
+      await page.locator('.recipe-inline-edit textarea').fill('수정한 자료 내용');
+      await page.locator('.recipe-inline-edit').getByRole('button', { name: '저장', exact: true }).click();
+      await page.waitForFunction(() => document.querySelector('.recipe-row-title').textContent === '수정한 자료');
+      assert.equal(posts[0].body, '수정한 자료 내용');
       await page.locator('#recipe-admin-open').click();
       await page.locator('#recipe-admin-password').fill('wrong-password'); await page.locator('#recipe-admin-submit').click();
       await page.waitForFunction(() => document.querySelector('#recipe-admin-status').textContent.includes('확인'));
@@ -79,6 +93,11 @@ const { chromium } = require('playwright');
       await page.locator('#recipe-post-submit').click();
       await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 2);
       assert.equal(submissions, 1); assert.equal(await page.locator('.recipe-row-title').first().textContent(), '새 레시피');
+      await page.locator('.recipe-row').nth(1).click();
+      page.once('dialog', dialog => dialog.accept());
+      await page.locator('.recipe-post').nth(1).getByRole('button', { name: '삭제', exact: true }).click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
+      assert.equal(posts.length, 1);
       await page.locator('#recipe-admin-exit').click(); await page.waitForFunction(() => !document.querySelector('#recipe-editor').hidden);
       assert.equal(admin, false);
       console.log('PASS recipe board gate, owner authentication, photo submission', width);

@@ -1,3 +1,4 @@
+import { canManagePost } from './board-permissions.js';
 export function reply(status, data, cookies = []) {
   const headers = new Headers({ 'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex, nofollow' });
@@ -66,7 +67,14 @@ export const POST_SCHEMA = `CREATE TABLE IF NOT EXISTS private_posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, body TEXT NOT NULL,
   image_base64 TEXT, image_type TEXT, created_at TEXT NOT NULL
 )`;
-export async function ensurePosts(db) { await db.prepare(POST_SCHEMA).run(); }
+export async function ensurePosts(db) {
+  await db.prepare(POST_SCHEMA).run();
+  const columns = (await db.prepare('PRAGMA table_info(private_posts)').all()).results;
+  if (!columns.some(column => column.name === 'author_id')) {
+    try { await db.prepare('ALTER TABLE private_posts ADD COLUMN author_id TEXT').run(); }
+    catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
+  }
+}
 export async function rateLimit(request, db, scope, maximum = 10) {
   if (!db) return true;
   await db.prepare('CREATE TABLE IF NOT EXISTS private_limits (key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires_at INTEGER NOT NULL)').run();
@@ -77,13 +85,13 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   await db.prepare('DELETE FROM private_limits WHERE expires_at < ?').bind(now).run();
   return row.attempts <= maximum;
 }
-export async function listPosts(db, before = null) {
+export async function listPosts(db, before = null, { identity = null } = {}) {
   await ensurePosts(db);
-  const fields = 'id, title, body, created_at, (image_type IS NOT NULL) AS has_image';
+  const fields = 'id, author_id, title, body, created_at, (image_type IS NOT NULL) AS has_image';
   const query = before ? db.prepare(`SELECT ${fields} FROM private_posts WHERE id < ? ORDER BY id DESC LIMIT 21`).bind(before)
     : db.prepare(`SELECT ${fields} FROM private_posts ORDER BY id DESC LIMIT 21`);
   const { results } = await query.all();
-  const posts = results.slice(0, 20).map(post => ({ ...post, image_url: post.has_image ? `/api/private-image?id=${post.id}` : null }));
+  const posts = results.slice(0, 20).map(({ author_id, ...post }) => ({ ...post, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id), image_url: post.has_image ? `/api/private-image?id=${post.id}` : null }));
   return { posts, next: results.length > 20 ? posts[posts.length - 1].id : null };
 }
 export function validatePost(data) {

@@ -46,7 +46,7 @@ async function loadDetail(id, focus = true) {
     if (version !== generation) return;
     selected = data.post.id; byId('board-index').hidden = true; byId('board-editor').hidden = true; byId('board-detail').hidden = false;
     byId('board-title').textContent = data.post.title;
-    byId('board-author').textContent = data.post.author + ' · ' + date(data.post.created_at) + ' (한국 시간)';
+    byId('board-author').replaceChildren(node('strong', data.post.author, 'board-author-name'), node('span', ' · ' + date(data.post.created_at)));
     byId('board-body').textContent = data.post.body;
     byId('board-post-actions').hidden = !(data.permissions?.canEdit || data.permissions?.canDelete);
     byId('board-edit-open').hidden = !data.permissions?.canEdit;
@@ -58,10 +58,38 @@ async function loadDetail(id, focus = true) {
     for (const comment of data.comments) {
       const item = node('li', '', 'board-comment');
       const header = node('div', '', 'board-comment-header');
-      header.append(node('p', comment.author + ' · ' + date(comment.created_at), 'board-meta'));
+      const meta = node('p', '', 'board-meta');
+      meta.append(node('strong', comment.author, 'board-author-name'), node('span', ' · ' + date(comment.created_at)));
+      header.append(meta);
+      const actions = node('div', '', 'board-comment-actions');
+      header.append(actions);
+      const commentBody = node('p', comment.body, 'board-comment-body');
+      if (comment.canEdit) {
+        const edit = node('button', '수정'); edit.type = 'button'; edit.setAttribute('aria-label', '댓글 수정');
+        const form = node('form', '', 'board-comment-edit'); form.hidden = true;
+        const label = node('label', '댓글 수정');
+        const input = node('textarea'); input.value = comment.body; input.required = true; input.maxLength = 2000; input.rows = 3; label.append(input);
+        const controls = node('div', '', 'board-edit-actions');
+        const save = node('button', '저장'); save.type = 'submit';
+        const cancel = node('button', '취소'); cancel.type = 'button'; controls.append(save, cancel);
+        const status = node('p'); status.setAttribute('role', 'status');
+        form.append(label, controls, status); item.append(form);
+        edit.addEventListener('click', () => { input.value = commentBody.textContent; form.hidden = false; commentBody.hidden = true; input.focus(); });
+        cancel.addEventListener('click', () => { form.hidden = true; commentBody.hidden = false; status.textContent = ''; });
+        form.addEventListener('submit', async event => {
+          event.preventDefault(); if (save.disabled || !form.reportValidity()) return;
+          const postId = selected; save.disabled = true; cancel.disabled = true; status.textContent = '저장하고 있습니다.';
+          try {
+            await api('/api/board-comments?id=' + comment.id, { method: 'PATCH', body: { body: input.value } });
+            if (selected === postId) await loadDetail(postId, false);
+          } catch (error) { status.textContent = error.message; }
+          finally { save.disabled = false; cancel.disabled = false; }
+        });
+        actions.append(edit);
+      }
       if (comment.canDelete) {
         const remove = node('button', '삭제', 'board-comment-delete'); remove.type = 'button';
-        remove.setAttribute('aria-label', '내 댓글 삭제');
+        remove.setAttribute('aria-label', '댓글 삭제');
         remove.addEventListener('click', async () => {
           if (!confirm('이 댓글을 삭제할까요?')) return;
           const postId = selected; remove.disabled = true;
@@ -74,9 +102,9 @@ async function loadDetail(id, focus = true) {
           } catch (error) { if (selected === postId) byId('board-comment-status').textContent = error.message; }
           finally { remove.disabled = false; }
         });
-        header.append(remove);
+        actions.append(remove);
       }
-      item.append(header, node('p', comment.body, 'board-comment-body'));
+      item.prepend(header, commentBody);
       byId('board-comments').append(item);
     }
     byId('board-comment-empty').hidden = data.comments.length > 0;

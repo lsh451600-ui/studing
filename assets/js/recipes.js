@@ -1,3 +1,4 @@
+import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
 const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');
 const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
@@ -49,6 +50,7 @@ function renderPosts(posts, append = false) {
       const attachment = document.createElement('a'); attachment.className = 'recipe-attachment'; attachment.href = post.attachment_url;
       attachment.download = post.attachment_name || ''; attachment.textContent = '첨부파일 받기 · ' + post.attachment_name; detail.append(attachment);
     }
+    appendPostActions(detail, post, { endpoint: '/api/recipe-posts', api, refresh: refreshPosts, categories: ['미분류', '한식', '중식', '일식', '양식', '베이커리'] });
   }
   content.hidden = false;
 }

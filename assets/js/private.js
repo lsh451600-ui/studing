@@ -1,3 +1,4 @@
+import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
 const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');
 const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
@@ -42,6 +43,7 @@ function renderPosts(posts, append = false) {
       const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 비밀자료 사진'; image.loading = 'lazy'; detail.append(image);
     }
     const body = document.createElement('p'); body.className = 'recipe-post-body'; body.textContent = post.body; detail.append(body); content.append(card);
+    appendPostActions(detail, post, { endpoint: '/api/private-posts', api, refresh: refreshPosts });
   }
   content.hidden = false;
 }

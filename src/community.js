@@ -1,5 +1,6 @@
 import { currentSession, reply, settings } from './member-auth.js';
 import { memberProfile } from './social-auth.js';
+import { isOperator } from './board-permissions.js';
 export async function initialize(db) {
   await db.batch([
     db.prepare('CREATE TABLE IF NOT EXISTS community_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id TEXT NOT NULL, author TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL)'),
@@ -14,7 +15,7 @@ export async function member(request, env) {
   if (!session.user) return { response: reply(401, '로그인 후 작성할 수 있습니다.', {}, session.cookies) };
   const profile = await memberProfile(env, session);
   if (!profile) return { response: reply(403, '회원 정보를 입력한 뒤 작성해 주세요.', {}, session.cookies) };
-  return { session, author: profile.nickname || '회원', isAdmin: profile.username?.toLowerCase() === 'lsh451600' };
+  return { session, author: profile.nickname || '회원', isAdmin: isOperator(profile) };
 }
 export async function postPermissions(request, env, authorId, comments = []) {
   const denied = { canEdit: false, canDelete: false, permissionsUnavailable: false, deletableCommentIds: [] };
@@ -22,11 +23,11 @@ export async function postPermissions(request, env, authorId, comments = []) {
   try {
     const session = await currentSession(request, env);
     if (!session.user) return denied;
-    const deletableCommentIds = comments.filter(comment => comment.author_id === session.user.id).map(comment => comment.id);
-    if (session.user.id === authorId) return { ...denied, canEdit: true, canDelete: true, deletableCommentIds };
     const profile = await memberProfile(env, session);
-    const isAdmin = profile?.username?.toLowerCase() === 'lsh451600';
-    return { ...denied, canDelete: isAdmin, deletableCommentIds };
+    const isAdmin = isOperator(profile);
+    const deletableCommentIds = comments.filter(comment => isAdmin || comment.author_id === session.user.id).map(comment => comment.id);
+    const canManage = isAdmin || session.user.id === authorId;
+    return { ...denied, canEdit: canManage, canDelete: canManage, deletableCommentIds };
   } catch {
     return { ...denied, permissionsUnavailable: true };
   }

@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { onRequest as posts } from '../functions/api/board-posts.js';
 import { onRequest as comments } from '../functions/api/board-comments.js';
+import { onRequest as recipePosts } from '../functions/api/recipe-posts.js';
+import { onRequest as privatePosts } from '../functions/api/private-posts.js';
+import { sessionCookie as recipeCookie, ensurePosts as ensureRecipes } from '../src/recipe-server.js';
+import { sessionCookie as privateCookie, ensurePosts as ensurePrivate } from '../src/private-server.js';
 import { initialize } from '../src/community.js';
 function database(t) {
   const sql = new DatabaseSync(':memory:'); t.after(() => sql.close());
@@ -52,7 +56,7 @@ test('authors can update and delete their own posts, and deletion removes associ
   assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id) })).status, 404);
   assert.equal((await settings.MEMBERS_DB.prepare('SELECT id FROM community_comments WHERE post_id = ?').bind(id).all()).results.length, 0);
 });
-test('the verified lsh451600 login can delete another member post but cannot edit it', async t => {
+test('the verified lsh451600 login can edit and delete another member post', async t => {
   const settings = env(t); await initialize(settings.MEMBERS_DB);
   const owner = async (id, title) => {
     const result = await settings.MEMBERS_DB.prepare('INSERT INTO community_posts (author_id, author, title, body, created_at) VALUES (?, ?, ?, ?, ?)').bind(id, 'member', title, 'Body', new Date().toISOString()).run();
@@ -61,8 +65,8 @@ test('the verified lsh451600 login can delete another member post but cannot edi
   const id = await owner('someone-else', 'Original');
   auth(t, { id: 'admin-id', username: 'lsh451600', nickname: 'Operator' });
   const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id, null, true) })).json();
-  assert.deepEqual(detail.permissions, { canEdit: false, canDelete: true, permissionsUnavailable: false });
-  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: 'Moderated', body: 'Edited' }, true, undefined, 'PATCH') })).status, 403);
+  assert.deepEqual(detail.permissions, { canEdit: true, canDelete: true, permissionsUnavailable: false });
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: 'Moderated', body: 'Edited' }, true, undefined, 'PATCH') })).status, 200);
   assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, null, true, undefined, 'DELETE') })).status, 200);
 });
 test('a different member cannot edit or delete someone else post', async t => {
@@ -95,3 +99,59 @@ test('only the comment author can delete, and public reads hide ownership IDs', 
   const list = await (await posts({ env: settings, request: request('board-posts') })).json();
   assert.equal(list.posts[0].comments, 1);
 });
+
+test('comment authors and the verified operator can edit and delete, but other members cannot', async t => {
+  let viewer = { id: 'owner-id', username: 'owner' };
+  t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: viewer.id, user_metadata: { username: 'lsh451600' } }) : Response.json([{ username: viewer.username, nickname: viewer.username }]));
+  const settings = env(t);
+  const created = await posts({ env: settings, request: request('board-posts', { title: 'Title', body: 'Body' }, true) });
+  const postId = (await created.json()).id;
+  const written = await comments({ env: settings, request: request('board-comments', { postId, body: 'Original' }, true) });
+  const id = (await written.json()).id;
+  const patch = body => comments({ env: settings, request: request('board-comments?id=' + id, { body }, true, undefined, 'PATCH') });
+  assert.equal((await patch('Owner edit')).status, 200);
+  assert.equal((await patch(' ')).status, 400);
+  viewer = { id: 'other-id', username: 'other' };
+  assert.equal((await patch('Forbidden')).status, 403);
+  let detail = await (await posts({ env: settings, request: request('board-posts?id=' + postId, null, true) })).json();
+  assert.equal(detail.comments[0].canEdit, false);
+  viewer = { id: 'operator-id', username: 'lsh451600' };
+  detail = await (await posts({ env: settings, request: request('board-posts?id=' + postId, null, true) })).json();
+  assert.equal(detail.comments[0].canEdit, true); assert.equal(detail.comments[0].canDelete, true);
+  assert.equal((await patch('Operator edit')).status, 200);
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=' + id, null, true, undefined, 'DELETE') })).status, 200);
+});
+for (const [kind, handler, cookie, ensure] of [['recipe', recipePosts, recipeCookie, ensureRecipes], ['private', privatePosts, privateCookie, ensurePrivate]]) {
+  test(kind + ' posts enforce member ownership and operator moderation, including legacy posts', async t => {
+    let viewer = { id: 'owner-id', username: 'owner' };
+    t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: viewer.id, user_metadata: { username: 'lsh451600' } }) : Response.json([{ username: viewer.username }]));
+    const settings = { ...env(t), RECIPE_PASSWORD: '0018', RECIPE_ADMIN_PASSWORD: 'a-secure-admin-password' };
+    await ensure(settings.MEMBERS_DB);
+    const reader = (await cookie(settings, 'viewer')).split(';')[0];
+    const writer = (await cookie(settings, 'admin')).split(';')[0];
+    const call = (method, id, data, { signed = true, access = reader, origin } = {}) => {
+      const req = request(kind + '-posts' + (id ? '?id=' + id : ''), data, signed, origin, method);
+      req.headers.set('Cookie', (req.headers.get('Cookie') || '') + '; ' + access);
+      return handler({ env: settings, request: req });
+    };
+    const created = await call('POST', null, { title: 'Original', body: 'Body' }, { access: writer });
+    assert.equal(created.status, 201); const id = (await created.json()).id;
+    const legacy = await settings.MEMBERS_DB.prepare('INSERT INTO ' + kind + '_posts (title, body, created_at) VALUES (?, ?, ?)').bind('Legacy', 'Body', new Date().toISOString()).run();
+    let listing = await (await call('GET')).json();
+    assert.equal(listing.posts.find(p => p.id === id).canEdit, true);
+    assert.ok(!JSON.stringify(listing).includes('owner-id'));
+    assert.equal((await call('PATCH', id, { title: 'Owner edit', body: 'Updated' })).status, 200);
+    assert.equal((await call('PATCH', id, { title: 'x', body: 'y' }, { origin: 'https://other.test' })).status, 403);
+    assert.equal((await call('DELETE', id, null, { signed: false, access: writer })).status, 403);
+    viewer = { id: 'other-id', username: 'other' };
+    assert.equal((await call('PATCH', id, { title: 'Forbidden', body: 'Body' })).status, 403);
+    assert.equal((await call('DELETE', id)).status, 403);
+    listing = await (await call('GET')).json(); assert.ok(listing.posts.every(p => !p.canEdit && !p.canDelete));
+    viewer = { id: 'operator-id', username: 'lsh451600' };
+    listing = await (await call('GET')).json(); assert.ok(listing.posts.every(p => p.canEdit && p.canDelete));
+    assert.equal((await call('PATCH', legacy.meta.last_row_id, { title: 'Operator edit', body: 'Updated' })).status, 200);
+    assert.equal((await call('DELETE', legacy.meta.last_row_id)).status, 200);
+    assert.equal((await call('DELETE', id)).status, 200);
+    assert.equal((await call('DELETE', id)).status, 404);
+  });
+}

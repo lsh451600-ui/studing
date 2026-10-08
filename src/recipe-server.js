@@ -1,3 +1,4 @@
+import { canManagePost } from './board-permissions.js';
 export function reply(status, data, cookies = []) {
   const headers = new Headers({ 'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex, nofollow' });
@@ -70,7 +71,7 @@ export const POST_SCHEMA = `CREATE TABLE IF NOT EXISTS recipe_posts (
 export async function ensurePosts(db) {
   await db.prepare(POST_SCHEMA).run();
   const columns = new Set((await db.prepare('PRAGMA table_info(recipe_posts)').all()).results.map(column => column.name));
-  for (const [name, definition] of [['category', "TEXT NOT NULL DEFAULT '미분류'"], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
+  for (const [name, definition] of [['author_id', 'TEXT'], ['category', "TEXT NOT NULL DEFAULT '미분류'"], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
     if (columns.has(name)) continue;
     try { await db.prepare(`ALTER TABLE recipe_posts ADD COLUMN ${name} ${definition}`).run(); }
     catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
@@ -86,16 +87,16 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   await db.prepare('DELETE FROM recipe_limits WHERE expires_at < ?').bind(now).run();
   return row.attempts <= maximum;
 }
-export async function listPosts(db, before = null, { q = '', category = '' } = {}) {
+export async function listPosts(db, before = null, { q = '', category = '', identity = null } = {}) {
   await ensurePosts(db);
-  const fields = 'id, title, body, category, created_at, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
+  const fields = 'id, author_id, title, body, category, created_at, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
   const filters = [], values = [];
   if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
   if (category) { filters.push('category = ?'); values.push(category); }
   if (before) { filters.push('id < ?'); values.push(before); }
   const query = db.prepare(`SELECT ${fields} FROM recipe_posts${filters.length ? ' WHERE ' + filters.join(' AND ') : ''} ORDER BY id DESC LIMIT 21`).bind(...values);
   const { results } = await query.all();
-  const posts = results.slice(0, 20).map(post => ({ ...post,
+  const posts = results.slice(0, 20).map(({ author_id, ...post }) => ({ ...post, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id),
     image_url: post.has_image ? `/api/recipe-image?id=${post.id}` : null,
     attachment_url: post.has_attachment ? `/api/recipe-file?id=${post.id}` : null }));
   return { posts, next: results.length > 20 ? posts[posts.length - 1].id : null };

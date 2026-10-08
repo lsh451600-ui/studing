@@ -17,7 +17,7 @@ export async function onRequest({ request, env }) {
         const comments = await db.prepare('SELECT id, author_id, author, body, created_at FROM community_comments WHERE post_id = ? ORDER BY id DESC LIMIT 100').bind(id).all();
         const { deletableCommentIds, ...permissions } = await postPermissions(request, env, row.author_id, comments.results);
         const { author_id, ...post } = row;
-        return reply(200, '', { post, comments: comments.results.reverse().map(({ author_id, ...comment }) => ({ ...comment, canDelete: deletableCommentIds.includes(comment.id) })), permissions });
+        return reply(200, '', { post, comments: comments.results.reverse().map(({ author_id, ...comment }) => ({ ...comment, canEdit: deletableCommentIds.includes(comment.id), canDelete: deletableCommentIds.includes(comment.id) })), permissions });
       }
       const before = params.has('before') ? idOf(params.get('before')) : null;
       if (params.has('before') && !before) return reply(400, '페이지 정보를 확인해 주세요.');
@@ -50,7 +50,7 @@ export async function onRequest({ request, env }) {
         ]);
         return reply(200, '게시물을 삭제했습니다.', { id }, auth.session.cookies);
       }
-      if (post.author_id !== auth.session.user.id) return reply(403, '작성자만 수정할 수 있습니다.', {}, auth.session.cookies);
+      if (post.author_id !== auth.session.user.id && !auth.isAdmin) return reply(403, '작성자 또는 운영자만 수정할 수 있습니다.', {}, auth.session.cookies);
       const title = typeof data.title === 'string' ? data.title.trim() : '', body = typeof data.body === 'string' ? data.body.trim() : '';
       if (!title || title.length > 100 || !body || body.length > 10000) return reply(400, '제목은 100자, 내용은 10,000자 이내로 입력해 주세요.', {}, auth.session.cookies);
       await db.prepare('UPDATE community_posts SET title = ?, body = ? WHERE id = ?').bind(title, body, id).run();

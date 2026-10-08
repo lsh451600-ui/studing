@@ -7,6 +7,8 @@ on:
       - 'src/member-auth.js'
       - 'src/account-auth.js'
       - 'src/community.js'
+      - 'src/board-permissions.js'
+      - 'assets/js/post-actions.js'
       - 'tests/community.test.js'
       - 'tests/board-ui.cjs'
       - 'assets/js/board.js'

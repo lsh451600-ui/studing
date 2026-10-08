@@ -46,8 +46,12 @@ const { chromium } = require('playwright');
             assert.ok(index >= 0); comments.splice(index, 1);
             return route.fulfill({ json: { id: Number(url.searchParams.get('id')) } });
           }
+          if (req.method() === 'PATCH') {
+            comments.find(c => c.id === Number(url.searchParams.get('id'))).body = req.postDataJSON().body;
+            return route.fulfill({ json: { id: Number(url.searchParams.get('id')) } });
+          }
           const data = req.postDataJSON(); assert.equal(data.postId, 1); commentWrites++;
-          comments.push({ canDelete: true, id: commentWrites, body: data.body, author: '회원', created_at: '2026-10-07T02:00:00Z' });
+          comments.push({ canEdit: true, canDelete: true, id: commentWrites, body: data.body, author: '회원', created_at: '2026-10-07T02:00:00Z' });
           return route.fulfill({ json: { id: commentWrites } });
         }
         return route.continue();
@@ -77,8 +81,15 @@ const { chromium } = require('playwright');
       assert.ok(await page.locator('#board-login-hint').isHidden());
       await page.locator('#board-comment-body').fill('좋은 이야기입니다.'); await page.locator('#board-comment-submit').click();
       await page.waitForFunction(() => document.querySelectorAll('.board-comment').length === 1); assert.equal(commentWrites, 1);
+      assert.ok(await page.locator('#board-comment-submit').evaluate(element => Math.abs(element.getBoundingClientRect().right - document.querySelector('#board-comment-body').getBoundingClientRect().right) < 1));
+      assert.equal(await page.locator('#board-author strong').evaluate(element => getComputedStyle(element).fontWeight), '700');
+      assert.ok(!(await page.locator('#board-author').textContent()).includes('한국 시간'));
+      await page.getByRole('button', { name: '댓글 수정', exact: true }).click();
+      await page.locator('.board-comment-edit textarea').fill('수정한 댓글');
+      await page.locator('.board-comment-edit button[type=submit]').click();
+      await page.waitForFunction(() => document.querySelector('.board-comment-body').textContent === '수정한 댓글');
       page.once('dialog', dialog => dialog.accept());
-      await page.getByRole('button', { name: '내 댓글 삭제' }).click();
+      await page.getByRole('button', { name: '댓글 삭제', exact: true }).click();
       await page.waitForFunction(() => document.querySelectorAll('.board-comment').length === 0);
       assert.equal(comments.length, 0);
       await page.locator('#board-heading-link').click();
