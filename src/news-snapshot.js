@@ -1,5 +1,5 @@
 export const snapshot = {
-  "updated_at": "2026-10-08T13:36:56.910758+00:00",
+  "updated_at": "2026-10-08T13:44:44.594942+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A30d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -93,5 +93,5 @@ export const snapshot = {
       "published_at": "2026-10-02T02:31:09+00:00"
     }
   ],
-  "new_articles": 1
+  "new_articles": 0
 };
