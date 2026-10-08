@@ -12,7 +12,7 @@ export async function onRequest({ request, env }) {
       const params = new URL(request.url).searchParams;
       if (params.has('id')) {
         const id = idOf(params.get('id')); if (!id) return reply(400, '게시물 번호를 확인해 주세요.');
-        const row = await db.prepare('SELECT id, author_id, author, title, body, created_at FROM community_posts WHERE id = ?').bind(id).first();
+        const row = await db.prepare('SELECT id, author_id, author, title, body, created_at, views FROM community_posts WHERE id = ?').bind(id).first();
         if (!row) return reply(404, '게시물이 없습니다.');
         const comments = await db.prepare('SELECT id, author_id, author, body, created_at FROM community_comments WHERE post_id = ? ORDER BY id DESC LIMIT 100').bind(id).all();
         const { deletableCommentIds, ...permissions } = await postPermissions(request, env, row.author_id, comments.results);
@@ -23,7 +23,7 @@ export async function onRequest({ request, env }) {
       if (params.has('before') && !before) return reply(400, '페이지 정보를 확인해 주세요.');
       const search = (params.get('q') || '').trim();
       if (search.length > 100) return reply(400, '검색어는 100자 이내로 입력해 주세요.');
-      const fields = 'p.id, p.author, p.title, p.created_at, (SELECT COUNT(*) FROM community_comments c WHERE c.post_id = p.id) AS comments';
+      const fields = 'p.id, p.author, p.title, p.created_at, p.views, (SELECT COUNT(*) FROM community_comments c WHERE c.post_id = p.id) AS comments';
       const filters = [], values = [];
       if (search) { filters.push('(instr(lower(p.title), lower(?)) > 0 OR instr(lower(p.body), lower(?)) > 0)'); values.push(search, search); }
       if (before) { filters.push('p.id < ?'); values.push(before); }

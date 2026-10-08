@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
+import { onRequest as views } from '../functions/api/board-views.js';
+import { onRequest as recipeEntry } from '../functions/api/recipes.js';
+import { onRequest as privateEntry } from '../functions/api/private.js';
 import { onRequest as posts } from '../functions/api/board-posts.js';
 import { onRequest as comments } from '../functions/api/board-comments.js';
 import { onRequest as recipePosts } from '../functions/api/recipe-posts.js';
@@ -155,3 +158,57 @@ for (const [kind, handler, cookie, ensure] of [['recipe', recipePosts, recipeCoo
     assert.equal((await call('DELETE', id)).status, 404);
   });
 }
+
+test('views persist atomically, repeat reads are deduplicated, and list reads do not increment', async t => {
+  const settings = env(t); await initialize(settings.MEMBERS_DB);
+  await settings.MEMBERS_DB.prepare('INSERT INTO community_posts (author_id, author, title, body, created_at) VALUES (?, ?, ?, ?, ?)').bind('owner', 'Owner', 'Title', 'Body', new Date().toISOString()).run();
+  let list = await (await posts({ env: settings, request: request('board-posts') })).json(); assert.equal(list.posts[0].views, 0);
+  const open = cookie => {
+    const req = request('board-views?id=1', null, false, undefined, 'POST'); if (cookie) req.headers.set('Cookie', cookie);
+    return views({ env: settings, request: req });
+  };
+  const first = await open(); assert.equal(first.status, 200); assert.equal((await first.json()).views, 1);
+  const cookie = first.headers.getSetCookie()[0].split(';')[0];
+  assert.ok(first.headers.getSetCookie()[0].includes('Max-Age=1800'));
+  assert.equal((await (await open(cookie)).json()).views, 1);
+  assert.equal((await (await open()).json()).views, 2);
+  list = await (await posts({ env: settings, request: request('board-posts') })).json(); assert.equal(list.posts[0].views, 2);
+  assert.equal((await views({ env: settings, request: request('board-views?id=1') })).status, 405);
+  assert.equal((await views({ env: settings, request: request('board-views?id=1', null, false, 'https://other.test', 'POST') })).status, 403);
+  assert.equal((await views({ env: settings, request: request('board-views?id=invalid', null, false, undefined, 'POST') })).status, 400);
+  assert.equal((await views({ env: settings, request: request('board-views?id=999', null, false, undefined, 'POST') })).status, 404);
+});
+for (const [kind, entry, handler] of [['recipe', recipeEntry, recipePosts], ['private', privateEntry, privatePosts]]) {
+  test(kind + ' verified operator can publish without RECIPE_ADMIN_PASSWORD; ordinary accounts cannot', async t => {
+    let operator = true;
+    t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user'
+      ? Response.json({ id: 'member-id', user_metadata: { username: 'lsh451600' } })
+      : Response.json([{ username: operator ? 'lsh451600' : 'ordinary-member' }]));
+    const settings = { ...env(t), RECIPE_PASSWORD: 'reader-password' };
+    const entered = await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: settings.RECIPE_PASSWORD }, true) });
+    assert.equal(entered.status, 200);
+    const access = await entered.json(); assert.equal(access.canWrite, true); assert.equal(access.accountWriter, true); assert.equal(access.adminConfigured, true);
+    const cookies = entered.headers.getSetCookie().filter(c => !c.includes('Max-Age=0')).map(c => c.split(';')[0]).join('; ');
+    const create = () => {
+      const req = request(kind + '-posts', { title: 'Operator post', body: 'Saved content' }, true);
+      req.headers.set('Cookie', '__Host-member-access=verified; ' + cookies);
+      return handler({ env: settings, request: req });
+    };
+    assert.equal((await create()).status, 201);
+    operator = false;
+    assert.equal((await create()).status, 403);
+    const normal = await (await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: settings.RECIPE_PASSWORD }, true) })).json();
+    assert.equal(normal.canWrite, false); assert.equal(normal.accountWriter, false);
+    operator = true;
+    assert.equal((await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: 'wrong-password' }, true) })).status, 401);
+  });
+}
+
+test('view-count migration preserves existing posts and starts them at zero', async t => {
+  const db = database(t);
+  await db.prepare('CREATE TABLE community_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id TEXT NOT NULL, author TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL)').run();
+  await db.prepare('INSERT INTO community_posts (author_id, author, title, body, created_at) VALUES (?, ?, ?, ?, ?)').bind('owner', 'Owner', 'Existing title', 'Existing body', new Date().toISOString()).run();
+  await initialize(db); await initialize(db);
+  const post = await db.prepare('SELECT title, body, views FROM community_posts WHERE id = 1').first();
+  assert.equal(post.title, 'Existing title'); assert.equal(post.body, 'Existing body'); assert.equal(post.views, 0);
+});

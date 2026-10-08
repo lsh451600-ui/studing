@@ -4,11 +4,13 @@ import { reply, sameOrigin, readJSON, authorized, ensurePosts, listPosts, valida
 export async function onRequest({ request, env }) {
   if (!['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) return reply(405, { message: '지원하지 않는 요청입니다.' });
   if (request.method !== 'GET' && !sameOrigin(request)) return reply(403, { message: '홈페이지에서 다시 시도해 주세요.' });
-  if (!await authorized(request, env, request.method === 'POST' ? 'admin' : 'viewer')) return reply(403, { message: request.method === 'POST' ? '작성자 인증이 필요합니다.' : '비밀자료 비밀번호를 다시 입력해 주세요.' });
-  if (!env.MEMBERS_DB) return reply(503, { message: '게시판을 준비 중입니다.' });
   try {
-    const db = env.MEMBERS_DB;
     const identity = await boardIdentity(request, env);
+    const canRead = await authorized(request, env, 'viewer');
+    const canWrite = identity?.isAdmin || await authorized(request, env, 'admin');
+    if (!canRead || (request.method === 'POST' && !canWrite)) return reply(403, { message: request.method === 'POST' ? '운영자 인증이 필요합니다.' : '열람 비밀번호를 다시 입력해 주세요.' });
+    const db = env.MEMBERS_DB;
+    if (!db) return reply(503, { message: '게시판을 준비 중입니다.' });
     if (request.method === 'PATCH' || request.method === 'DELETE') {
       const id = idOf(new URL(request.url).searchParams.get('id'));
       if (!id) return reply(400, { message: '게시물 번호를 확인해 주세요.' });

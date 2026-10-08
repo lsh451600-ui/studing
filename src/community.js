@@ -3,11 +3,16 @@ import { memberProfile } from './social-auth.js';
 import { isOperator } from './board-permissions.js';
 export async function initialize(db) {
   await db.batch([
-    db.prepare('CREATE TABLE IF NOT EXISTS community_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id TEXT NOT NULL, author TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS community_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id TEXT NOT NULL, author TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0)'),
     db.prepare('CREATE TABLE IF NOT EXISTS community_comments (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE, author_id TEXT NOT NULL, author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL)'),
     db.prepare('CREATE INDEX IF NOT EXISTS community_comments_post ON community_comments(post_id, id)'),
     db.prepare('CREATE TABLE IF NOT EXISTS community_limits (key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires_at INTEGER NOT NULL)')
   ]);
+  const columns = (await db.prepare('PRAGMA table_info(community_posts)').all()).results;
+  if (!columns.some(column => column.name === 'views')) {
+    try { await db.prepare('ALTER TABLE community_posts ADD COLUMN views INTEGER NOT NULL DEFAULT 0').run(); }
+    catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
+  }
 }
 export async function member(request, env) {
   if (!settings(env).ready) return { response: reply(503, '로그인 연결을 확인해 주세요.') };

@@ -12,10 +12,12 @@ export async function onRequest({ request, env }) {
   if (typeof data?.password !== 'string' || !data.password.length || data.password.length > 128) return reply(400, { message: '비밀번호를 입력해 주세요.' });
   try {
     if (!await rateLimit(request, env.MEMBERS_DB, 'viewer')) return reply(429, { message: '입력 시도가 많습니다. 15분 후 다시 시도해 주세요.' });
-    const canWrite = adminReady(env) && await matchesPassword(data.password, env.RECIPE_ADMIN_PASSWORD);
-    if (!canWrite && !await matchesPassword(data.password, env.RECIPE_PASSWORD)) return reply(401, { message: '비밀번호가 맞지 않습니다. 다시 입력해 주세요.' });
-    const listing = env.MEMBERS_DB ? await listPosts(env.MEMBERS_DB, null, { identity: await boardIdentity(request, env) }) : { posts: [], next: null };
-    return reply(200, { title: '비밀자료', ...listing, storageAvailable: Boolean(env.MEMBERS_DB), adminConfigured: adminReady(env), canWrite }, [await sessionCookie(env, 'viewer'), canWrite ? await sessionCookie(env, 'admin') : clearCookie('admin')]);
+    const passwordCanWrite = adminReady(env) && await matchesPassword(data.password, env.RECIPE_ADMIN_PASSWORD);
+    if (!passwordCanWrite && !await matchesPassword(data.password, env.RECIPE_PASSWORD)) return reply(401, { message: '비밀번호가 맞지 않습니다. 다시 입력해 주세요.' });
+    const identity = await boardIdentity(request, env);
+    const canWrite = passwordCanWrite || Boolean(identity?.isAdmin);
+    const listing = env.MEMBERS_DB ? await listPosts(env.MEMBERS_DB, null, { identity }) : { posts: [], next: null };
+    return reply(200, { title: '비밀자료', ...listing, storageAvailable: Boolean(env.MEMBERS_DB), adminConfigured: adminReady(env) || Boolean(identity?.isAdmin), accountWriter: Boolean(identity?.isAdmin), canWrite }, [await sessionCookie(env, 'viewer'), passwordCanWrite ? await sessionCookie(env, 'admin') : clearCookie('admin')]);
   } catch { return reply(503, { message: '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' }); }
 }
 

@@ -21,7 +21,7 @@ function rows(posts, append) {
   if (!posts.length && !append) byId('board-list').append(node('p', '첫 이야기를 남겨 주세요.', 'board-empty'));
   for (const post of posts) {
     const link = node('a', '', 'board-row'); link.href = '/board?post=' + post.id;
-    link.append(node('strong', post.title), node('span', post.author + ' · ' + date(post.created_at) + ' · 댓글 ' + post.comments, 'board-meta'));
+    link.append(node('strong', post.title), node('span', post.author + ' · ' + date(post.created_at) + ' · 조회수 ' + (post.views || 0) + ' · 댓글 ' + post.comments, 'board-meta'));
     link.addEventListener('click', event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, '', link.href); loadDetail(post.id); });
     byId('board-list').append(link);
   }
@@ -109,7 +109,11 @@ async function loadDetail(id, focus = true) {
     }
     byId('board-comment-empty').hidden = data.comments.length > 0;
     byId('board-status').textContent = data.permissions?.permissionsUnavailable ? '수정 권한을 확인할 수 없습니다. 글은 계속 볼 수 있으며 잠시 후 다시 시도해 주세요.' : ''; updateAuth();
-    if (focus) byId('board-title').focus({ preventScroll: true });
+    if (focus) {
+      byId('board-title').focus({ preventScroll: true });
+      // Only opening a post counts; comment and permission refreshes keep the same count.
+      await api('/api/board-views?id=' + data.post.id, { method: 'POST' }).catch(() => {});
+    }
   } catch (error) { if (version === generation) byId('board-status').textContent = error.message; }
 }
 for (const id of ['board-heading-link']) byId(id).addEventListener('click', event => {

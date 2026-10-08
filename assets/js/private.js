@@ -4,7 +4,7 @@ const form = byId('recipe-access-form'), input = byId('recipe-password'), submit
 const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
 const board = byId('recipe-board'), adminPanel = byId('recipe-admin-panel'), editor = byId('recipe-editor');
 const adminForm = byId('recipe-admin-form'), postForm = byId('recipe-post-form');
-let pending = false, posting = false, next = null, previewURL = null, generation = 0, owner = false, storage = false, configured = false;
+let pending = false, posting = false, next = null, previewURL = null, generation = 0, owner = false, storage = false, configured = false, accountWriter = false;
 function clearPreview() {
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = null; byId('recipe-image-preview').removeAttribute('src'); byId('recipe-image-preview').hidden = true;
@@ -64,11 +64,11 @@ form.addEventListener('submit', async event => {
     if (current !== generation) return;
     renderPosts(data.posts || []); next = data.next; byId('recipe-more').hidden = !next;
     board.hidden = false; gate.hidden = true;
-    owner = Boolean(data.canWrite); storage = Boolean(data.storageAvailable); configured = Boolean(data.adminConfigured);
+    owner = Boolean(data.canWrite); storage = Boolean(data.storageAvailable); configured = Boolean(data.adminConfigured); accountWriter = Boolean(data.accountWriter);
     editor.hidden = false;
     byId('recipe-admin-open').disabled = false;
-    byId('recipe-admin-open').hidden = owner; byId('recipe-admin-exit').hidden = !owner;
-    byId('recipe-board-status').textContent = !storage ? '게시물 저장을 위해 Cloudflare D1의 MEMBERS_DB 연결이 필요합니다.' : !configured ? '운영자만 등록할 수 있도록 Cloudflare에 RECIPE_ADMIN_PASSWORD를 설정해 주세요. 입력한 내용은 이 화면에 유지됩니다.' : owner ? '' : '제목과 내용을 작성한 뒤 운영자 인증을 완료하면 등록할 수 있습니다.';
+    byId('recipe-admin-open').hidden = owner; byId('recipe-admin-exit').hidden = !owner || accountWriter;
+    byId('recipe-board-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : owner ? '' : '운영자 계정으로 로그인하면 게시물을 등록할 수 있습니다.';
     byId('recipe-board-heading').focus();
   } catch (error) { status.textContent = error.message; }
   finally {
@@ -117,7 +117,7 @@ function encodeFile(file) {
 }
 postForm.addEventListener('submit', async event => {
   event.preventDefault(); if (posting || !postForm.reportValidity()) return;
-  if (!storage || !configured) { byId('recipe-post-status').textContent = !storage ? '저장소가 연결되지 않았습니다. Cloudflare D1 바인딩 MEMBERS_DB를 확인해 주세요.' : '운영자 비밀번호가 설정되지 않았습니다. Cloudflare 환경 변수 RECIPE_ADMIN_PASSWORD를 설정해 주세요.'; return; }
+  if (!storage || !configured) { byId('recipe-post-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : '운영자 계정으로 로그인한 뒤 등록해 주세요.'; return; }
   if (!owner) { byId('recipe-post-status').textContent = '운영자 인증 후 등록하기를 다시 눌러 주세요.'; openWriter(); return; }
   posting = true; byId('recipe-post-submit').disabled = true; postForm.setAttribute('aria-busy', 'true');
   const postStatus = byId('recipe-post-status'); postStatus.textContent = '게시물을 저장하고 있습니다.';

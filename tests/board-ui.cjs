@@ -19,7 +19,7 @@ const { chromium } = require('playwright');
   try {
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      let authenticated = false, missing = false, commentWrites = 0, postWrites = 0;
+      let authenticated = false, missing = false, commentWrites = 0, postWrites = 0, viewWrites = 0;
       const posts = [{ id: 1, title: '외식 이야기', body: '<script>window.injected = true</script>', author: '회원', created_at: '2026-10-07T01:00:00Z', comments: 0 }], comments = [];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
@@ -28,6 +28,11 @@ const { chromium } = require('playwright');
         if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
         if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: {} } });
         if (url.pathname === '/api/visitors') return route.fulfill({ json: { available: true, today: 1, total: 2 } });
+        if (url.pathname === '/api/board-views') {
+          assert.equal(req.method(), 'POST'); viewWrites++;
+          const post = posts.find(p => p.id === Number(url.searchParams.get('id'))); post.views = (post.views || 0) + 1;
+          return route.fulfill({ json: { views: post.views } });
+        }
         if (url.pathname === '/api/board-posts') {
           if (missing) return route.fulfill({ status: 503, json: { message: '게시판 저장소 연결이 필요합니다.' } });
           if (req.method() === 'POST') {
@@ -98,9 +103,16 @@ const { chromium } = require('playwright');
       await page.getByRole('button', { name: '댓글 삭제', exact: true }).click();
       await page.waitForFunction(() => document.querySelectorAll('.board-comment').length === 0);
       assert.equal(comments.length, 0);
+      assert.equal(viewWrites, 1, 'comment and login refreshes do not count new views');
       await page.locator('#board-heading-link').click();
       await page.waitForSelector('.board-row');
       assert.equal(new URL(page.url()).pathname, '/board');
+      await page.waitForFunction(() => document.querySelector('.board-row .board-meta').textContent.includes('조회수 1 · 댓글'));
+      assert.match(await page.locator('.board-row .board-meta').textContent(), /조회수 1 · 댓글/);
+      if (width >= 768) assert.ok(await page.locator('.board-row .board-meta').evaluate(meta => {
+        const row = meta.parentElement.getBoundingClientRect(), box = meta.getBoundingClientRect(), title = meta.previousElementSibling.getBoundingClientRect();
+        return Math.abs(box.right - row.right + 4) < 1 && box.left > title.left && Math.abs((box.top + box.bottom) / 2 - (title.top + title.bottom) / 2) < 1;
+      }));
       await page.locator('.board-row').click();
       await page.waitForSelector('#board-detail:not([hidden])');
       await page.locator('#board-edit-open').click();

@@ -21,7 +21,7 @@ const { chromium } = require('playwright');
     browser = await chromium.launch();
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      let admin = false, submissions = 0;
+      let admin = false, submissions = 0, accountWriterMode = false;
       const posts = [{ canEdit: true, canDelete: true, id: 'first', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
@@ -32,7 +32,7 @@ const { chromium } = require('playwright');
         if (url.pathname === '/api/recipes') {
           if (req.method() === 'DELETE') { admin = false; return route.fulfill({ json: {} }); }
           assert.equal(req.postDataJSON().password, 'reader-password');
-          return route.fulfill({ json: { posts, adminConfigured: true, storageAvailable: true, next: null } });
+          return route.fulfill({ json: { posts, adminConfigured: true, canWrite: accountWriterMode, accountWriter: accountWriterMode, storageAvailable: true, next: null } });
         }
         if (url.pathname === '/api/recipe-admin') {
           if (req.method() === 'DELETE') { admin = false; return route.fulfill({ json: {} }); }
@@ -49,9 +49,9 @@ const { chromium } = require('playwright');
             return route.fulfill({ json: {} });
           }
           if (req.method() === 'POST') {
-            assert.ok(admin, 'only authenticated owner submits a post');
+            assert.ok(admin || accountWriterMode, 'only authenticated owner submits a post');
             const payload = req.postDataJSON(); assert.equal(payload.title, '새 레시피'); assert.equal(payload.body, '새 레시피 조리 순서');
-            assert.equal(payload.image.type, 'image/png'); assert.ok(payload.image.base64.length > 0);
+            if (!accountWriterMode) { assert.equal(payload.image.type, 'image/png'); assert.ok(payload.image.base64.length > 0); }
             posts.unshift({ ...payload, id: 'new', created_at: '2026-10-07T02:00:00Z' }); submissions++;
             return route.fulfill({ json: { success: true } });
           }
@@ -100,7 +100,18 @@ const { chromium } = require('playwright');
       assert.equal(posts.length, 1);
       await page.locator('#recipe-admin-exit').click(); await page.waitForFunction(() => !document.querySelector('#recipe-editor').hidden);
       assert.equal(admin, false);
-      console.log('PASS recipe board gate, owner authentication, photo submission', width);
+      accountWriterMode = true;
+      await page.goto(origin + '/recipes');
+      await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
+      await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
+      assert.ok(await page.locator('#recipe-admin-open').isHidden()); assert.ok(await page.locator('#recipe-admin-exit').isHidden());
+      assert.ok(!(await page.locator('#recipe-board-status').textContent()).includes('RECIPE_ADMIN_PASSWORD'));
+      await page.locator('#recipe-post-category').selectOption('한식');
+      await page.locator('#recipe-post-title').fill('새 레시피'); await page.locator('#recipe-post-body').fill('새 레시피 조리 순서');
+      await page.locator('#recipe-post-submit').click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 2);
+      assert.equal(submissions, 2);
+      console.log('PASS board gate, owner authentication, photo submission, account operator publishing', width);
       await context.close();
     }
   } finally { if (browser) await browser.close(); await new Promise(done => server.close(done)); }
