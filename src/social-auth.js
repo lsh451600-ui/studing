@@ -31,6 +31,7 @@ export function readFlow(request, kind = 'google') {
 export async function memberProfile(env, session) {
   const result = await upstream(env, '/rest/v1/member_profiles?select=username,nickname,phone&id=eq.' + encodeURIComponent(session.user.id), { token: session.access });
   if (result.ok && Array.isArray(result.data)) return result.data[0] || null;
+  if (result.status !== 400) throw new Error('profile_unavailable');
   // Keep login and account pages available while an existing deployment awaits the SQL migration.
   const legacy = await upstream(env, '/rest/v1/member_profiles?select=username,phone&id=eq.' + encodeURIComponent(session.user.id), { token: session.access });
   if (!legacy.ok || !Array.isArray(legacy.data)) throw new Error('profile_unavailable');
