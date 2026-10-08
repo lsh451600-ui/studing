@@ -16,6 +16,7 @@ export async function onRequest({ request, env }) {
     if (request.method === 'GET') {
       const profile = await memberProfile(env, session);
       return reply(200, '', { account: { username: profile?.username || user.user_metadata?.username || '회원',
+        nickname: profile?.nickname || '',
         email: user.email || '', phone: profile?.phone || '', createdAt: user.created_at || null,
         providers, passwordRequired: providers.includes('email') } }, session.cookies);
     }

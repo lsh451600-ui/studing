@@ -12,7 +12,7 @@ supabase link --project-ref <프로젝트-reference-id>
 supabase db push
 ```
 
-적용 파일: `supabase/migrations/20261007090000_member_profiles.sql`.
+기존 프로젝트에는 저장소의 마이그레이션 전체를 순서대로 적용합니다. 닉네임 기능에는 `20261008120000_member_nicknames.sql`이 포함되어야 합니다.
 회원 프로필 생성 트리거는 신규 Auth 사용자에게 username과 phone 메타데이터를 요구합니다. 다른 앱과 공유하는 기존 프로젝트라면 기존 가입 흐름과의 호환성을 먼저 확인하세요. 기존 Supabase 사용자는 자동으로 프로필이 생성되지 않습니다.
 
 ## 2. Cloudflare Pages 환경 변수
@@ -49,6 +49,7 @@ Confirm signup 이메일 템플릿의 인증 링크를 다음과 같이 설정�
 ## 마이페이지 · 비밀번호 찾기 · 회원탈퇴
 
 - `/mypage`: 로그인한 회원 본인의 아이디, 이메일, 전화번호, 가입일, 로그인 방식을 표시합니다. `/api/account`가 서버에서 세션을 검증합니다.
+- 마이페이지의 게시글 닉네임은 자유게시판의 새 글·댓글과 기존 본인 글·댓글 작성자 표시에 사용됩니다. 닉네임은 한글·영문·숫자·밑줄 2~20자이며 중복해서 사용할 수 없습니다.
 - `/forgot-password`: 아이디 또는 이메일로 비밀번호 재설정 메일을 요청합니다. 등록 여부나 계정 이메일은 응답에 노출하지 않습니다.
 - `/reset-password`: 이메일 링크의 인증 정보를 검증한 뒤 12~128자의 새 비밀번호를 설정합니다. 성공하면 재로그인을 안내하고 기존 세션의 종료를 요청합니다.
 - Supabase URL Configuration → Redirect URLs에 `https://dining.win/reset-password`를 추가하면 재설정 화면으로 직접 이동합니다. 설정하지 않아 기본 Site URL로 돌아오는 표준 recovery 링크도 홈페이지에서 재설정 화면으로 연결합니다.

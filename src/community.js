@@ -14,7 +14,8 @@ export async function member(request, env) {
   if (!session.user) return { response: reply(401, '로그인 후 작성할 수 있습니다.', {}, session.cookies) };
   const profile = await memberProfile(env, session);
   if (!profile) return { response: reply(403, '회원 정보를 입력한 뒤 작성해 주세요.', {}, session.cookies) };
-  return { session, author: profile.username };
+  // Profiles created before the nickname migration may not have a nickname yet.
+  return { session, author: profile.nickname || profile.username };
 }
 export async function allowWrite(db, user, scope) {
   const now = Date.now(), period = Math.floor(now / 600000);

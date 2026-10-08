@@ -17,6 +17,7 @@ async function load() {
   try {
     const { account } = await accountAPI();
     byId('account-username').textContent = account.username;
+    byId('account-nickname').value = account.nickname || '';
     byId('account-email').textContent = account.email || '등록된 이메일 없음';
     byId('account-phone').textContent = account.phone || '등록된 전화번호 없음';
     byId('account-created').textContent = account.createdAt ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'long' }).format(new Date(account.createdAt)) : '확인할 수 없음';
@@ -28,6 +29,23 @@ async function load() {
     status.textContent = '';
   } catch (error) { status.textContent = error.message || '회원 정보를 불러오지 못했습니다. 새로고침해 주세요.'; status.dataset.error = 'true'; }
 }
+byId('nickname-form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  if (pending || !form.reportValidity()) return;
+  const feedback = byId('nickname-status');
+  pending = true; byId('nickname-submit').disabled = true;
+  feedback.textContent = '닉네임을 저장하고 있습니다.'; delete feedback.dataset.error;
+  try {
+    const result = await fetch('/api/nickname', { method: 'POST', credentials: 'same-origin', cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nickname: byId('account-nickname').value }) });
+    const data = await result.json();
+    if (!result.ok) throw new Error(data.message || '닉네임을 저장하지 못했습니다.');
+    byId('account-nickname').value = data.nickname;
+    feedback.textContent = '닉네임을 저장했습니다. 새로 작성하는 글과 댓글에 적용됩니다.';
+  } catch (error) { feedback.textContent = error.message || '닉네임을 저장하지 못했습니다. 다시 시도해 주세요.'; feedback.dataset.error = 'true'; }
+  finally { pending = false; byId('nickname-submit').disabled = false; }
+});
 byId('withdrawal-open').addEventListener('click', () => { byId('withdrawal-status').textContent = ''; dialog.showModal(); });
 byId('withdrawal-close').addEventListener('click', () => dialog.close());
 dialog.addEventListener('cancel', event => { if (pending) event.preventDefault(); });
