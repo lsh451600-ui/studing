@@ -2,20 +2,20 @@ import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
 const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');
 const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
-const board = byId('recipe-board'), adminPanel = byId('recipe-admin-panel'), editor = byId('recipe-editor');
-const adminForm = byId('recipe-admin-form'), postForm = byId('recipe-post-form');
-let pending = false, posting = false, next = null, previewURL = null, generation = 0, owner = false, storage = false, configured = false, accountWriter = false;
+const board = byId('recipe-board'), editor = byId('recipe-editor');
+const postForm = byId('recipe-post-form');
+let pending = false, posting = false, next = null, previewURL = null, generation = 0, storage = false, accountWriter = false;
 function clearPreview() {
   if (previewURL) URL.revokeObjectURL(previewURL);
   previewURL = null; byId('recipe-image-preview').removeAttribute('src'); byId('recipe-image-preview').hidden = true;
 }
 function resetView() {
-  generation++; owner = false; storage = false; configured = false; form.reset(); input.type = 'password'; content.replaceChildren();
-  content.hidden = true; board.hidden = true; adminPanel.hidden = true; editor.hidden = true;
-  adminForm.reset(); postForm.reset(); clearPreview(); gate.hidden = false; status.textContent = '';
-  byId('recipe-admin-status').textContent = ''; byId('recipe-post-status').textContent = '';
+  generation++; storage = false; accountWriter = false; form.reset(); input.type = 'password'; content.replaceChildren();
+  content.hidden = true; board.hidden = true; editor.hidden = true;
+  postForm.reset(); clearPreview(); gate.hidden = false; status.textContent = '';
+  byId('recipe-post-status').textContent = '';
   byId('recipe-board-status').textContent = ''; next = null;
-  byId('recipe-admin-open').hidden = false; byId('recipe-admin-exit').hidden = true;
+  byId('recipe-admin-open').hidden = true;
 }
 async function api(path, options = {}) {
   const response = await fetch(path, { cache: 'no-store', credentials: 'same-origin', ...options });
@@ -76,11 +76,11 @@ form.addEventListener('submit', async event => {
     if (current !== generation) return;
     renderPosts(data.posts || []); next = data.next; byId('recipe-more').hidden = !next;
     board.hidden = false; gate.hidden = true;
-    owner = Boolean(data.canWrite); storage = Boolean(data.storageAvailable); configured = Boolean(data.adminConfigured); accountWriter = Boolean(data.accountWriter);
-    editor.hidden = false;
+    storage = Boolean(data.storageAvailable); accountWriter = data.accountWriter === true;
+    editor.hidden = !accountWriter;
     byId('recipe-admin-open').disabled = false;
-    byId('recipe-admin-open').hidden = owner; byId('recipe-admin-exit').hidden = !owner || accountWriter;
-    byId('recipe-board-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : owner ? '' : '운영자 계정으로 로그인하면 게시물을 등록할 수 있습니다.';
+    byId('recipe-admin-open').hidden = !accountWriter;
+    byId('recipe-board-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : '';
     byId('recipe-board-heading').focus();
   } catch (error) { status.textContent = error.message; }
   finally {
@@ -88,30 +88,23 @@ form.addEventListener('submit', async event => {
     pending = false; submit.disabled = false; form.removeAttribute('aria-busy');
   }
 });
-function openWriter() {
-  editor.hidden = false;
-  if (owner || !configured || !storage) { byId('recipe-post-title').focus(); return; }
-  adminPanel.hidden = false; byId('recipe-admin-password').focus();
-}
-byId('recipe-admin-open').addEventListener('click', openWriter);
-adminForm.addEventListener('submit', async event => {
-  event.preventDefault(); if (!adminForm.reportValidity()) return;
-  const button = byId('recipe-admin-submit'); button.disabled = true;
-  const current = generation;
-  try {
-    await api('/api/recipe-admin', jsonOptions({ password: byId('recipe-admin-password').value }));
-    if (current !== generation) return;
-    owner = true; adminPanel.hidden = true; editor.hidden = false; byId('recipe-admin-open').hidden = true;
-    byId('recipe-admin-exit').hidden = false; byId('recipe-post-title').focus();
-  } catch (error) { byId('recipe-admin-status').textContent = error.message; }
-  finally { byId('recipe-admin-password').value = ''; button.disabled = false; }
+byId('recipe-admin-open').addEventListener('click', () => {
+  if (!accountWriter) return;
+  editor.hidden = false; byId('recipe-post-title').focus();
 });
-byId('recipe-admin-exit').addEventListener('click', async () => {
-  if (posting) return;
-  try {
-    await api('/api/recipe-admin', { method: 'DELETE' }); owner = false; editor.hidden = false; postForm.reset(); clearPreview();
-    byId('recipe-admin-open').hidden = false; byId('recipe-admin-exit').hidden = true;
-  } catch (error) { byId('recipe-board-status').textContent = error.message; }
+byId('recipe-heading-link').addEventListener('click', async event => {
+  if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  if (!gate.hidden) { byId('recipe-password').focus(); return; }
+  generation++; next = null; editor.hidden = true;
+  byId('recipe-search-form').reset();
+  for (const post of content.querySelectorAll('details[open]')) post.open = false;
+  try { await refreshPosts(); byId('recipe-board-heading').focus({ preventScroll: true }); }
+  catch (error) { byId('recipe-board-status').textContent = error.message; }
+});
+window.addEventListener('member-session-change', () => {
+  // A changed login must recheck publishing rights before the editor is shown again.
+  if (gate.hidden) resetView();
 });
 byId('recipe-search-form').addEventListener('submit', async event => {
   event.preventDefault(); next = null;
@@ -155,8 +148,8 @@ function encodeFile(file) {
 }
 postForm.addEventListener('submit', async event => {
   event.preventDefault(); if (posting || !postForm.reportValidity()) return;
-  if (!storage || !configured) { byId('recipe-post-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : '운영자 계정으로 로그인한 뒤 등록해 주세요.'; return; }
-  if (!owner) { byId('recipe-post-status').textContent = '운영자 인증 후 등록하기를 다시 눌러 주세요.'; openWriter(); return; }
+  if (!accountWriter) return;
+  if (!storage) { byId('recipe-post-status').textContent = '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.'; return; }
   posting = true; byId('recipe-post-submit').disabled = true; postForm.setAttribute('aria-busy', 'true');
   const postStatus = byId('recipe-post-status'); postStatus.textContent = '게시물을 저장하고 있습니다.';
   try {

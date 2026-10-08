@@ -7,7 +7,7 @@ export async function onRequest({ request, env }) {
   try {
     const identity = await boardIdentity(request, env);
     const canRead = await authorized(request, env, 'viewer');
-    const canWrite = identity?.isAdmin || await authorized(request, env, 'admin');
+    const canWrite = Boolean(identity?.isAdmin);
     if (!canRead || (request.method === 'POST' && !canWrite)) return reply(403, { message: request.method === 'POST' ? '운영자 인증이 필요합니다.' : '열람 비밀번호를 다시 입력해 주세요.' });
     const db = env.MEMBERS_DB;
     if (!db) return reply(503, { message: '게시판을 준비 중입니다.' });

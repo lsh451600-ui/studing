@@ -137,8 +137,8 @@ for (const [kind, handler, cookie, ensure] of [['recipe', recipePosts, recipeCoo
       req.headers.set('Cookie', (req.headers.get('Cookie') || '') + '; ' + access);
       return handler({ env: settings, request: req });
     };
-    const created = await call('POST', null, { title: 'Original', body: 'Body' }, { access: writer });
-    assert.equal(created.status, 201); const id = (await created.json()).id;
+    const seeded = await settings.MEMBERS_DB.prepare('INSERT INTO ' + kind + '_posts (author_id, title, body, created_at) VALUES (?, ?, ?, ?)').bind('owner-id', 'Original', 'Body', new Date().toISOString()).run();
+    const id = seeded.meta.last_row_id;
     const legacy = await settings.MEMBERS_DB.prepare('INSERT INTO ' + kind + '_posts (title, body, created_at) VALUES (?, ?, ?)').bind('Legacy', 'Body', new Date().toISOString()).run();
     let listing = await (await call('GET')).json();
     assert.equal(listing.posts.find(p => p.id === id).canEdit, true);

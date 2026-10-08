@@ -15,7 +15,7 @@ export async function onRequest({ request, env }) {
     const passwordCanWrite = adminReady(env) && await matchesPassword(data.password, env.RECIPE_ADMIN_PASSWORD);
     if (!passwordCanWrite && !await matchesPassword(data.password, env.RECIPE_PASSWORD)) return reply(401, { message: '비밀번호가 맞지 않습니다. 다시 입력해 주세요.' });
     const identity = await boardIdentity(request, env);
-    const canWrite = passwordCanWrite || Boolean(identity?.isAdmin);
+    const canWrite = Boolean(identity?.isAdmin);
     const listing = env.MEMBERS_DB ? await listPosts(env.MEMBERS_DB, null, { identity }) : { posts: [], next: null };
     return reply(200, { title: '레시피', ...listing, storageAvailable: Boolean(env.MEMBERS_DB), adminConfigured: adminReady(env) || Boolean(identity?.isAdmin), accountWriter: Boolean(identity?.isAdmin), canWrite }, [await sessionCookie(env, 'viewer'), passwordCanWrite ? await sessionCookie(env, 'admin') : clearCookie('admin')]);
   } catch { return reply(503, { message: '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' }); }

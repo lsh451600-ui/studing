@@ -10,9 +10,9 @@ async function login(password, settings = env) {
   const session = new Request('https://example.test/api/recipe-posts', { headers: { Cookie: cookies } });
   return { response, session, data: await response.json() };
 }
-test('owner password at entry creates a server-verified writing session', async () => {
+test('writer password alone unlocks reading without account publishing permission', async () => {
   const { response, session, data } = await login(env.RECIPE_ADMIN_PASSWORD);
-  assert.equal(response.status, 200); assert.equal(data.canWrite, true);
+  assert.equal(response.status, 200); assert.equal(data.canWrite, false); assert.equal(data.accountWriter, false);
   assert.equal(await authorized(session, env, 'admin'), true);
   assert.equal(await authorized(session, env, 'viewer'), true);
 });

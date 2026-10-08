@@ -34,6 +34,11 @@ async function loginAdmin(env, viewer) {
   const response = await admin({ env, request: request('/api/recipe-admin', { method: 'POST', cookie: viewer, data: { password: env.RECIPE_ADMIN_PASSWORD } }) });
   assert.equal(response.status, 200); return viewer + '; ' + cookieOf(response);
 }
+
+function operator(t, env) {
+  Object.assign(env, { SUPABASE_URL: 'https://project.supabase.co', SUPABASE_PUBLISHABLE_KEY: 'public', SUPABASE_SECRET_KEY: 'secret' });
+  t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: 'operator-id' }) : Response.json([{ username: 'lsh451600' }]));
+}
 test('exact passwords and missing configuration fail closed', async () => {
   assert.equal(await matchesPassword('0018', '18'), false);
   assert.equal((await enter({ env: {}, request: request('/api/recipes', { method: 'POST', data: { password: '0018' } }) })).status, 503);
@@ -58,11 +63,12 @@ test('separate owner authentication is required and cookies cannot be promoted',
   const same = { ...env, RECIPE_ADMIN_PASSWORD: env.RECIPE_PASSWORD };
   assert.equal((await admin({ env: same, request: request('/api/recipe-admin', { method: 'POST', cookie: await loginViewer(same), data: { password: same.RECIPE_ADMIN_PASSWORD } }) })).status, 503);
 });
-test('owner writes persist in SQLite, readers can read posts and protected images', async () => {
+test('owner writes persist in SQLite, readers can read posts and protected images', async t => {
   const env = makeEnv(), viewer = await loginViewer(env), owner = await loginAdmin(env, viewer);
+  operator(t, env); const memberCookie = owner + '; __Host-member-access=verified';
   const base64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2y3sAAAAASUVORK5CYII=';
   const data = { title: '한식 레시피', body: '<script>literal text</script>\n재료와 순서', image: { type: 'image/png', base64 } };
-  const created = await posts({ env, request: request('/api/recipe-posts', { method: 'POST', cookie: owner, data }) });
+  const created = await posts({ env, request: request('/api/recipe-posts', { method: 'POST', cookie: memberCookie, data }) });
   assert.equal(created.status, 201); const id = (await created.json()).id;
   const listing = await posts({ env, request: request('/api/recipe-posts', { cookie: viewer }) });
   const list = await listing.json(); assert.equal(list.posts.length, 1); assert.equal(list.posts[0].body, data.body);
@@ -79,10 +85,11 @@ test('write and owner login reject cross-origin and invalid image payloads', asy
   assert.throws(() => validatePost({ title: '', body: 'y' }));
   assert.throws(() => validatePost({ title: 'x', body: 'y', image: { type: 'image/png', base64: 'A'.repeat(1398108) } }));
 });
-test('recipe categories, literal search, and safe non-image downloads persist', async () => {
+test('recipe categories, literal search, and safe non-image downloads persist', async t => {
   const env = makeEnv(), viewer = await loginViewer(env), owner = await loginAdmin(env, viewer);
+  operator(t, env); const memberCookie = owner + '; __Host-member-access=verified';
   const pdf = btoa('%PDF-1.7\nrecipe attachment');
-  const created = await posts({ env, request: request('/api/recipe-posts', { method: 'POST', cookie: owner, data: {
+  const created = await posts({ env, request: request('/api/recipe-posts', { method: 'POST', cookie: memberCookie, data: {
     category: '베이커리', title: '검색 가능한 식빵', body: '밀가루와 우유', attachment: { name: '식빵.pdf', type: 'application/pdf', base64: pdf }
   } }) });
   assert.equal(created.status, 201); const id = (await created.json()).id;
@@ -106,7 +113,7 @@ test('session tampering, secret rotation and logout are enforced', async () => {
   const ownerCookie = await sessionCookie(env, 'admin');
   assert.ok(ownerCookie.includes('HttpOnly; Secure; SameSite=Strict'));
 });
-test('pagination preserves older posts and missing storage cannot report successful upload', async () => {
+test('pagination preserves older posts and missing storage cannot report successful upload', async t => {
   const env = makeEnv(), viewer = await loginViewer(env);
   for (let i = 0; i < 22; i++) await env.MEMBERS_DB.prepare('INSERT INTO recipe_posts (title, body, created_at) VALUES (?, ?, ?)').bind('Post '+i, 'body', new Date().toISOString()).run();
   const page = await posts({ env, request: request('/api/recipe-posts', { cookie: viewer }) }); const first = await page.json();
@@ -114,5 +121,12 @@ test('pagination preserves older posts and missing storage cannot report success
   const second = await posts({ env, request: request('/api/recipe-posts?before=3', { cookie: viewer }) });
   assert.equal((await second.json()).posts.length, 2);
   const owner = await loginAdmin(env, viewer);
-  assert.equal((await posts({ env: { ...env, MEMBERS_DB: undefined }, request: request('/api/recipe-posts', { method: 'POST', cookie: owner, data: { title: 'x', body: 'y' } }) })).status, 503);
+  operator(t, env); const memberCookie = owner + '; __Host-member-access=verified';
+  assert.equal((await posts({ env: { ...env, MEMBERS_DB: undefined }, request: request('/api/recipe-posts', { method: 'POST', cookie: memberCookie, data: { title: 'x', body: 'y' } }) })).status, 503);
+});
+
+test('writer password alone cannot publish a recipe without the operator account', async () => {
+  const env = makeEnv(), owner = await loginAdmin(env, await loginViewer(env));
+  const response = await posts({ env, request: request('/api/recipe-posts', { method: 'POST', cookie: owner, data: { title: 'Forbidden', body: 'No operator login' } }) });
+  assert.equal(response.status, 403);
 });

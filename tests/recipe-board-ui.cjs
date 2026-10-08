@@ -21,7 +21,7 @@ const { chromium } = require('playwright');
     browser = await chromium.launch();
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      let admin = false, submissions = 0, accountWriterMode = false;
+      let submissions = 0, accountWriterMode = false;
       const posts = [{ canEdit: true, canDelete: true, id: 'first', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
@@ -30,14 +30,9 @@ const { chromium } = require('playwright');
         if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: {} } });
         if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
         if (url.pathname === '/api/recipes') {
-          if (req.method() === 'DELETE') { admin = false; return route.fulfill({ json: {} }); }
+          if (req.method() === 'DELETE') return route.fulfill({ json: {} });
           assert.equal(req.postDataJSON().password, 'reader-password');
           return route.fulfill({ json: { posts, adminConfigured: true, canWrite: accountWriterMode, accountWriter: accountWriterMode, storageAvailable: true, next: null } });
-        }
-        if (url.pathname === '/api/recipe-admin') {
-          if (req.method() === 'DELETE') { admin = false; return route.fulfill({ json: {} }); }
-          if (req.postDataJSON().password !== 'owner-password') return route.fulfill({ status: 401, json: { message: '관리자 비밀번호를 확인해 주세요.' } });
-          admin = true; return route.fulfill({ json: { authenticated: true } });
         }
         if (url.pathname === '/api/recipe-posts') {
           if (req.method() === 'PATCH') {
@@ -49,9 +44,9 @@ const { chromium } = require('playwright');
             return route.fulfill({ json: {} });
           }
           if (req.method() === 'POST') {
-            assert.ok(admin || accountWriterMode, 'only authenticated owner submits a post');
+            assert.ok(accountWriterMode, 'only authenticated operator submits a post');
             const payload = req.postDataJSON(); assert.equal(payload.title, '새 레시피'); assert.equal(payload.body, '새 레시피 조리 순서');
-            if (!accountWriterMode) { assert.equal(payload.image.type, 'image/png'); assert.ok(payload.image.base64.length > 0); }
+            if (payload.image) { assert.equal(payload.image.type, 'image/png'); assert.ok(payload.image.base64.length > 0); }
             posts.unshift({ ...payload, id: 'new', created_at: '2026-10-07T02:00:00Z' }); submissions++;
             return route.fulfill({ json: { success: true } });
           }
@@ -59,7 +54,7 @@ const { chromium } = require('playwright');
         }
         return route.continue();
       });
-      const page = await context.newPage();
+      const errors = []; const page = await context.newPage(); page.on('pageerror', error => errors.push(error.message));
       await page.goto(origin + '/recipes');
       assert.ok(await page.locator('#recipe-gate').isVisible());
       const gateBox = await page.locator('#recipe-gate').boundingBox();
@@ -68,7 +63,8 @@ const { chromium } = require('playwright');
       await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
       await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
       assert.equal(await page.locator('.recipe-post').count(), 1);
-      assert.ok(await page.locator('#recipe-editor').isVisible());
+      assert.ok(await page.locator('#recipe-editor').isHidden());
+      assert.ok(await page.locator('#recipe-admin-open').isHidden());
       assert.equal(submissions, 0);
       await page.locator('.recipe-row').click(); assert.ok(await page.locator('.recipe-post-body').isVisible());
       await page.locator('.recipe-post-actions').getByRole('button', { name: '수정', exact: true }).click();
@@ -77,12 +73,22 @@ const { chromium } = require('playwright');
       await page.locator('.recipe-inline-edit').getByRole('button', { name: '저장', exact: true }).click();
       await page.waitForFunction(() => document.querySelector('.recipe-row-title').textContent === '수정한 자료');
       assert.equal(posts[0].body, '수정한 자료 내용');
-      await page.locator('#recipe-admin-open').click();
-      await page.locator('#recipe-admin-password').fill('wrong-password'); await page.locator('#recipe-admin-submit').click();
-      await page.waitForFunction(() => document.querySelector('#recipe-admin-status').textContent.includes('확인'));
-      assert.ok(await page.locator('#recipe-editor').isVisible()); assert.equal(submissions, 0);
-      await page.locator('#recipe-admin-password').fill('owner-password'); await page.locator('#recipe-admin-submit').click();
-      await page.waitForFunction(() => document.querySelector('#recipe-admin-panel').hidden && !document.querySelector('#recipe-admin-exit').hidden);
+      await page.locator('#recipe-filter-category').selectOption('한식');
+      await page.locator('#recipe-search-query').fill('검색어');
+      await page.locator('#recipe-heading-link').click();
+      await page.waitForFunction(() => !document.querySelector('.recipe-post').open);
+      assert.equal(await page.locator('#recipe-filter-category').inputValue(), '');
+      assert.equal(await page.locator('#recipe-search-query').inputValue(), '');
+      assert.ok(await page.locator('#recipe-editor').isHidden());
+      assert.equal(await page.locator('.recipe-board-kicker').count(), 0);
+      assert.equal(await page.locator('#recipe-admin-panel').count(), 0);
+      assert.ok(await page.locator('#recipe-search-form').evaluate(form => form.querySelector('label').htmlFor === 'recipe-filter-category'));
+      accountWriterMode = true;
+      await page.goto(origin + '/recipes');
+      await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
+      await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
+      assert.ok(await page.locator('#recipe-editor').isVisible());
+      assert.ok(await page.locator('#recipe-admin-open').isVisible());
       await page.locator('#recipe-post-category').selectOption('한식');
       await page.locator('#recipe-post-title').fill('새 레시피'); await page.locator('#recipe-post-body').fill('새 레시피 조리 순서');
       await page.locator('#recipe-post-image').setInputFiles({ name: 'recipe.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j6xkAAAAASUVORK5CYII=', 'base64') });
@@ -98,20 +104,13 @@ const { chromium } = require('playwright');
       await page.locator('.recipe-post').nth(1).getByRole('button', { name: '삭제', exact: true }).click();
       await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
       assert.equal(posts.length, 1);
-      await page.locator('#recipe-admin-exit').click(); await page.waitForFunction(() => !document.querySelector('#recipe-editor').hidden);
-      assert.equal(admin, false);
-      accountWriterMode = true;
-      await page.goto(origin + '/recipes');
-      await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
-      await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
-      assert.ok(await page.locator('#recipe-admin-open').isHidden()); assert.ok(await page.locator('#recipe-admin-exit').isHidden());
-      assert.ok(!(await page.locator('#recipe-board-status').textContent()).includes('RECIPE_ADMIN_PASSWORD'));
-      await page.locator('#recipe-post-category').selectOption('한식');
-      await page.locator('#recipe-post-title').fill('새 레시피'); await page.locator('#recipe-post-body').fill('새 레시피 조리 순서');
-      await page.locator('#recipe-post-submit').click();
-      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 2);
-      assert.equal(submissions, 2);
-      console.log('PASS board gate, owner authentication, photo submission, account operator publishing', width);
+      await page.locator('#recipe-heading-link').click();
+      await page.waitForFunction(() => document.querySelector('#recipe-editor').hidden);
+      await page.locator('#recipe-admin-open').click(); assert.ok(await page.locator('#recipe-editor').isVisible());
+      await page.evaluate(() => window.dispatchEvent(new CustomEvent('member-session-change', { detail: false })));
+      assert.ok(await page.locator('#recipe-editor').isHidden()); assert.ok(await page.locator('#recipe-admin-open').isHidden());
+      assert.deepEqual(errors, []);
+      console.log('PASS board gate, owner authentication, photo submission, heading navigation, operator-only editor', width);
       await context.close();
     }
   } finally { if (browser) await browser.close(); await new Promise(done => server.close(done)); }
