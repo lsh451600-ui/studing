@@ -14,10 +14,10 @@ export async function onRequest({ request, env }) {
         const id = idOf(params.get('id')); if (!id) return reply(400, '게시물 번호를 확인해 주세요.');
         const row = await db.prepare('SELECT id, author_id, author, title, body, created_at FROM community_posts WHERE id = ?').bind(id).first();
         if (!row) return reply(404, '게시물이 없습니다.');
-        const comments = await db.prepare('SELECT id, author, body, created_at FROM community_comments WHERE post_id = ? ORDER BY id DESC LIMIT 100').bind(id).all();
-        const permissions = await postPermissions(request, env, row.author_id);
+        const comments = await db.prepare('SELECT id, author_id, author, body, created_at FROM community_comments WHERE post_id = ? ORDER BY id DESC LIMIT 100').bind(id).all();
+        const { deletableCommentIds, ...permissions } = await postPermissions(request, env, row.author_id, comments.results);
         const { author_id, ...post } = row;
-        return reply(200, '', { post, comments: comments.results.reverse(), permissions });
+        return reply(200, '', { post, comments: comments.results.reverse().map(({ author_id, ...comment }) => ({ ...comment, canDelete: deletableCommentIds.includes(comment.id) })), permissions });
       }
       const before = params.has('before') ? idOf(params.get('before')) : null;
       if (params.has('before') && !before) return reply(400, '페이지 정보를 확인해 주세요.');

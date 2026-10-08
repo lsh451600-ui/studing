@@ -18,7 +18,7 @@ ORIGIN = 'https://dining.win'
 def build(root):
     rss = ET.Element('rss', version='2.0')
     channel = ET.SubElement(rss, 'channel')
-    for key, value in [('title', '외·모Check 실무 가이드'), ('link', ORIGIN + '/guides'),
+    for key, value in [('title', '외모Check 실무 가이드'), ('link', ORIGIN + '/guides'),
                        ('description', '외식 매장 운영의 질문을 계산 예시와 관찰 기록지로 점검하는 공개 실무 가이드.'), ('language', 'ko')]:
         ET.SubElement(channel, key).text = value
     ET.SubElement(channel, '{' + ATOM + '}link', href=ORIGIN + '/feed.xml', rel='self', type='application/rss+xml')

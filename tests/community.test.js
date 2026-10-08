@@ -74,3 +74,24 @@ test('a different member cannot edit or delete someone else post', async t => {
     assert.equal(response.status, 403);
   }
 });
+
+test('only the comment author can delete, and public reads hide ownership IDs', async t => {
+  auth(t); const settings = env(t);
+  const created = await posts({ env: settings, request: request('board-posts', { title: 'Title', body: 'Body' }, true) });
+  const postId = (await created.json()).id;
+  const written = await comments({ env: settings, request: request('board-comments', { postId, body: 'My comment' }, true) });
+  const id = (await written.json()).id;
+  const other = await settings.MEMBERS_DB.prepare('INSERT INTO community_comments (post_id, author_id, author, body, created_at) VALUES (?, ?, ?, ?, ?)').bind(postId, 'other-id', 'Other', 'Other comment', new Date().toISOString()).run();
+  const detail = await (await posts({ env: settings, request: request('board-posts?id=' + postId, null, true) })).json();
+  assert.equal(detail.comments.find(c => c.id === id).canDelete, true);
+  assert.equal(detail.comments.find(c => c.id === other.meta.last_row_id).canDelete, false);
+  assert.ok(!JSON.stringify(detail).includes('author_id'));
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=' + id, null, false, undefined, 'DELETE') })).status, 401);
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=' + id, null, true, 'https://other.test', 'DELETE') })).status, 403);
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=' + other.meta.last_row_id, null, true, undefined, 'DELETE') })).status, 403);
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=invalid', null, true, undefined, 'DELETE') })).status, 400);
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=' + id, null, true, undefined, 'DELETE') })).status, 200);
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=' + id, null, true, undefined, 'DELETE') })).status, 404);
+  const list = await (await posts({ env: settings, request: request('board-posts') })).json();
+  assert.equal(list.posts[0].comments, 1);
+});

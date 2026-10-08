@@ -204,6 +204,7 @@ const initialSession = checkSession({ force: navigationType === 'reload' || para
   byId('member-feedback').textContent = '로그인 확인이 잠시 지연되고 있습니다. 다시 시도해 주세요.';
   return null;
 });
+window.memberSessionReady = initialSession;
 if (params.has('login_required')) {
   initialSession.then(data => {
     if (data?.authenticated && !data.needsProfile && !data.profileUnavailable && protectedNext) { try { sessionStorage.removeItem('member-login-next'); } catch {} location.replace(protectedNext); return; }

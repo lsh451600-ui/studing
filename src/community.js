@@ -16,16 +16,17 @@ export async function member(request, env) {
   if (!profile) return { response: reply(403, '회원 정보를 입력한 뒤 작성해 주세요.', {}, session.cookies) };
   return { session, author: profile.nickname || '회원', isAdmin: profile.username?.toLowerCase() === 'lsh451600' };
 }
-export async function postPermissions(request, env, authorId) {
-  const denied = { canEdit: false, canDelete: false, permissionsUnavailable: false };
+export async function postPermissions(request, env, authorId, comments = []) {
+  const denied = { canEdit: false, canDelete: false, permissionsUnavailable: false, deletableCommentIds: [] };
   if (!settings(env).ready) return denied;
   try {
     const session = await currentSession(request, env);
     if (!session.user) return denied;
-    if (session.user.id === authorId) return { ...denied, canEdit: true, canDelete: true };
+    const deletableCommentIds = comments.filter(comment => comment.author_id === session.user.id).map(comment => comment.id);
+    if (session.user.id === authorId) return { ...denied, canEdit: true, canDelete: true, deletableCommentIds };
     const profile = await memberProfile(env, session);
     const isAdmin = profile?.username?.toLowerCase() === 'lsh451600';
-    return { ...denied, canDelete: isAdmin };
+    return { ...denied, canDelete: isAdmin, deletableCommentIds };
   } catch {
     return { ...denied, permissionsUnavailable: true };
   }

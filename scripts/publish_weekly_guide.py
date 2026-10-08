@@ -103,11 +103,11 @@ def publish(root, now, data):
     route = '/guides/' + slug
     url = 'https://dining.win' + route
     shell = (root / 'guides/menu-complexity.html').read_text()
-    shell = re.sub(r'<title>.*?</title>', '<title>' + e(data['title']) + ' · 외·모Check</title>', shell, count=1)
-    for name, value in [('description', data['summary']), ('og:title', data['title']), ('og:description', data['summary']), ('og:url', url)]:
+    shell = re.sub(r'<title>.*?</title>', '<title>외모Check-' + e(data['title']) + '</title>', shell, count=1)
+    for name, value in [('description', data['summary']), ('og:title', '외모Check-' + data['title']), ('og:description', data['summary']), ('og:url', url)]:
         shell = re.sub(r'(<meta (?:name|property)="' + name + r'" content=")[^"]*', lambda m: m[1] + e(value, quote=True), shell, count=1)
     shell = re.sub(r'(<link rel="canonical" href=")[^"]*', lambda m: m[1] + url, shell, count=1)
-    metadata = {'@context': 'https://schema.org', '@type': 'Article', 'headline': data['title'], 'description': data['summary'], 'url': url, 'inLanguage': 'ko', 'datePublished': date, 'dateModified': date, 'author': {'@type': 'Organization', 'name': '외·모Check'}}
+    metadata = {'@context': 'https://schema.org', '@type': 'Article', 'headline': data['title'], 'description': data['summary'], 'url': url, 'inLanguage': 'ko', 'datePublished': date, 'dateModified': date, 'author': {'@type': 'Organization', 'name': '외모Check'}}
     shell = re.sub(r'<script type="application/ld\+json">.*?</script>', lambda m: '<script type="application/ld+json">' + json.dumps(metadata, ensure_ascii=False).replace('<', '\\u003c') + '</script>', shell, count=1, flags=re.S)
     breadcrumb = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': '홈', 'item': 'https://dining.win/'},
@@ -115,7 +115,7 @@ def publish(root, now, data):
         {'@type': 'ListItem', 'position': 3, 'name': data['title'], 'item': url}]}
     shell = re.sub(r'(<script type="application/ld\+json" id="breadcrumb-schema">).*?(</script>)',
                    lambda m: m[1] + json.dumps(breadcrumb, ensure_ascii=False).replace('<', '\\u003c') + m[2], shell, flags=re.S)
-    article = '<article><p><a href="/guides">실무 가이드</a> / ' + e(data['category']) + '</p><h1>' + e(data['title']) + '</h1><p class="meta">외·모Check · ' + date + ' 발행 · AI 보조 자동 작성 · <a href="/editorial">작성 원칙</a></p><div class="note">예시 숫자와 매장은 설명용 가정입니다. 실제 취재 또는 검증된 성과가 아닙니다. 이 글은 AI 보조 자동 작성 자료이며 전문가 검수를 거친 지침이 아닙니다.</div><p class="lead">' + e(data['summary']) + '</p>'
+    article = '<article><p><a href="/guides">실무 가이드</a> / ' + e(data['category']) + '</p><h1>' + e(data['title']) + '</h1><p class="meta">외모Check · ' + date + ' 발행 · AI 보조 자동 작성 · <a href="/editorial">작성 원칙</a></p><div class="note">예시 숫자와 매장은 설명용 가정입니다. 실제 취재 또는 검증된 성과가 아닙니다. 이 글은 AI 보조 자동 작성 자료이며 전문가 검수를 거친 지침이 아닙니다.</div><p class="lead">' + e(data['summary']) + '</p>'
     for section in data['sections']:
         article += '<h2>' + e(section['heading']) + '</h2>' + ''.join('<p>' + e(p) + '</p>' for p in section['paragraphs'])
     article += '<section class="worksheet"><h2>내 매장 기록지</h2><ol>' + ''.join('<li>' + e(q) + ' <p>기록: ______________________________</p></li>' for q in data['worksheet']) + '</ol></section><button class="print-guide" type="button" onclick="window.print()">기록지 인쇄</button><h2>작성 범위와 한계</h2><p>' + e(data['scope']) + '</p><p><a href="/inquiry">내용 문의 및 주제 제안</a> · <a href="/guides">다른 실무 가이드</a></p></article>'

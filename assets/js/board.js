@@ -1,5 +1,5 @@
 const byId = id => document.getElementById(id);
-let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, writing = false, commenting = false;
+let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 async function api(url, { method = 'GET', body } = {}) {
   const response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000),
@@ -12,7 +12,7 @@ function node(tag, text, className) { const element = document.createElement(tag
 function authenticated() { return sessionAuthenticated; }
 function updateAuth() {
   const ready = authenticated();
-  byId('board-login-hint').hidden = ready;
+  byId('board-login-hint').hidden = !sessionKnown || ready;
   byId('board-post-submit').disabled = !ready || writing;
   byId('board-comment-submit').disabled = !ready || commenting;
 }
@@ -57,7 +57,26 @@ async function loadDetail(id, focus = true) {
     byId('board-comments').replaceChildren();
     for (const comment of data.comments) {
       const item = node('li', '', 'board-comment');
-      item.append(node('p', comment.author + ' · ' + date(comment.created_at), 'board-meta'), node('p', comment.body, 'board-comment-body'));
+      const header = node('div', '', 'board-comment-header');
+      header.append(node('p', comment.author + ' · ' + date(comment.created_at), 'board-meta'));
+      if (comment.canDelete) {
+        const remove = node('button', '삭제', 'board-comment-delete'); remove.type = 'button';
+        remove.setAttribute('aria-label', '내 댓글 삭제');
+        remove.addEventListener('click', async () => {
+          if (!confirm('이 댓글을 삭제할까요?')) return;
+          const postId = selected; remove.disabled = true;
+          try {
+            await api('/api/board-comments?id=' + comment.id, { method: 'DELETE' });
+            if (selected === postId) {
+              await loadDetail(postId, false);
+              byId('board-comment-status').textContent = '댓글을 삭제했습니다.';
+            }
+          } catch (error) { if (selected === postId) byId('board-comment-status').textContent = error.message; }
+          finally { remove.disabled = false; }
+        });
+        header.append(remove);
+      }
+      item.append(header, node('p', comment.body, 'board-comment-body'));
       byId('board-comments').append(item);
     }
     byId('board-comment-empty').hidden = data.comments.length > 0;
@@ -65,6 +84,10 @@ async function loadDetail(id, focus = true) {
     if (focus) byId('board-title').focus({ preventScroll: true });
   } catch (error) { if (version === generation) byId('board-status').textContent = error.message; }
 }
+for (const id of ['board-heading-link']) byId(id).addEventListener('click', event => {
+  if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  event.preventDefault(); history.pushState(null, '', '/board'); loadList();
+});
 byId('board-login').addEventListener('click', () => byId('login-open').click());
 byId('board-write').addEventListener('click', () => {
   if (!byId('board-detail').hidden) {
@@ -133,14 +156,18 @@ byId('board-comment-form').addEventListener('submit', async event => {
 });
 window.addEventListener('member-session-change', event => {
   authVersion++;
+  sessionKnown = true;
   sessionAuthenticated = event.detail === true;
   updateAuth();
+  if (selected) loadDetail(selected, false);
 });
 async function syncSession() {
   const version = authVersion;
   try {
-    const data = await api('/api/session');
+    const data = await (window.memberSessionReady || api('/api/session'));
+    if (!data) throw new Error('session unavailable');
     if (version !== authVersion) return;
+    sessionKnown = true;
     sessionAuthenticated = data.authenticated === true;
     updateAuth();
   } catch (error) {

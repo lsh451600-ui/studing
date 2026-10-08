@@ -40,8 +40,14 @@ const { chromium } = require('playwright');
           return route.fulfill({ json: url.searchParams.has('id') ? { post: posts.find(p => p.id === Number(url.searchParams.get('id'))), comments, permissions: authenticated ? { canEdit: true, canDelete: true } : { canEdit: false, canDelete: false } } : { posts, next: null } });
         }
         if (url.pathname === '/api/board-comments') {
-          assert.ok(authenticated); const data = req.postDataJSON(); assert.equal(data.postId, 1); commentWrites++;
-          comments.push({ id: commentWrites, body: data.body, author: '회원', created_at: '2026-10-07T02:00:00Z' });
+          assert.ok(authenticated);
+          if (req.method() === 'DELETE') {
+            const index = comments.findIndex(c => c.id === Number(url.searchParams.get('id')));
+            assert.ok(index >= 0); comments.splice(index, 1);
+            return route.fulfill({ json: { id: Number(url.searchParams.get('id')) } });
+          }
+          const data = req.postDataJSON(); assert.equal(data.postId, 1); commentWrites++;
+          comments.push({ canDelete: true, id: commentWrites, body: data.body, author: '회원', created_at: '2026-10-07T02:00:00Z' });
           return route.fulfill({ json: { id: commentWrites } });
         }
         return route.continue();
@@ -55,10 +61,13 @@ const { chromium } = require('playwright');
       assert.ok(await page.locator('#board-write').isVisible());
       assert.ok(await page.locator('#board-post-form').isHidden());
       assert.equal(await page.locator('#board-title').textContent(), '외식 이야기');
-      assert.equal(await page.locator('#board-title').evaluate(element => getComputedStyle(element).color), 'rgb(255, 255, 255)');
-      assert.equal(await page.locator('#board-back').textContent(), '자유게시판');
+      assert.equal(await page.locator('.board-post-card').evaluate(element => getComputedStyle(element).backgroundColor), await page.locator('#board-comment-form').evaluate(element => getComputedStyle(element).backgroundColor));
+      assert.equal(await page.locator('.board-title-box #board-author').count(), 1);
+      assert.equal(await page.locator('#board-author').evaluate(element => getComputedStyle(element).textAlign), 'right');
+      assert.equal(await page.locator('#board-back').count(), 0);
+      assert.equal(await page.title(), '외모Check-자유게시판');
       assert.equal(await page.locator('#board-body').evaluate(element => getComputedStyle(element).backgroundColor), 'rgb(255, 255, 255)');
-      assert.ok(await page.locator('#board-back').evaluate(element => Math.abs(element.getBoundingClientRect().right - element.parentElement.getBoundingClientRect().right) < 1));
+      assert.ok(await page.locator('#board-detail').evaluate(element => Math.abs(element.getBoundingClientRect().width - document.querySelector('.board-page').getBoundingClientRect().width) < 1));
       assert.equal(await page.locator('#board-body').textContent(), posts[0].body);
       assert.equal(await page.evaluate(() => window.injected), undefined);
       assert.ok(await page.locator('#board-comment-submit').isDisabled());
@@ -68,7 +77,11 @@ const { chromium } = require('playwright');
       assert.ok(await page.locator('#board-login-hint').isHidden());
       await page.locator('#board-comment-body').fill('좋은 이야기입니다.'); await page.locator('#board-comment-submit').click();
       await page.waitForFunction(() => document.querySelectorAll('.board-comment').length === 1); assert.equal(commentWrites, 1);
-      await page.locator('#board-back').click();
+      page.once('dialog', dialog => dialog.accept());
+      await page.getByRole('button', { name: '내 댓글 삭제' }).click();
+      await page.waitForFunction(() => document.querySelectorAll('.board-comment').length === 0);
+      assert.equal(comments.length, 0);
+      await page.locator('#board-heading-link').click();
       await page.waitForSelector('.board-row');
       assert.equal(new URL(page.url()).pathname, '/board');
       await page.locator('.board-row').click();
@@ -93,6 +106,17 @@ const { chromium } = require('playwright');
       assert.ok(await page.locator('#board-post-form').isVisible());
       assert.equal(new URL(page.url()).pathname, '/board');
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      await context.addInitScript(() => {
+        window.loginFlash = false;
+        new MutationObserver(() => {
+          const hint = document.getElementById('board-login-hint');
+          const login = document.getElementById('login-open');
+          if ((hint && !hint.hidden) || (login && !login.hidden)) window.loginFlash = true;
+        }).observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden'] });
+      });
+      await page.goto(origin + '/board');
+      await page.waitForFunction(() => document.querySelector('.member-controls').dataset.state === 'authenticated');
+      assert.equal(await page.evaluate(() => window.loginFlash), false);
       missing = true; await page.goto(origin + '/board');
       await page.waitForFunction(() => document.querySelector('#board-status').textContent.includes('저장소'));
       console.log('PASS community read, login gating, safe text, post, comment, missing storage', width); await context.close();
