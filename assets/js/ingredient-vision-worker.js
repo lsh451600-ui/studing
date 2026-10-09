@@ -32,5 +32,5 @@ self.onmessage = async ({ data }) => {
       }
     }
     self.postMessage({ type: 'result', ingredients: [...scores].sort((a,b)=>b[1]-a[1]).slice(0,8).map(([name])=>name) });
-  } catch { self.postMessage({ type: 'error', message: '이 기기에서 사진 분석을 완료하지 못했습니다. 재료를 직접 입력해 검색하거나 다른 브라우저에서 다시 시도해 주세요.' }); }
+  } catch { self.postMessage({ type: 'error', message: '이 기기에서 사진 분석을 완료하지 못했습니다. 다른 사진이나 다른 브라우저에서 다시 시도해 주세요.' }); }
 };
