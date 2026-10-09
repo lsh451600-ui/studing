@@ -172,6 +172,14 @@ const { chromium } = require('playwright');
           assert.equal(await page.locator('#member-feedback').textContent(), '');
           assert.ok(!(await page.locator('#kakao-link-button').isVisible()));
           assert.equal(await page.locator('#member-status').textContent(), '테스트회원님');
+          for (const role of [{ level: 'regular', isAdmin: true, icon: 'member-diamond' }, { level: 'special', isAdmin: false, icon: 'member-crown' }, { level: 'regular', isAdmin: false, icon: null }]) {
+            await page.evaluate(role => dispatchEvent(new CustomEvent('member-authenticated', { detail: { id: 'member', username: '테스트회원', ...role } })), role);
+            for (const selector of ['#member-status', '#menu-account-status']) {
+              assert.equal(await page.locator(selector + ' .member-diamond').count(), role.icon === 'member-diamond' ? 1 : 0);
+              assert.equal(await page.locator(selector + ' .member-crown').count(), role.icon === 'member-crown' ? 1 : 0);
+            }
+          }
+
           assert.ok(await page.locator('#logout-button').isVisible());
           assert.ok(!(await page.locator('#login-open').isVisible()));
           assert.ok(!(await page.locator('#signup-open').isVisible()));
@@ -205,11 +213,7 @@ const { chromium } = require('playwright');
           assert.equal(await page.locator('#menu-profile-link').getAttribute('href'), '/mypage');
           assert.equal(await page.locator('#mypage-link').count(), 0);
           assert.equal(await page.locator('#menu-account-action').textContent(), '로그아웃');
-          assert.ok(await page.locator('#menu-account-status').evaluate(el => {
-            const dot = getComputedStyle(el, '::before');
-            const headerDot = getComputedStyle(document.querySelector('#member-status'), '::before');
-            return dot.backgroundColor === headerDot.backgroundColor && dot.width === headerDot.width && dot.content === '""';
-          }), 'drawer and masthead share the same green login indicator');
+          assert.ok(await page.locator('#menu-account-status').evaluate(el => getComputedStyle(el, '::before').content === 'none'), 'ordinary members have no login marker');
           assert.equal(await page.locator('#site-menu .menu-footer .menu-inquiry').getAttribute('href'), '/inquiry');
           const linkBox = await page.locator('#kakao-link-button').boundingBox();
           assert.ok(linkBox.x >= 0 && linkBox.x + linkBox.width <= width && linkBox.height >= 44, 'Kakao link must fit viewport and touch target');

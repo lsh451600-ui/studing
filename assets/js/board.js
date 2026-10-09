@@ -1,4 +1,4 @@
-import { decorateMember } from './member-badge.js?v=20261009';
+import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 const byId = id => document.getElementById(id);
 let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, sessionAdmin = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));

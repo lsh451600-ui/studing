@@ -1,4 +1,4 @@
-import { decorateMember } from './member-badge.js?v=20261009';
+import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 const byId = id => document.getElementById(id);
 const status = byId('account-status'), dialog = byId('withdrawal-dialog');
 let pending = false;
@@ -17,7 +17,7 @@ async function accountAPI(options = {}) {
 async function load() {
   try {
     const { account } = await accountAPI();
-    byId('account-username').textContent = account.username; decorateMember(byId('account-username'), account.level);
+    byId('account-username').textContent = account.username; decorateMember(byId('account-username'), account.level, account.isAdmin);
     byId('account-level').textContent = account.isAdmin ? '운영자' : account.level === 'special' ? '특별회원' : '일반회원';
     byId('recipe-access-notice').hidden = !['recipe_access', 'industry_access'].some(key => new URLSearchParams(location.search).has(key));
     byId('member-level-panel').hidden = !account.isAdmin;
@@ -93,7 +93,7 @@ async function loadMembers() {
     const list = byId('member-level-list'); list.replaceChildren();
     for (const member of data.members) {
       const row = document.createElement('div'); row.className = 'member-level-row';
-      const name = document.createElement('strong'); name.textContent = member.username; decorateMember(name, member.level);
+      const name = document.createElement('strong'); name.textContent = member.username; decorateMember(name, member.level, member.isAdmin);
       if (member.isAdmin) { const label = document.createElement('span'); label.textContent = '운영자'; row.append(name, label); }
       else {
         const select = document.createElement('select'); select.setAttribute('aria-label', member.username + ' 회원 등급');
@@ -101,7 +101,7 @@ async function loadMembers() {
         select.value = member.level;
         const save = document.createElement('button'); save.type = 'button'; save.textContent = '저장'; save.setAttribute('aria-label', member.username + ' 등급 저장');
         save.addEventListener('click', async () => { save.disabled = true; select.disabled = true;
-          try { await levelAPI('/api/member-levels', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ memberId: member.id, level: select.value }) }); member.level = select.value; decorateMember(name, member.level); status.textContent = member.username + '님의 등급을 ' + select.selectedOptions[0].textContent + '으로 변경했습니다.'; }
+          try { await levelAPI('/api/member-levels', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ memberId: member.id, level: select.value }) }); member.level = select.value; decorateMember(name, member.level, member.isAdmin); status.textContent = member.username + '님의 등급을 ' + select.selectedOptions[0].textContent + '으로 변경했습니다.'; }
           catch (error) { status.textContent = error.message; select.value = member.level; }
           finally { save.disabled = false; select.disabled = false; }
         }); row.append(name, select, save);

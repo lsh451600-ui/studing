@@ -1,4 +1,4 @@
-import { decorateMember } from './member-badge.js?v=20261009';
+import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 const make = (tag, text, className) => {
   const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el;
 };

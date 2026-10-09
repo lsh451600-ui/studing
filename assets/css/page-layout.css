@@ -230,3 +230,7 @@ header{column-gap:0}
 header:has(.member-controls[data-state="authenticated"]){column-gap:0}
 header>.brand{margin-left:-4px}
 header .brand img,.home-page header .brand img{object-position:left center;height:auto}
+
+/* Member icons come from verified roles; regular members have no marker. */
+header .member-controls[data-state="authenticated"] .member-status:before{content:none;display:none}
+#menu-account-status[data-state="authenticated"]::before{content:none;display:none}

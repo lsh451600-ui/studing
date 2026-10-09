@@ -1,4 +1,4 @@
-import { decorateMember } from './member-badge.js?v=20261009';
+import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 // Default Supabase recovery emails may return to the configured site root.
 const recoveryFragment = new URLSearchParams(location.hash.slice(1));
 const recoveryQuery = new URLSearchParams(location.search);
@@ -87,7 +87,7 @@ function showUser(user) {
   if (user) {
     const profile = document.createElement('a');
     profile.id = 'menu-profile-link'; profile.href = '/mypage';
-    profile.textContent = displayName + '님'; decorateMember(profile, user.level);
+    profile.textContent = displayName + '님'; decorateMember(profile, user.level, user.isAdmin);
     profile.setAttribute('aria-label', displayName + '님 마이페이지');
     byId('menu-account-status').append(profile);
   }
@@ -106,7 +106,7 @@ function showUser(user) {
   byId('member-status').textContent = '';
   if (user) {
     const profile = document.createElement('a'); profile.href = '/mypage'; profile.className = 'member-profile-link';
-    profile.textContent = displayName + '님'; decorateMember(profile, user.level); profile.setAttribute('aria-label', displayName + '님 마이페이지');
+    profile.textContent = displayName + '님'; decorateMember(profile, user.level, user.isAdmin); profile.setAttribute('aria-label', displayName + '님 마이페이지');
     byId('member-status').append(profile);
   }
   byId('member-status').title = user ? '로그인 중 · ' + displayName + '님' : '';
