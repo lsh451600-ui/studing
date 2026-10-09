@@ -74,7 +74,7 @@ async function searchRecipes(ingredients, current) {
       for (const text of ['일치 재료: '+recipe.matched.join(', '), '부족한 재료: '+(recipe.missing.join(', ')||'없음')]) {
         const line = document.createElement('p'); line.textContent = text; card.append(line);
       }
-      const link = document.createElement('a'); link.href = '/recipes?recipe=' + recipe.id; link.dataset.recipeId = String(recipe.id); link.textContent = '레시피 바로 보기'; card.append(link);
+      const link = document.createElement('a'); link.className = 'ingredient-recipe-link'; link.setAttribute('aria-label', recipe.title + ' 레시피 바로 보기'); link.href = '/recipes?recipe=' + recipe.id; link.dataset.recipeId = String(recipe.id); link.textContent = '레시피 바로 보기'; card.append(link);
       results.append(card);
     }
     byId('ingredient-match-status').textContent = data.recommendations.length ? '' : '일치하는 레시피가 없습니다. 다른 식재료 사진으로 다시 검색해 주세요.';
