@@ -27,6 +27,19 @@ test('rank by exact coverage then matching count; return at most three and never
  const estimated=rankRecipes([{id:9,body:'재료: 달걀 1개, 대파 1대'}],['달걀']);
  assert.equal(rankRecipes(estimated,['달걀'])[0].estimated,true);
 });
+test('unlisted ingredients and seasonings remain missing and count toward coverage',()=>{
+ const [recipe]=rankRecipes([{id:1,body:'재료: 계란 2개, 굴소스 1큰술, 소금 약간, 피시소스 1/2작은술\n만드는 방법\n달걀을 볶습니다.'}],['달걀']);
+ assert.deepEqual(recipe.ingredients,['달걀','굴소스','소금','피시소스']);
+ assert.deepEqual(recipe.missing,['굴소스','소금','피시소스']);
+ assert.equal(recipe.score,25);
+ assert.deepEqual(extractIngredients('재료\n- 계란 2개\n- 렌틸콩 100g\n- 두부 반모\n조리 순서\n섞습니다.'),['달걀','렌틸콩','두부']);
+});
+test('coverage deduplicates aliases and never shows 100 percent with missing ingredients',()=>{
+ const [recipe]=rankRecipes([{id:1,ingredients:['계란','달걀','대파','쪽파','굴소스']}],['달걀','계란','대파']);
+ assert.equal(recipe.score,67);assert.deepEqual(recipe.missing,['굴소스']);
+ const ingredients=Array.from({length:201},(_,i)=>'재료'+i);
+ assert.equal(rankRecipes([{id:1,ingredients}],ingredients.slice(1))[0].score,99);
+});
 test('recommendation API protects content, searches past first 100 recipes, and includes legacy recipes',async t=>{
  const {db,env,request}=setup(t);await ensurePosts(db);await ensureLevels(db);
  const cookie='__Host-member-access=verified; '+(await sessionCookie(env,'viewer')).split(';')[0];
