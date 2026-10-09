@@ -177,7 +177,7 @@ const { chromium } = require('playwright');
           assert.ok(!(await page.locator('#signup-open').isVisible()));
           if (width <= 768) {
             const headerBox = await page.locator('header').boundingBox();
-            assert.ok(headerBox.height <= 150, 'member row fits below the logo');
+            assert.ok(headerBox.height <= 82, 'member controls stay on one header row');
             assert.ok(await page.locator('#member-status').evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= 11), 'member ID uses compact text');
             await page.evaluate(() => window.dispatchEvent(new CustomEvent('member-authenticated', { detail: { id: 'member', username: 'abcdefghijklmnopqrst', kakaoLinked: true } })));
             assert.ok(await page.locator('#member-status').evaluate(el => el.scrollWidth <= el.clientWidth && getComputedStyle(el).textOverflow !== 'ellipsis'), 'complete member ID fits without truncation');
