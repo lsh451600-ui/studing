@@ -21,7 +21,9 @@ const { chromium } = require('playwright');
     browser = await chromium.launch();
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      let submissions = 0, accountWriterMode = false;
+      let submissions = 0, accountWriterMode = false, failComment = false;
+      const commentStore = new Map([['first', [{ id: 1, author: '다른 회원', body: '다른 회원 댓글', created_at: '2026-10-08T01:00:00Z', canEdit: false, canDelete: false }]]]);
+      let commentId = 1;
       const posts = [{ canEdit: true, canDelete: true, id: 'first', category: '베이커리', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       const listing = (params = new URLSearchParams()) => {
         let filtered = posts.filter(p => (!params.get('category') || p.category === params.get('category')) && (!params.get('q') || (p.title + ' ' + p.body).includes(params.get('q'))));
@@ -41,6 +43,21 @@ const { chromium } = require('playwright');
           if (req.method() === 'DELETE') return route.fulfill({ json: {} });
           assert.equal(req.postDataJSON().password, 'reader-password');
           return route.fulfill({ json: { ...listing(), adminConfigured: true, canWrite: accountWriterMode, accountWriter: accountWriterMode, storageAvailable: true, next: null } });
+        }
+        if (url.pathname === '/api/recipe-comments') {
+          if (req.method() === 'GET') return route.fulfill({ json: { comments: commentStore.get(url.searchParams.get('postId')) || [] } });
+          if (req.method() === 'POST') {
+            if (failComment) { failComment = false; return route.fulfill({ status: 503, json: { message: '댓글 저장 실패' } }); }
+            const data = req.postDataJSON(), comments = commentStore.get(String(data.postId)) || [];
+            comments.push({ id: ++commentId, author: '나의 닉네임', body: data.body, created_at: '2026-10-08T02:00:00Z', canEdit: true, canDelete: true });
+            commentStore.set(String(data.postId), comments); return route.fulfill({ json: { id: commentId } });
+          }
+          const comments = [...commentStore.values()].find(comments => comments.some(c => c.id === Number(url.searchParams.get('id'))));
+          const index = comments.findIndex(c => c.id === Number(url.searchParams.get('id')));
+          assert.ok(comments[index].canEdit);
+          if (req.method() === 'PATCH') comments[index].body = req.postDataJSON().body;
+          if (req.method() === 'DELETE') comments.splice(index, 1);
+          return route.fulfill({ json: {} });
         }
         if (url.pathname === '/api/recipe-posts') {
           if (req.method() === 'PATCH') {
@@ -85,6 +102,25 @@ const { chromium } = require('playwright');
         assert.equal(await page.locator('.recipe-post-body').evaluate(el => getComputedStyle(el).color), 'rgb(20, 43, 73)');
         await page.locator('#theme-toggle').click();
       }
+      await page.locator('.recipe-comment').waitFor();
+      assert.equal(await page.locator('.recipe-comment').first().getByRole('button').count(), 0);
+      const draft = page.locator('.recipe-comment-form textarea');
+      await draft.fill('맛있는 레시피 감사합니다.'); failComment = true;
+      await page.getByRole('button', { name: '댓글 등록', exact: true }).click();
+      await page.getByText('댓글 저장 실패', { exact: true }).waitFor();
+      assert.equal(await draft.inputValue(), '맛있는 레시피 감사합니다.');
+      await page.getByRole('button', { name: '댓글 등록', exact: true }).click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-comment').length === 2);
+      assert.equal(await draft.inputValue(), '');
+      const mine = page.locator('.recipe-comment').last();
+      await mine.getByRole('button', { name: '수정', exact: true }).click();
+      await mine.locator('.recipe-comment-edit textarea').fill('수정한 레시피 댓글');
+      await mine.getByRole('button', { name: '저장', exact: true }).click();
+      await page.getByText('수정한 레시피 댓글', { exact: true }).waitFor();
+      page.once('dialog', dialog => dialog.accept());
+      await page.locator('.recipe-comment').last().getByRole('button', { name: '삭제', exact: true }).click();
+      await page.waitForFunction(() => document.querySelectorAll('.recipe-comment').length === 1);
+      assert.equal(await page.locator('.recipe-comment').first().locator('.recipe-comment-body').textContent(), '다른 회원 댓글');
       const received = page.waitForEvent('download'); await page.locator('.recipe-attachment').click();
       assert.equal((await received).suggestedFilename(), 'recipe.pdf');
       await page.waitForFunction(() => document.querySelector('.recipe-downloads').textContent === '1');
@@ -136,6 +172,10 @@ const { chromium } = require('playwright');
       await page.locator('#recipe-heading-link').click();
       await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 10);
       assert.deepEqual(await page.locator('#recipe-pagination button').allTextContents(), ['1', '2', '3']);
+      await page.locator('.recipe-row').nth(1).click();
+      await page.locator('.recipe-post').nth(1).locator('.recipe-comments-empty').waitFor();
+      assert.equal(await page.locator('.recipe-post').nth(1).locator('.recipe-comment').count(), 0);
+
       await page.getByRole('button', { name: '2페이지', exact: true }).click();
       await page.waitForFunction(() => document.querySelector('#recipe-pagination [aria-current]').textContent === '2');
       assert.equal(await page.locator('.recipe-post').count(), 10);

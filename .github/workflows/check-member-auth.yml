@@ -27,6 +27,8 @@ on:
       - 'tests/recipe-board-ui.cjs'
       - 'tests/recipe-access.test.js'
       - 'src/recipe-server.js'
+      - 'src/recipe-comments.js'
+      - 'assets/js/recipe-comments.js'
       - 'src/private-server.js'
       - 'assets/js/private.js'
       - 'tests/private.test.js'

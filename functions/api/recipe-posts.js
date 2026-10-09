@@ -1,3 +1,4 @@
+import { ensureRecipeComments } from '../../src/recipe-comments.js';
 import { boardIdentity, canManagePost } from '../../src/board-permissions.js';
 import { idOf } from '../../src/community.js';
 import { reply, sameOrigin, readJSON, authorized, ensurePosts, listPosts, validatePost } from '../../src/recipe-server.js';
@@ -19,7 +20,11 @@ export async function onRequest({ request, env }) {
       if (!post) return reply(404, { message: '게시물이 없습니다.' });
       if (!canManagePost(identity, post.author_id)) return reply(403, { message: '작성자 또는 운영자만 수정·삭제할 수 있습니다.' });
       if (request.method === 'DELETE') {
-        await db.prepare('DELETE FROM recipe_posts WHERE id = ?').bind(id).run();
+        await ensureRecipeComments(db);
+        await db.batch([
+          db.prepare('DELETE FROM recipe_comments WHERE post_id = ?').bind(id),
+          db.prepare('DELETE FROM recipe_posts WHERE id = ?').bind(id)
+        ]);
         return reply(200, { message: '게시물을 삭제했습니다.', id });
       }
       let data;

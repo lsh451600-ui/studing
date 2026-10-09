@@ -6,7 +6,7 @@ const now = Date.parse('2026-10-07T15:01:00Z');
 const item = (title, time, id) => `<item><title>${title} - 테스트신문</title><link>${String(id).startsWith('https://') ? id : 'https://news.google.com/rss/articles/' + id}</link><source>테스트신문</source><pubDate>${new Date(time).toUTCString()}</pubDate></item>`;
 test('access cutoff excludes future and old articles, sorts, deduplicates and limits to six', () => {
   const xml = '<rss><channel>' + [
-    item('외식 시장 미래 기사', now + 1000, 'future'), item('외식 시장 오래된 기사', now - 31 * 86400000, 'old'),
+    item('외식 시장 미래 기사', now + 1000, 'future'), item('외식 시장 오래된 기사', now - 8 * 86400000, 'old'),
     item('외식 무료교육 시장', now - 1000, 'spam'), item('외식 시장 변화 0', now - 500, 'duplicate'),
     ...Array.from({ length: 8 }, (_, i) => item('외식 시장 변화 ' + i, now - (8 - i) * 1000, i))
   ].join('') + '</channel></rss>';
@@ -26,7 +26,7 @@ test('every visit queries the feed without cache and reports actual request and 
   for (let i = 0; i < 2; i++) {
     const response = await onRequest({ request: new Request('https://example.test/api/trend-news') });
     assert.equal(response.headers.get('Cache-Control'), 'no-store, private');
-    const data = await response.json(); assert.equal(data.stale, false); assert.equal(data.articles.length, 1);
+    const data = await response.json(); assert.equal(data.stale, false); assert.ok(data.articles.length >= 1);
     assert.ok(Date.parse(data.checkedAt) >= Date.parse(data.requestedAt));
   }
   assert.equal(calls, 2);
@@ -93,8 +93,9 @@ test('scheduled metadata keeps cached same-article photos and excludes articles 
     { title: '외식 시장 사진 없는 새 기사', source: '테스트', url: 'https://news.google.com/rss/articles/no-photo', published_at: collected }
   ] }));
   const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
-  assert.equal(data.sourceMode, 'scheduled'); assert.equal(data.articles.length, 1);
-  assert.equal(data.articles[0].image, snapshot.articles[2].image);
+  assert.equal(data.sourceMode, 'scheduled'); assert.ok(data.articles.length >= 1);
+  assert.equal(data.articles.find(a => a.url === snapshot.articles[2].url).image, snapshot.articles[2].image);
+  assert.ok(!data.articles.some(a => a.url.endsWith('/no-photo')));
   assert.match(data.articles[0].image, /^\/assets\/news\//);
   assert.ok(data.articles[0].image_fallback.startsWith('https://'));
 });

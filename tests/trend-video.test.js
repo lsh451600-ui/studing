@@ -36,12 +36,12 @@ function database(saved = {}) {
   } };
 }
 test('search bounds recent embeddable videos and ranks validated details by publication date', async t => {
-  const items = [video('aaaaaaaaaaa', 10, { snippet: { title: 'Newest dining trend', publishedAt: new Date(now - 1000).toISOString() } }), video('bbbbbbbbbbb', 500), video('ccccccccccc', 9999, { status: { embeddable: false, privacyStatus: 'public' } }), video('ddddddddddd', 99999, { snippet: { title: 'Old', publishedAt: new Date(now - 31 * 86400000).toISOString() } }), video('eeeeeeeeeee', 999999, { snippet: { title: 'Live', publishedAt: new Date(now - 1000).toISOString(), liveBroadcastContent: 'live' } })];
+  const items = [video('aaaaaaaaaaa', 10, { snippet: { title: 'Newest dining trend', publishedAt: new Date(now - 1000).toISOString() } }), video('bbbbbbbbbbb', 500), video('ccccccccccc', 9999, { status: { embeddable: false, privacyStatus: 'public' } }), video('ddddddddddd', 99999, { snippet: { title: 'Old', publishedAt: new Date(now - 8 * 86400000).toISOString() } }), video('eeeeeeeeeee', 999999, { snippet: { title: 'Live', publishedAt: new Date(now - 1000).toISOString(), liveBroadcastContent: 'live' } })];
   const calls = mockYoutube(t, items);
   assert.equal((await selectVideo(secret, now)).id, 'aaaaaaaaaaa');
   assert.equal(calls[0].searchParams.get('order'), 'date');
   assert.equal(calls[0].searchParams.get('videoEmbeddable'), 'true');
-  assert.equal(calls[0].searchParams.get('publishedAfter'), new Date(now - 30 * 86400000).toISOString());
+  assert.equal(calls[0].searchParams.get('publishedAfter'), new Date(now - 7 * 86400000).toISOString());
   assert.equal(calls.length, 2);
 });
 test('missing key and unsupported methods never call upstream or expose secrets', async t => {
@@ -66,7 +66,7 @@ test('shared cache refreshes once and serves fresh result without upstream calls
 test('active lease or retry cooldown serves stale result without extra search', async t => {
   t.mock.method(globalThis, 'fetch', () => { throw new Error('Unexpected fetch'); });
   for (const lock of [{ lease_until: Date.now() + 60000 }, { retry_after: Date.now() + 60000 }]) {
-    const db = database({ payload: JSON.stringify({ id: 'bbbbbbbbbbb' }), fetched_at: refreshSlot(Date.now()) - 1000, ...lock });
+    const db = database({ payload: JSON.stringify({ id: 'bbbbbbbbbbb', publishedAt: new Date(now - 86400000).toISOString() }), fetched_at: refreshSlot(Date.now()) - 1000, ...lock });
     const result = await (await onRequest({ request, env: { MEMBERS_DB: db, YOUTUBE_API_KEY: secret } })).json();
     assert.equal(result.stale, true);
     assert.equal(result.video.id, 'bbbbbbbbbbb');
@@ -91,7 +91,7 @@ test('empty search results produce a placeholder and cooldown', async t => {
 });
 test('expired stale cache is withheld during refresh failure', async t => {
   t.mock.method(globalThis, 'fetch', () => { throw new Error('outage'); });
-  const db = database({ payload: JSON.stringify({ id: 'bbbbbbbbbbb' }), fetched_at: Date.now() - 8 * 86400000 });
+  const db = database({ payload: JSON.stringify({ id: 'bbbbbbbbbbb', publishedAt: new Date(now - 86400000).toISOString() }), fetched_at: Date.now() - 8 * 86400000 });
   const result = await (await onRequest({ request, env: { MEMBERS_DB: db, YOUTUBE_API_KEY: secret } })).json();
   assert.equal(result.available, false);
   assert.equal(result.video, undefined);
@@ -286,13 +286,13 @@ test('legacy visit query shares the scheduled cache instead of spending quota on
   assert.equal(calls.length, 2);
 });
 test('Korean 09:00 and 21:00 boundaries expire the shared video result', async t => {
-  const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500)]);
+  const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500, { snippet: { title: 'Scheduled latest', publishedAt: '2026-10-07T00:00:00Z' } })]);
   let mockedNow = Date.now();
   t.mock.method(Date, 'now', () => mockedNow);
   for (const boundary of ['2026-10-08T00:00:00Z', '2026-10-08T12:00:00Z']) {
     const clock = Date.parse(boundary);
     mockedNow = clock - 1;
-    const db = database({ payload: JSON.stringify({ id: 'aaaaaaaaaaa' }), fetched_at: clock - 1000 });
+    const db = database({ payload: JSON.stringify({ id: 'aaaaaaaaaaa', publishedAt: new Date(clock - 86400000).toISOString() }), fetched_at: clock - 1000 });
     const env = { MEMBERS_DB: db, YOUTUBE_API_KEY: secret };
     assert.equal((await (await onRequest({ request, env })).json()).video.id, 'aaaaaaaaaaa');
     mockedNow = clock;

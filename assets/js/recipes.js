@@ -1,3 +1,4 @@
+import { appendRecipeComments } from './recipe-comments.js?v=20261009';
 import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
 const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');
@@ -68,6 +69,7 @@ function renderPosts(posts) {
       });
     }
     appendPostActions(detail, post, { endpoint: '/api/recipe-posts', api, refresh: refreshPosts, categories: ['미분류', '한식', '중식', '일식', '양식', '베이커리'] });
+    appendRecipeComments(card, detail, post, api);
   }
   content.hidden = false;
 }

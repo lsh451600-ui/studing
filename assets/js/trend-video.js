@@ -13,7 +13,7 @@ const errors = {
   youtube_forbidden: '구글에서 영상 조회 요청을 거부했습니다. API 사용 설정과 키 제한을 확인해 주세요. (YT-06)',
   youtube_timeout: '유튜브 연결 시간이 초과됐습니다. 잠시 후 다시 시도해 주세요. (YT-07)',
   youtube_connection_failed: '유튜브 서버에 연결하지 못했습니다. (YT-08)',
-  no_video: '최근 30일의 조건에 맞는 공개 영상을 찾지 못했습니다. (YT-09)',
+  no_video: '최근 7일의 조건에 맞는 공개 영상을 찾지 못했습니다. (YT-09)',
   storage_unavailable: '영상 캐시에 연결하지 못했습니다. 서버 설정 확인이 필요합니다. (YT-10)',
   refresh_pending: '영상을 갱신하고 있습니다. 잠시 후 새로고침해 주세요.',
   youtube_response_invalid: '유튜브 응답을 처리하지 못했습니다. 서버 응답 확인이 필요합니다. (YT-12)',
@@ -53,7 +53,7 @@ async function update() {
     }
     title.textContent = video.title;
     meta.textContent = video.channel + ' · 조회수 ' + new Intl.NumberFormat('ko-KR').format(video.views) + '회';
-    status.textContent = '최근 30일 · 최신 발행순 · 매일 오전 9시·오후 9시 자동 갱신\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
+    status.textContent = '최근 7일 · 최신 발행순 · 매일 오전 9시·오후 9시 자동 갱신\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
     watch.href = 'https://www.youtube.com/watch?v=' + video.id;
   } catch {
     if (!currentId) document.getElementById('video-loading').textContent = '영상을 불러오지 못했습니다.';

@@ -3,7 +3,7 @@ const PERIOD = 12 * 60 * 60 * 1000;
 export const refreshSlot = now => Math.floor(now / PERIOD) * PERIOD;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 const QUERY = '외식 트렌드|외식 산업|푸드 트렌드';
-const CACHE_KEY = 'dining-latest-v4';
+const CACHE_KEY = 'dining-latest-v5';
 const inFlight = new Map();
 const reasons = new Set(['api_key_invalid', 'api_not_enabled', 'api_key_restricted', 'quota_exceeded', 'youtube_forbidden', 'youtube_unavailable', 'youtube_connection_failed', 'youtube_timeout', 'youtube_response_invalid', 'youtube_redirect_blocked', 'youtube_internal_error', 'no_video']);
 export function classifyYouTubeError(data = {}, status = 0) {
@@ -57,7 +57,7 @@ async function youtube(key, resource, parameters) {
 }
 export async function selectVideo(key, now = Date.now()) {
   const found = await youtube(key, 'search', { part: 'snippet', type: 'video', q: QUERY,
-    order: 'date', publishedAfter: new Date(now - 30 * 86400000).toISOString(), publishedBefore: new Date(now).toISOString(),
+    order: 'date', publishedAfter: new Date(now - 7 * 86400000).toISOString(), publishedBefore: new Date(now).toISOString(),
     regionCode: 'KR', relevanceLanguage: 'ko', safeSearch: 'moderate', videoEmbeddable: 'true', maxResults: '25' });
   const ids = [...new Set((found.items || []).map(item => item?.id?.videoId).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
   if (!ids.length) return null;
@@ -65,7 +65,7 @@ export async function selectVideo(key, now = Date.now()) {
   const candidates = (details.items || []).filter(video => ids.includes(video?.id) && video.status?.embeddable === true
     && video.status?.privacyStatus === 'public' && /^(0|[1-9][0-9]*)$/.test(String(video.statistics?.viewCount)) && Number.isFinite(Number(video.statistics?.viewCount))
     && Number(video.statistics?.viewCount) >= 0 && typeof video.snippet?.title === 'string'
-    && Date.parse(video.snippet.publishedAt) >= now - 30 * 86400000 && Date.parse(video.snippet.publishedAt) <= now
+    && Date.parse(video.snippet.publishedAt) >= now - 7 * 86400000 && Date.parse(video.snippet.publishedAt) <= now
     && !['live', 'upcoming'].includes(video.snippet.liveBroadcastContent));
   candidates.sort((a, b) => Date.parse(b.snippet.publishedAt) - Date.parse(a.snippet.publishedAt) || Number(b.statistics.viewCount) - Number(a.statistics.viewCount));
   if (!candidates.length) return null;
@@ -79,7 +79,7 @@ async function edgeResponse(request, env) {
   if (!cache) return reply({ available: false, reason: 'storage_unavailable' }, 503);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(env.YOUTUBE_API_KEY)));
   const fingerprint = Array.from(digest.slice(0, 12), byte => byte.toString(16).padStart(2, '0')).join('');
-  const key = new Request(new URL('/__video-cache/v4/' + fingerprint + '/' + refreshSlot(Date.now()), request.url));
+  const key = new Request(new URL('/__video-cache/v5/' + fingerprint + '/' + refreshSlot(Date.now()), request.url));
   let cached;
   try { cached = await cache.match(key); } catch { /* Cache outages must not block video lookup. */ }
   if (cached) return cached;
@@ -115,7 +115,7 @@ export async function onRequest({ request, env }) {
     try {
       const payload = JSON.parse(saved?.payload || 'null');
       if (reasons.has(payload?.failure)) return { available: false, reason: payload.failure };
-      if (payload && /^[A-Za-z0-9_-]{11}$/.test(payload.id) && now - saved.fetched_at <= MAX_AGE)
+      if (payload && /^[A-Za-z0-9_-]{11}$/.test(payload.id) && now - saved.fetched_at <= MAX_AGE && Date.parse(payload.publishedAt) >= now - MAX_AGE && Date.parse(payload.publishedAt) <= now)
         return { available: true, video: payload, checkedAt: new Date(saved.fetched_at).toISOString(), stale: true };
     } catch {}
     return { available: false, reason: 'refresh_pending' };

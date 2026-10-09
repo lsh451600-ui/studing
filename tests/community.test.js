@@ -5,6 +5,7 @@ import { onRequest as views } from '../functions/api/board-views.js';
 import { onRequest as recipeEntry } from '../functions/api/recipes.js';
 import { onRequest as privateEntry } from '../functions/api/private.js';
 import { onRequest as posts } from '../functions/api/board-posts.js';
+import { onRequest as recipeComments } from '../functions/api/recipe-comments.js';
 import { onRequest as comments } from '../functions/api/board-comments.js';
 import { onRequest as recipePosts } from '../functions/api/recipe-posts.js';
 import { onRequest as privatePosts } from '../functions/api/private-posts.js';
@@ -211,4 +212,59 @@ test('view-count migration preserves existing posts and starts them at zero', as
   await initialize(db); await initialize(db);
   const post = await db.prepare('SELECT title, body, views FROM community_posts WHERE id = 1').first();
   assert.equal(post.title, 'Existing title'); assert.equal(post.body, 'Existing body'); assert.equal(post.views, 0);
+});
+
+async function recipeCommentSetup(t) {
+  const settings = { ...env(t), RECIPE_PASSWORD: 'reader-password' };
+  await ensureRecipes(settings.MEMBERS_DB);
+  for (let i = 0; i < 2; i++) await settings.MEMBERS_DB.prepare('INSERT INTO recipe_posts (author_id,title,body,created_at) VALUES (?,?,?,?)').bind('owner-id', 'Recipe ' + i, 'Body', new Date().toISOString()).run();
+  const cookie = (await recipeCookie(settings, 'viewer')).split(';')[0];
+  const req = (path, data, signed = true, origin, method) => {
+    const initial = request(path, data, signed, origin, method), headers = new Headers(initial.headers);
+    headers.set('Cookie', (initial.headers.get('Cookie') || '') + '; ' + cookie);
+    return new Request(initial, { headers });
+  };
+  return { settings, req };
+}
+test('recipe comments require member and reader access, reject foreign origins and validate inputs', async t => {
+  auth(t); const { settings, req } = await recipeCommentSetup(t);
+  assert.equal((await recipeComments({ env: settings, request: request('recipe-comments?postId=1', null, true) })).status, 403);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?postId=1', null, false) })).status, 401);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body: 'Hi' }, true, 'https://other.test') })).status, 403);
+  for (const body of ['', '   ', 'x'.repeat(2001)]) assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body }) })).status, 400);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?postId=invalid') })).status, 400);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 999, body: 'Hi' }) })).status, 404);
+});
+test('recipe comments persist per recipe with verified nickname and owner moderation', async t => {
+  auth(t); const { settings, req } = await recipeCommentSetup(t);
+  const created = await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, author: 'forged', body: '<script>literal</script>' }) });
+  assert.equal(created.status, 201); const id = (await created.json()).id;
+  const listed = await (await recipeComments({ env: settings, request: req('recipe-comments?postId=1') })).json();
+  assert.equal(listed.comments[0].author, 'verified-nickname'); assert.equal(listed.comments[0].body, '<script>literal</script>');
+  assert.equal(listed.comments[0].canEdit, true); assert.ok(!JSON.stringify(listed).includes('member-id'));
+  assert.deepEqual((await (await recipeComments({ env: settings, request: req('recipe-comments?postId=2') })).json()).comments, []);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?id=' + id, { body: '수정한 댓글' }, true, undefined, 'PATCH') })).status, 200);
+  assert.equal((await (await recipeComments({ env: settings, request: req('recipe-comments?postId=1') })).json()).comments[0].body, '수정한 댓글');
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?id=' + id, null, true, undefined, 'DELETE') })).status, 200);
+  assert.deepEqual((await (await recipeComments({ env: settings, request: req('recipe-comments?postId=1') })).json()).comments, []);
+});
+test('other members cannot modify recipe comments while the verified operator can', async t => {
+  auth(t); const { settings, req } = await recipeCommentSetup(t);
+  const created = await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body: '원본 댓글' }) });
+  const id = (await created.json()).id;
+  auth(t, { id: 'other-member', username: 'ordinary' });
+  const listed = await (await recipeComments({ env: settings, request: req('recipe-comments?postId=1') })).json();
+  assert.equal(listed.comments[0].canEdit, false); assert.equal(listed.comments[0].canDelete, false);
+  for (const method of ['PATCH', 'DELETE']) assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?id=' + id, method === 'PATCH' ? { body: 'forged' } : null, true, undefined, method) })).status, 403);
+  auth(t, { id: 'operator-id', username: 'lsh451600' });
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?id=' + id, { body: '운영자 수정' }, true, undefined, 'PATCH') })).status, 200);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?id=' + id, null, true, undefined, 'DELETE') })).status, 200);
+});
+test('recipe deletion removes its comments and comment flooding is limited', async t => {
+  auth(t); const { settings, req } = await recipeCommentSetup(t);
+  for (let i = 0; i < 20; i++) assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body: '댓글 ' + i }) })).status, 201);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body: 'Too many' }) })).status, 429);
+  auth(t, { id: 'owner-id', username: 'owner' });
+  assert.equal((await recipePosts({ env: settings, request: req('recipe-posts?id=1', null, true, undefined, 'DELETE') })).status, 200);
+  assert.equal((await settings.MEMBERS_DB.prepare('SELECT id FROM recipe_comments WHERE post_id = 1').all()).results.length, 0);
 });

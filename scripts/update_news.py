@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 KST = timezone(timedelta(hours=9))
-QUERY = '외식 (트렌드 OR 소비 OR 가성비 OR 혼밥 OR 물가 OR 시장) -아카데미 -교육 -모집 when:30d'
+QUERY = '외식 (트렌드 OR 소비 OR 가성비 OR 혼밥 OR 물가 OR 시장) -아카데미 -교육 -모집 when:7d'
 FEED = 'https://news.google.com/rss/search?' + urllib.parse.urlencode(
     {'q': QUERY, 'hl': 'ko', 'gl': 'KR', 'ceid': 'KR:ko'})
 
@@ -49,7 +49,7 @@ def collect(xml, now, history=()):
         parsed = urllib.parse.urlparse(link)
         if parsed.scheme != 'https' or parsed.hostname != 'news.google.com':
             continue
-        if not title or not source or not now - timedelta(days=30) <= published <= now:
+        if not title or not source or not now - timedelta(days=7) <= published <= now:
             continue
         if not any(word in title for word in ('외식', '레스토랑', '식당', '프랜차이즈', '음식점')):
             continue
@@ -192,7 +192,7 @@ def render(articles, now):
 <div class="read"><span>기사 원문 읽기</span><span aria-hidden="true">↗</span></div></a>''')
     return '''<section id="trends"><div class="section-head"><div><small>DINING TREND NEWS</small><h2>외식의 다음 장면</h2></div><span>외부 기사 링크 · 발행일 최신순</span></div>''' + f'''
 
-<p class="external-news-note">Google 뉴스에서 수집한 외부 기사 제목입니다. 내용과 권리는 원문 매체에 있으며, 본 사이트의 실무 가이드와 구분됩니다.</p><div class="cards">{''.join(cards)}</div><p id="news-status" data-collected="{now.astimezone(KST):%Y.%m.%d %H:%M}" style="font-size:12px;color:var(--muted);line-height:1.9;white-space:pre-line" role="status">최근 30일 외식 트렌드 최신 기사 · 매일 오전 9시·오후 9시 자동 갱신 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 카드를 누르면 기사 원문으로 이동합니다.</p></section>'''
+<p class="external-news-note">Google 뉴스에서 수집한 외부 기사 제목입니다. 내용과 권리는 원문 매체에 있으며, 본 사이트의 실무 가이드와 구분됩니다.</p><div class="cards">{''.join(cards)}</div><p id="news-status" data-collected="{now.astimezone(KST):%Y.%m.%d %H:%M}" style="font-size:12px;color:var(--muted);line-height:1.9;white-space:pre-line" role="status">최근 7일 외식 트렌드 최신 기사 · 매일 오전 9시·오후 9시 자동 갱신 (한국 시간)<br>마지막 수집: <time datetime="{now.isoformat()}">{now.astimezone(KST):%Y.%m.%d %H:%M}</time> · 카드를 누르면 기사 원문으로 이동합니다.</p></section>'''
 
 
 def update(xml, now):
@@ -208,11 +208,14 @@ def update(xml, now):
     unseen = collect(xml, now, history)
     # Keep current cards while filling open slots with never-published articles.
     # A partial update must not shrink six cards to only the new arrivals.
-    candidates = sorted([*unseen, *previous.get('articles', [])],
+    local_articles = {a['url']: a for a in local.get('articles', [])}
+    retained = [{**a, **local_articles.get(a['url'], {})} for a in previous.get('articles', [])]
+    retained.extend(local.get('articles', []))
+    candidates = sorted([*unseen, *retained],
                         key=lambda article: datetime.fromisoformat(article['published_at']), reverse=True)
     articles = []
     for article in candidates:
-        if not now - timedelta(days=30) <= datetime.fromisoformat(article['published_at']) <= now:
+        if not now - timedelta(days=7) <= datetime.fromisoformat(article['published_at']) <= now:
             continue
         if not any(same_article(article, old) for old in articles):
             articles.append(article)

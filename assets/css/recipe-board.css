@@ -40,3 +40,9 @@
 .recipe-list-heading .recipe-sort[data-recipe-sort=downloads]{text-align:center}
 .recipe-list-heading .recipe-sort[aria-pressed=true]{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:4px}
 .recipe-list-heading .recipe-sort:hover{color:var(--accent)}
+
+.recipe-comments{margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.recipe-comment-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}.recipe-comment-heading h3{margin:0;font-size:17px}
+.recipe-comment{padding:18px 0;border-bottom:1px solid var(--line)}.recipe-comment-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px}.recipe-comment-meta strong{font-size:15px;font-weight:700}.recipe-comment-meta time{font-size:11px;color:var(--muted)}
+.recipe-comment-body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.8}
+.recipe-comment-controls{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}.recipe-comments button{min-height:38px;padding:8px 12px;font-size:12px}.recipe-comment-form button[type=submit]{background:var(--accent);border-color:var(--accent);color:#fff}.recipe-comments-empty{font-size:13px;color:var(--muted);line-height:1.8}

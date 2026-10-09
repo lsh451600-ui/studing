@@ -1,6 +1,6 @@
 {
   "updated_at": "2026-10-08T23:49:45.170876+00:00",
-  "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A30d&hl=ko&gl=KR&ceid=KR%3Ako",
+  "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
       "title": "외식 프랜차이즈 줄줄이 가격인상… 소비자 부담 커진다",
@@ -56,6 +56,17 @@
       "image_alt": "교촌치킨, 중국 장쑤성 우시에 신규 매장 ‘우시점’ 오픈... 중국 시장 공략 박차 · 식품외식경제 제공 사진",
       "image_source": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607",
       "image_original": "https://www.foodbank.co.kr/news/thumbnail/202610/68607_30138_3642_v150.jpg"
+    },
+    {
+      "title": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력”",
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42VTVTTXM0RWJBMkExVFNfeDgxU3VVWGNPbVRTTmd2WWdoS1RiVGFaTUcyaXRTR3FjT255YmF1UVJfTTRkX0F5UEpmbXFvc0Ezcm5EOXdmaWFrT2hXNzFIRjZBT0FOOVI3OFgxYmlB?oc=5",
+      "source": "식품저널 foodnews",
+      "published_at": "2026-10-02T02:31:09+00:00",
+      "original_url": "https://www.foodnews.co.kr/news/articleView.html?idxno=120398",
+      "image": "/assets/news/b26171f6ad61c7780c2ae5ca.jpg",
+      "image_original": "https://cdn.foodnews.co.kr/news/thumbnail/202610/120398_86820_2438_v150.jpg",
+      "image_alt": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력” · 식품저널 foodnews 제공 사진",
+      "image_source": "https://www.foodnews.co.kr/news/articleView.html?idxno=120398"
     }
   ],
   "history": [

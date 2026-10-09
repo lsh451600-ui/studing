@@ -107,6 +107,27 @@ class NewsDeduplication(unittest.TestCase):
             self.assertEqual(result['new_articles'], 0)
             self.assertEqual((root / 'index.html').read_text().count('<img'), 6)
 
+    def test_news_collection_is_limited_to_the_last_seven_days(self):
+        from datetime import timedelta
+        xml = feed(('old', '외식 시장 소비 증가')).replace('Thu, 08 Oct 2026 10:00:00 GMT', (NOW - timedelta(days=8)).strftime('%a, %d %b %Y %H:%M:%S GMT'))
+        with self.assertRaises(ValueError): news.collect(xml, NOW)
+        self.assertIn('when%3A7d', news.FEED)
+
+    def test_newer_remote_feed_does_not_drop_cached_photos_or_missing_cards(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)):
+            root = Path(folder); (root / 'src').mkdir(); (root / 'index.html').write_text('<section id="trends"></section>')
+            xml = feed(*[(str(i), '외식 시장 소비 변화 ' + str(i)) for i in range(6)])
+            with patch.object(news, 'resolve_publishers', side_effect=cached_photos): news.update(xml, NOW)
+            previous = json.loads((root / 'news.json').read_text())
+            remote = json.loads(json.dumps(previous)); remote['updated_at'] = '2026-10-08T12:01:00+00:00'; remote['articles'].pop()
+            for article in remote['articles']: article.pop('image', None)
+            remote_path = root / 'remote.json'; remote_path.write_text(json.dumps(remote))
+            with patch.dict(news.os.environ, {'PREVIOUS_NEWS_PATH': str(remote_path)}), patch.object(news, 'resolve_publishers'):
+                news.update(xml, NOW)
+            result = json.loads((root / 'news.json').read_text())
+            self.assertEqual(len(result['articles']), 6)
+            self.assertTrue(all(news.local_photo(a['image']) for a in result['articles']))
+
     def test_no_verified_photo_preserves_existing_homepage(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(news, 'ROOT', Path(folder)), patch.object(news, 'resolve_publishers'):
             root = Path(folder); (root / 'src').mkdir()
