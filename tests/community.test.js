@@ -206,7 +206,7 @@ for (const [kind, entry, handler] of [['recipe', recipeEntry, recipePosts], ['pr
     const normal = await (await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: settings.RECIPE_PASSWORD }, true) })).json();
     assert.equal(normal.canWrite, false); assert.equal(normal.accountWriter, false);
     operator = true;
-    if (kind === 'recipe') assert.equal((await entry({ env: settings, request: request('recipes', { password: 'wrong-password' }, true) })).status, 401);
+    assert.equal((await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', {}, true) })).status, 200);
   });
 }
 

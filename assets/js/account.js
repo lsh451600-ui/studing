@@ -94,7 +94,10 @@ async function loadMembers() {
     for (const member of data.members) {
       const row = document.createElement('div'); row.className = 'member-level-row';
       const name = document.createElement('strong'); name.textContent = member.username; decorateMember(name, member.level, member.isAdmin);
-      if (member.isAdmin) { const label = document.createElement('span'); label.textContent = '운영자'; row.append(name, label); }
+      const identity = document.createElement('div'); identity.className = 'member-level-identity';
+      const phone = document.createElement('span'); phone.className = 'member-level-phone'; phone.textContent = member.phone || '등록된 전화번호 없음';
+      phone.setAttribute('aria-label', member.username + ' 전화번호'); identity.append(name, phone);
+      if (member.isAdmin) { const label = document.createElement('span'); label.textContent = '운영자'; row.append(identity, label); }
       else {
         const select = document.createElement('select'); select.setAttribute('aria-label', member.username + ' 회원 등급');
         for (const [value, label] of [['regular', '일반회원'], ['special', '특별회원']]) { const option = document.createElement('option'); option.value = value; option.textContent = label; select.append(option); }
@@ -104,7 +107,7 @@ async function loadMembers() {
           try { await levelAPI('/api/member-levels', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ memberId: member.id, level: select.value }) }); member.level = select.value; decorateMember(name, member.level, member.isAdmin); status.textContent = member.username + '님의 등급을 ' + select.selectedOptions[0].textContent + '으로 변경했습니다.'; }
           catch (error) { status.textContent = error.message; select.value = member.level; }
           finally { save.disabled = false; select.disabled = false; }
-        }); row.append(name, select, save);
+        }); row.append(identity, select, save);
       } list.append(row);
     }
     if (!data.members.length) list.textContent = '검색 결과가 없습니다.';

@@ -12,14 +12,14 @@ export async function onRequest({ request, env }) {
     if (request.method === 'GET') {
       const params = new URL(request.url).searchParams, q = (params.get('q') || '').trim(), raw = params.get('page') || '1';
       if (!/^[1-9][0-9]*$/.test(raw) || !Number.isSafeInteger(Number(raw)) || q.length > 100 || /[(),.*%"\\]/.test(q)) return reply(400, '검색 조건을 확인해 주세요.');
-      const query = new URLSearchParams({ select: 'id,username', order: 'username.asc,id.asc', limit: '21', offset: String((Number(raw) - 1) * 20) });
+      const query = new URLSearchParams({ select: 'id,username,phone', order: 'username.asc,id.asc', limit: '21', offset: String((Number(raw) - 1) * 20) });
       if (q) query.set('username', 'ilike.*' + q + '*');
       const result = await upstream(env, '/rest/v1/member_profiles?' + query, { privileged: true });
       if (!result.ok || !Array.isArray(result.data)) return reply(503, '회원 목록을 불러오지 못했습니다.');
       const members = [];
       for (const profile of result.data.slice(0, 20)) {
         const record = await db.prepare('SELECT level FROM member_levels WHERE member_id = ?').bind(profile.id).first();
-        members.push({ id: profile.id, username: profile.username, level: record?.level || 'regular', isAdmin: profile.username?.toLowerCase() === 'lsh451600' });
+        members.push({ id: profile.id, username: profile.username, phone: profile.phone || '', level: record?.level || 'regular', isAdmin: profile.username?.toLowerCase() === 'lsh451600' });
       }
       return reply(200, '', { members, page: Number(raw), hasMore: result.data.length > 20 }, auth.session.cookies);
     }

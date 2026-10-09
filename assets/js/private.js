@@ -96,12 +96,12 @@ function lock() {
   byId('industry-write').hidden = true; byId('recipe-editor').hidden = true;
   byId('industry-password').value = ''; byId('industry-post-form').reset();
 }
-byId('industry-access-form').addEventListener('submit', async event => {
-  event.preventDefault(); const version = ++generation;
+async function unlockIndustry(password) {
+  const version = ++generation;
   byId('industry-access-submit').disabled = true;
   byId('industry-access-status').textContent = '확인하고 있습니다.';
   try {
-    const data = await api('/api/private', json({ password: byId('industry-password').value }));
+    const data = await api('/api/private', json(password === undefined ? {} : { password }));
     if (version !== generation) return;
     unlocked = true; page = data.page || 1; totalPages = data.totalPages || 1; query = ''; sort = 'latest';
     byId('industry-query').value = ''; render(data.posts); paginate();
@@ -109,8 +109,20 @@ byId('industry-access-form').addEventListener('submit', async event => {
     byId('industry-write').hidden = !data.canWrite; byId('industry-access-status').textContent = '';
   } catch (error) { if (version === generation) byId('industry-access-status').textContent = error.message; }
   finally { hidePassword(); byId('industry-password').value = ''; byId('industry-access-submit').disabled = false; }
+}
+byId('industry-access-form').addEventListener('submit', event => {
+  event.preventDefault(); unlockIndustry(byId('industry-password').value);
 });
-window.addEventListener('member-session-change', lock);
-window.addEventListener('pageshow', event => { if (event.persisted) lock(); });
+async function syncAdminAccess() {
+  const version = generation;
+  try {
+    const data = await api('/api/private');
+    if (version === generation && data.isAdmin && !unlocked) await unlockIndustry();
+  } catch { /* Keep the password form when membership cannot be checked. */ }
+}
+window.addEventListener('member-session-change', () => { lock(); syncAdminAccess(); });
+window.addEventListener('pageshow', event => { if (event.persisted) { lock(); syncAdminAccess(); } });
 window.addEventListener('pagehide', lock);
 lock();
+
+syncAdminAccess();

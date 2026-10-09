@@ -1,9 +1,12 @@
+import { boardIdentity } from '../../src/board-permissions.js';
 import { reply, sameOrigin, readJSON, authorized, rateLimit, matchesPassword, sessionCookie, clearCookie, adminReady } from '../../src/recipe-server.js';
 export async function onRequest({ request, env }) {
   if (!['POST', 'DELETE'].includes(request.method)) return reply(405, { message: '지원하지 않는 요청입니다.' });
   if (!sameOrigin(request)) return reply(403, { message: '홈페이지에서 다시 시도해 주세요.' });
   if (request.method === 'DELETE') return reply(200, { message: '작성자 모드를 종료했습니다.' }, [clearCookie('admin')]);
   if (!await authorized(request, env)) return reply(401, { message: '레시피 열람 비밀번호를 먼저 입력해 주세요.' });
+  const identity = await boardIdentity(request, env);
+  if (identity?.isAdmin) return reply(200, { canWrite: true, message: '운영자 계정으로 인증했습니다.' });
   if (!adminReady(env) || !env.MEMBERS_DB) return reply(503, { message: '게시물 작성을 준비 중입니다.' });
   try {
     if (!await rateLimit(request, env.MEMBERS_DB, 'admin', 5)) return reply(429, { message: '인증 시도가 많습니다. 15분 후 다시 시도해 주세요.' });

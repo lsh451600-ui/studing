@@ -21,7 +21,7 @@ function setup(t) {
   const sqlite=new DatabaseSync(':memory:');t.after(()=>sqlite.close());
   const db={prepare(sql){const st=sqlite.prepare(sql);let v=[];return{bind(...a){v=a;return this},async run(){return st.run(...v)},async first(){return st.get(...v)||null},async all(){return{results:st.all(...v)}}}},async batch(qs){sqlite.exec('BEGIN');try{const out=[];for(const q of qs)out.push(await q.run());sqlite.exec('COMMIT');return out}catch(e){sqlite.exec('ROLLBACK');throw e}}};
   let admin=true;
-  t.mock.method(globalThis,'fetch',async input=>{const url=new URL(input);if(url.pathname==='/auth/v1/user')return Response.json({id:admin?adminId:targetId});if(url.searchParams.get('select')==='id,username')return Response.json([{id:targetId,username:'ordinary'}]);return Response.json([{username:admin?'lsh451600':'ordinary',nickname:admin?'운영팀':'lsh451600'}])});
+  t.mock.method(globalThis,'fetch',async input=>{const url=new URL(input);if(url.pathname==='/auth/v1/user')return Response.json({id:admin?adminId:targetId});if(['id,username','id,username,phone'].includes(url.searchParams.get('select')))return Response.json([{id:targetId,username:'ordinary',phone:'01012345678'}]);return Response.json([{username:admin?'lsh451600':'ordinary',nickname:admin?'운영팀':'lsh451600'}])});
   const env={MEMBERS_DB:db,SUPABASE_URL:'https://project.supabase.co',SUPABASE_PUBLISHABLE_KEY:'public',SUPABASE_SECRET_KEY:'secret',RECIPE_PASSWORD:'reader-pass'};
   const req=(path,{method='GET',body,signed=true,origin='https://dining.win',cookie=''}={})=>new Request('https://dining.win'+path,{method,headers:{Origin:origin,Cookie:(signed?'__Host-member-access=verified; ':'')+cookie,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});
   return{env,req,db,setAdmin:value=>{admin=value}};
@@ -76,4 +76,24 @@ test('author badges use current grades and omit private author identifiers',asyn
   const graded=await authorLevels(db,rows); assert.equal(graded[0].authorLevel,'special'); assert.equal(graded[0].author,'nickname'); assert.equal(graded[0].author_id,undefined); assert.equal(graded[1].authorLevel,'regular');
   await db.prepare("UPDATE member_levels SET level='regular' WHERE member_id=?").bind(targetId).run();
   assert.equal((await authorLevels(db,rows))[0].authorLevel,'regular');
+});
+
+test('verified admin can unlock and read both boards without any shared password or viewer cookie',async t=>{
+  const {env,req,setAdmin,db}=setup(t);
+  const withoutPasswords={...env,RECIPE_PASSWORD:undefined,RECIPE_ADMIN_PASSWORD:undefined};
+  for(const [path,handler,postsPath,postsHandler] of [['/api/recipes',recipes,'/api/recipe-posts',recipePosts],['/api/private',industry,'/api/private-posts',industryPosts]]){
+    const availability=await handler({env:withoutPasswords,request:req(path)});assert.equal(availability.status,200);assert.equal((await availability.json()).isAdmin,true);
+    const unlocked=await handler({env:withoutPasswords,request:req(path,{method:'POST',body:{}})});assert.equal(unlocked.status,200);assert.equal((await unlocked.json()).canWrite,true);
+    assert.equal((await postsHandler({env:withoutPasswords,request:req(postsPath)})).status,200);
+    assert.equal((await handler({env:withoutPasswords,request:req(path,{method:'POST',body:{},origin:'https://other.test'})})).status,403);
+  }
+  setAdmin(false);await ensureLevels(db);
+  await db.prepare('INSERT INTO member_levels(member_id,level,updated_by,updated_at) VALUES (?,?,?,?)').bind(targetId,'special',adminId,new Date().toISOString()).run();
+  for(const [path,handler] of [['/api/recipe-posts',recipePosts],['/api/private-posts',industryPosts]])assert.equal((await handler({env,request:req(path)})).status,403);
+});
+test('admin member directory includes phone numbers but ordinary members cannot fetch it',async t=>{
+  const {env,req,setAdmin}=setup(t);
+  const response=await levels({env,request:req('/api/member-levels')});assert.equal(response.status,200);
+  assert.deepEqual((await response.json()).members[0],{id:targetId,username:'ordinary',phone:'01012345678',level:'regular',isAdmin:false});
+  setAdmin(false);const denied=await levels({env,request:req('/api/member-levels')});assert.equal(denied.status,403);assert.ok(!(await denied.text()).includes('01012345678'));
 });

@@ -126,12 +126,12 @@ async function refreshPosts(page = currentPage) {
 }
 byId('recipe-show-password').addEventListener('change', event => { input.type = event.target.checked ? 'text' : 'password'; });
 window.addEventListener('pagehide', resetView);
-form.addEventListener('submit', async event => {
-  event.preventDefault(); if (pending || !form.reportValidity()) return;
+async function unlockRecipes(password, focus = false) {
+  if (pending) return;
   pending = true; submit.disabled = true; form.setAttribute('aria-busy', 'true'); status.textContent = '비밀번호를 확인하고 있습니다.';
   const current = generation;
   try {
-    const data = await api('/api/recipes', jsonOptions({ password: input.value }));
+    const data = await api('/api/recipes', jsonOptions(password === undefined ? {} : { password }));
     if (current !== generation) return;
     renderPosts(data.posts || []); renderPagination(data); updateSortButtons();
     board.hidden = false; gate.hidden = true;
@@ -140,15 +140,26 @@ form.addEventListener('submit', async event => {
     byId('recipe-admin-open').disabled = false;
     byId('recipe-admin-open').hidden = !accountWriter;
     byId('recipe-board-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : '';
-    byId('recipe-board-heading').focus();
+    if (focus) byId('recipe-board-heading').focus();
     const linkedId = new URL(location.href).searchParams.get('recipe');
     if (linkedId) await openRecipe(linkedId, false);
-  } catch (error) { status.textContent = error.message; }
+  } catch (error) { if (current === generation) status.textContent = error.message; }
   finally {
     input.value = ''; input.type = 'password'; byId('recipe-show-password').checked = false;
     pending = false; submit.disabled = false; form.removeAttribute('aria-busy');
+    if (current !== generation && !gate.hidden) syncAdminAccess();
   }
+}
+form.addEventListener('submit', event => {
+  event.preventDefault(); if (form.reportValidity()) unlockRecipes(input.value, true);
 });
+async function syncAdminAccess() {
+  const current = generation;
+  try {
+    const data = await api('/api/recipes');
+    if (current === generation && data.isAdmin && gate.hidden === false) await unlockRecipes();
+  } catch { /* The password form remains available if membership cannot be checked. */ }
+}
 byId('recipe-admin-open').addEventListener('click', () => {
   if (!accountWriter) return;
   editor.hidden = false; byId('recipe-post-title').focus();
@@ -166,7 +177,7 @@ byId('recipe-heading-link').addEventListener('click', async event => {
 });
 window.addEventListener('member-session-change', () => {
   // A changed login must recheck publishing rights before the editor is shown again.
-  if (gate.hidden) resetView();
+  resetView(); syncAdminAccess();
 });
 function updateSortButtons() {
   for (const button of document.querySelectorAll('[data-recipe-sort]')) {
@@ -262,3 +273,6 @@ byId('recipe-pagination').addEventListener('click', async event => {
   } catch (error) { byId('recipe-board-status').textContent = error.message; }
   finally { byId('recipe-pagination').removeAttribute('aria-busy'); }
 });
+
+window.addEventListener('pageshow', event => { if (event.persisted) { resetView(); syncAdminAccess(); } });
+syncAdminAccess();

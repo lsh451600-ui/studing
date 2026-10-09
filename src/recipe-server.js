@@ -63,7 +63,9 @@ async function validSession(request, env, role) {
   return matchesPassword(parts[3], await sign(parts.slice(0, 3).join('.'), secret));
 }
 export async function authorized(request, env, role = 'viewer') {
-  if (!(await membership(request, env)).canAccessRecipes) return false;
+  const auth = await membership(request, env);
+  if (!auth.canAccessRecipes) return false;
+  if (auth.isAdmin) return true;
   if (await validSession(request, env, 'admin')) return true;
   return role === 'viewer' && await validSession(request, env, 'viewer');
 }

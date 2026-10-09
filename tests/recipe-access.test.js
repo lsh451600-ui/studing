@@ -10,8 +10,9 @@ test('ordinary members cannot unlock recipes with either password',async t=>{
   t.mock.method(globalThis,'fetch',async input=>new URL(input).pathname==='/auth/v1/user'?Response.json({id:'member'}):Response.json([{username:'ordinary'}]));
   for(const password of [env.RECIPE_PASSWORD,env.RECIPE_ADMIN_PASSWORD])assert.equal((await onRequest({env,request:request(password,'__Host-member-access=verified')})).status,403);
 });
-test('operator bypasses membership restriction but password validation remains',async t=>{
+test('verified operator opens recipes without a separate password',async t=>{
   t.mock.method(globalThis,'fetch',async input=>new URL(input).pathname==='/auth/v1/user'?Response.json({id:'operator'}):Response.json([{username:'lsh451600',nickname:'운영팀'}]));
   const signed='__Host-member-access=verified';assert.equal((await onRequest({env,request:request(env.RECIPE_PASSWORD,signed)})).status,200);
-  assert.equal((await onRequest({env,request:request('wrong-password',signed)})).status,401);
+  assert.equal((await onRequest({env,request:request('wrong-password',signed)})).status,200);
+  assert.equal((await onRequest({env:{...env,RECIPE_PASSWORD:undefined,RECIPE_ADMIN_PASSWORD:undefined},request:request(undefined,signed)})).status,200);
 });

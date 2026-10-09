@@ -7,7 +7,7 @@ export async function onRequest({ request, env }) {
     try {
       const auth = await membership(request, env);
       if (!auth.canAccessRecipes) return reply(auth.authenticated ? 403 : 401, { message: '외식 산업 자료는 특별회원만 이용할 수 있습니다.' });
-      return reply(200, { available: Boolean(env.RECIPE_PASSWORD) });
+      return reply(200, { available: auth.isAdmin || Boolean(env.RECIPE_PASSWORD), isAdmin: auth.isAdmin });
     } catch { return reply(503, { message: '회원 등급을 확인하지 못했습니다.' }); }
   }
   if (!['POST', 'DELETE'].includes(request.method)) return reply(405, { message: '지원하지 않는 요청입니다.' });
@@ -16,6 +16,11 @@ export async function onRequest({ request, env }) {
   try {
     const auth = await membership(request, env);
     if (!auth.canAccessRecipes) return reply(auth.authenticated ? 403 : 401, { message: '외식 산업 자료는 특별회원만 이용할 수 있습니다.' });
+    if (auth.isAdmin) {
+      const identity = { id: auth.id, isAdmin: true };
+      const listing = env.MEMBERS_DB ? await listPosts(env.MEMBERS_DB, null, { identity }) : { posts: [], next: null };
+      return reply(200, { title: '외식 산업 자료', ...listing, storageAvailable: Boolean(env.MEMBERS_DB), adminConfigured: true, accountWriter: true, canWrite: true }, auth.session.cookies);
+    }
   } catch { return reply(503, { message: '회원 등급을 확인하지 못했습니다.' }); }
   if (!env.RECIPE_PASSWORD) return reply(503, { message: '외식 산업 자료 페이지를 준비 중입니다.' });
   let data;
