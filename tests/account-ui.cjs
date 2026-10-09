@@ -82,7 +82,7 @@ const { chromium } = require('playwright');
       await page.locator('#withdrawal-confirmation').fill('회원탈퇴'); await page.locator('#withdrawal-password').fill('current-password');
       await page.locator('#withdrawal-submit').click(); await page.waitForFunction(() => document.getElementById('account-status').textContent.includes('완료'));
       assert.ok(await page.locator('#account-content').isHidden()); assert.equal(await page.locator('.member-profile-link').count(), 0);
-      assert.equal(await page.evaluate(() => JSON.parse(sessionStorage.getItem('member-session-v2')).data.authenticated), false);
+      assert.equal(await page.evaluate(() => JSON.parse(sessionStorage.getItem('member-session-v3')).data.authenticated), false);
       await page.goto(origin + '/forgot-password');
       assert.ok(await page.locator('#recovery-identifier').evaluate(input => input.getBoundingClientRect().height >= 44));
       await page.locator('#recovery-identifier').fill('test_member'); await page.locator('#recovery-submit').click();
