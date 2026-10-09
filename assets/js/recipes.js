@@ -111,7 +111,7 @@ form.addEventListener('submit', async event => {
   try {
     const data = await api('/api/recipes', jsonOptions({ password: input.value }));
     if (current !== generation) return;
-    renderPosts(data.posts || []); renderPagination(data);
+    renderPosts(data.posts || []); renderPagination(data); updateSortButtons();
     board.hidden = false; gate.hidden = true;
     storage = Boolean(data.storageAvailable); accountWriter = data.accountWriter === true;
     editor.hidden = !accountWriter;

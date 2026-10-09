@@ -38,6 +38,7 @@
 
 .recipe-list-heading .recipe-sort{border:0;border-radius:0;background:transparent;color:inherit;min-height:30px;min-width:0;padding:0;text-align:left;font-size:11px;cursor:pointer}
 .recipe-list-heading .recipe-sort[data-recipe-sort=downloads]{text-align:center}
+.recipe-list-heading .recipe-sort[data-recipe-sort=latest]{text-align:right}
 .recipe-list-heading .recipe-sort[aria-pressed=true]{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:4px}
 .recipe-list-heading .recipe-sort:hover{color:var(--accent)}
 

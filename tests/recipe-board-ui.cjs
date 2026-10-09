@@ -206,6 +206,14 @@ const { chromium } = require('playwright');
       const sortedTitles = await page.locator('.recipe-row-title').allTextContents();
       assert.deepEqual(sortedTitles, [...sortedTitles].sort((a,b) => a.localeCompare(b,'ko')));
       assert.equal(await page.locator('#recipe-search-query').inputValue(), '페이지 자료');
+      await page.locator('[data-recipe-sort="latest"]').click();
+      await page.waitForFunction(() => document.querySelector('[data-recipe-sort="latest"]').getAttribute('aria-pressed') === 'true');
+      assert.equal(await page.locator('#recipe-pagination [aria-current]').textContent(), '1');
+      assert.equal(await page.locator('.recipe-row-title').first().textContent(), '페이지 자료 0');
+      await page.getByRole('button', { name: '2페이지', exact: true }).click();
+      await page.waitForFunction(() => document.querySelector('#recipe-pagination [aria-current]').textContent === '2');
+      assert.equal(await page.locator('.recipe-row-title').first().textContent(), '페이지 자료 10');
+
       posts.splice(1); await page.locator('#recipe-heading-link').click();
       await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
       accountWriterMode = true;
