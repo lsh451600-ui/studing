@@ -1,3 +1,4 @@
+import { normalizeIngredients } from '../assets/js/ingredient-matching.js';
 import { membership } from './member-levels.js';
 import { ensureRecipeComments } from './recipe-comments.js';
 import { canManagePost } from './board-permissions.js';
@@ -74,7 +75,7 @@ export const POST_SCHEMA = `CREATE TABLE IF NOT EXISTS recipe_posts (
 export async function ensurePosts(db) {
   await db.prepare(POST_SCHEMA).run();
   const columns = new Set((await db.prepare('PRAGMA table_info(recipe_posts)').all()).results.map(column => column.name));
-  for (const [name, definition] of [['downloads', 'INTEGER NOT NULL DEFAULT 0'], ['author_id', 'TEXT'], ['category', "TEXT NOT NULL DEFAULT '미분류'"], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
+  for (const [name, definition] of [['ingredients', "TEXT NOT NULL DEFAULT '[]'"], ['downloads', 'INTEGER NOT NULL DEFAULT 0'], ['author_id', 'TEXT'], ['category', "TEXT NOT NULL DEFAULT '미분류'"], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
     if (columns.has(name)) continue;
     try { await db.prepare(`ALTER TABLE recipe_posts ADD COLUMN ${name} ${definition}`).run(); }
     catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
@@ -92,7 +93,7 @@ export async function rateLimit(request, db, scope, maximum = 10) {
 }
 export async function listPosts(db, before = null, { q = '', category = '', identity = null, page = 1, sort = 'latest' } = {}) {
   await ensureRecipeComments(db);
-  const fields = 'id, author_id, title, body, category, created_at, downloads, (SELECT COUNT(*) FROM recipe_comments WHERE post_id = recipe_posts.id) AS comment_count, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
+  const fields = 'id, author_id, title, body, category, ingredients, created_at, downloads, (SELECT COUNT(*) FROM recipe_comments WHERE post_id = recipe_posts.id) AS comment_count, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
   const filters = [], values = [];
   if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
   if (category) { filters.push('category = ?'); values.push(category); }
@@ -116,6 +117,9 @@ export function validatePost(data) {
   const categories = ['한식', '중식', '일식', '양식', '베이커리'];
   const category = data.category === undefined ? '미분류' : data.category;
   if (typeof category !== 'string' || !categories.includes(category) && category !== '미분류') throw new Error('분류를 선택해 주세요.');
+  if (data.ingredients !== undefined && (typeof data.ingredients !== 'string' && !Array.isArray(data.ingredients))) throw new Error('재료를 쉼표로 구분해 입력해 주세요.');
+  const ingredients = normalizeIngredients(data.ingredients || []);
+  if (ingredients.length > 50 || ingredients.some(name => name.length > 40) || (Array.isArray(data.ingredients) && data.ingredients.some(name => typeof name !== 'string'))) throw new Error('재료는 40자 이내로 최대 50개 입력해 주세요.');
   let imageBase64 = null, imageType = null, attachmentBase64 = null, attachmentName = null, attachmentType = null;
   if (data.image) {
     if (typeof data.image.base64 !== 'string' || data.image.base64.length > 1398104 || !/^[A-Za-z0-9+/]*={0,2}$/.test(data.image.base64)) throw new Error('이미지는 1MB 이하로 올려 주세요.');
@@ -153,5 +157,5 @@ export function validatePost(data) {
     attachmentName = cleanName;
     attachmentType = extension === 'pdf' ? 'application/pdf' : extension === 'docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : extension === 'xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : extension === 'csv' ? 'text/csv' : 'text/plain';
   }
-  return { title, body, category, imageBase64, imageType, attachmentBase64, attachmentName, attachmentType };
+  return { title, body, category, ingredients, imageBase64, imageType, attachmentBase64, attachmentName, attachmentType };
 }

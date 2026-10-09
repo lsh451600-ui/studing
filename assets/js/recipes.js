@@ -1,5 +1,5 @@
 import { appendRecipeComments } from './recipe-comments.js?v=crown-20261009-count';
-import { appendPostActions } from './post-actions.js?v=20261009-permissions';
+import { appendPostActions } from './post-actions.js?v=20261009-ingredients';
 const byId = id => document.getElementById(id);
 const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');
 const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
@@ -11,6 +11,7 @@ function clearPreview() {
   previewURL = null; byId('recipe-image-preview').removeAttribute('src'); byId('recipe-image-preview').hidden = true;
 }
 function resetView() {
+  window.dispatchEvent(new Event('recipe-access-locked'));
   generation++; storage = false; accountWriter = false; form.reset(); input.type = 'password'; content.replaceChildren();
   content.hidden = true; board.hidden = true; editor.hidden = true;
   postForm.reset(); clearPreview(); gate.hidden = false; status.textContent = '';
@@ -69,7 +70,7 @@ function renderPosts(posts) {
         finally { downloading = false; attachment.removeAttribute('aria-disabled'); }
       });
     }
-    appendPostActions(detail, post, { endpoint: '/api/recipe-posts', api, refresh: refreshPosts, categories: ['미분류', '한식', '중식', '일식', '양식', '베이커리'] });
+    appendPostActions(detail, post, { endpoint: '/api/recipe-posts', api, refresh: refreshPosts, categories: ['미분류', '한식', '중식', '일식', '양식', '베이커리'], ingredientField: true });
     appendRecipeComments(card, detail, post, api);
   }
   content.hidden = false;
@@ -217,7 +218,7 @@ postForm.addEventListener('submit', async event => {
     const attachmentFile = byId('recipe-post-file').files[0];
     if (file && attachmentFile) throw new Error('사진과 파일은 한 게시물에 하나씩만 첨부할 수 있습니다.');
     const attachment = attachmentFile ? await encodeFile(attachmentFile) : null;
-    const payload = { category: byId('recipe-post-category').value, title: byId('recipe-post-title').value, body: byId('recipe-post-body').value, image: file ? await encodeFile(file) : null, attachment };
+    const payload = { category: byId('recipe-post-category').value, title: byId('recipe-post-title').value, body: byId('recipe-post-body').value, ingredients: byId('recipe-post-ingredients').value, image: file ? await encodeFile(file) : null, attachment };
     await api('/api/recipe-posts', jsonOptions(payload)); postForm.reset(); clearPreview();
     postStatus.textContent = '게시물을 올렸습니다.';
     try { await refreshPosts(1); } catch { byId('recipe-board-status').textContent = '게시물은 저장됐습니다. 목록을 새로고침해 주세요.'; }

@@ -1,4 +1,4 @@
-export function appendPostActions(detail, post, { endpoint, api, refresh, categories = null }) {
+export function appendPostActions(detail, post, { endpoint, api, refresh, categories = null, ingredientField = false }) {
   if (!post.canEdit && !post.canDelete) return;
   const make = (tag, text, className) => {
     const element = document.createElement(tag); if (text) element.textContent = text; if (className) element.className = className; return element;
@@ -18,6 +18,12 @@ export function appendPostActions(detail, post, { endpoint, api, refresh, catego
       for (const value of categories) { const option = make('option', value); option.value = value; category.append(option); }
       category.value = post.category || '미분류'; label.append(category); form.append(label);
     }
+    let ingredients;
+    if (ingredientField) {
+      const label = make('label', '재료 (쉼표로 구분)'); ingredients = make('textarea'); ingredients.rows = 2; ingredients.maxLength = 2000;
+      let saved = post.ingredients || []; if (typeof saved === 'string') { try { saved = JSON.parse(saved); } catch { saved = []; } }
+      ingredients.value = Array.isArray(saved) ? saved.join(', ') : ''; ingredients.placeholder = '달걀, 두부, 대파, 소금'; label.append(ingredients); form.append(label);
+    }
     const controls = make('div', '', 'recipe-post-actions'), save = make('button', '저장'), cancel = make('button', '취소');
     save.type = 'submit'; cancel.type = 'button'; controls.append(save, cancel); form.append(controls);
     edit.addEventListener('click', () => { form.hidden = false; title.focus(); });
@@ -26,7 +32,7 @@ export function appendPostActions(detail, post, { endpoint, api, refresh, catego
       event.preventDefault(); if (save.disabled || !form.reportValidity()) return;
       save.disabled = true; cancel.disabled = true; status.textContent = '저장하고 있습니다.';
       try {
-        await api(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: title.value, body: body.value, ...(category ? { category: category.value } : {}) }) });
+        await api(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: title.value, body: body.value, ...(category ? { category: category.value } : {}), ...(ingredients ? { ingredients: ingredients.value } : {}) }) });
         status.textContent = '수정했습니다.'; form.hidden = true;
         await refresh();
       } catch (error) { status.textContent = error.message; }

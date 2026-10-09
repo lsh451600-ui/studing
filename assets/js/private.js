@@ -1,5 +1,5 @@
 import { appendRecipeComments } from './recipe-comments.js?v=crown-20261009-industry';
-import { appendPostActions } from './post-actions.js?v=20261009-permissions';
+import { appendPostActions } from './post-actions.js?v=20261009-ingredients';
 const byId = id => document.getElementById(id);
 const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
 const json = body => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });

@@ -156,7 +156,7 @@ const { chromium } = require('playwright');
       await page.locator('.recipe-row').click();
       await page.locator('.recipe-post-actions').getByRole('button', { name: '수정', exact: true }).click();
       await page.locator('.recipe-inline-edit input').fill('수정한 자료');
-      await page.locator('.recipe-inline-edit textarea').fill('수정한 자료 내용');
+      await page.locator('.recipe-inline-edit').getByRole('textbox', { name: '내용', exact: true }).fill('수정한 자료 내용');
       await page.locator('.recipe-inline-edit').getByRole('button', { name: '저장', exact: true }).click();
       await page.waitForFunction(() => document.querySelector('.recipe-row-title').textContent === '수정한 자료');
       assert.equal(posts[0].body, '수정한 자료 내용');

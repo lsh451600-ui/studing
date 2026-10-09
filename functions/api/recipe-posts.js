@@ -16,7 +16,7 @@ export async function onRequest({ request, env }) {
       const id = idOf(new URL(request.url).searchParams.get('id'));
       if (!id) return reply(400, { message: '게시물 번호를 확인해 주세요.' });
       await ensurePosts(db);
-      const post = await db.prepare('SELECT id, author_id FROM recipe_posts WHERE id = ?').bind(id).first();
+      const post = await db.prepare('SELECT id, author_id, ingredients FROM recipe_posts WHERE id = ?').bind(id).first();
       if (!post) return reply(404, { message: '게시물이 없습니다.' });
       if (!canManagePost(identity, post.author_id)) return reply(403, { message: '작성자 또는 운영자만 수정·삭제할 수 있습니다.' });
       if (request.method === 'DELETE') {
@@ -31,7 +31,7 @@ export async function onRequest({ request, env }) {
       try { data = await readJSON(request, 65536); } catch { return reply(400, { message: '입력 내용을 확인해 주세요.' }); }
       let updated;
       try { updated = validatePost(data); } catch (error) { return reply(400, { message: error.message }); }
-      await db.prepare('UPDATE recipe_posts SET title = ?, body = ?, category = ? WHERE id = ?').bind(updated.title, updated.body, updated.category, id).run();
+      await db.prepare('UPDATE recipe_posts SET title = ?, body = ?, category = ?, ingredients = ? WHERE id = ?').bind(updated.title, updated.body, updated.category, data.ingredients === undefined ? post.ingredients : JSON.stringify(updated.ingredients), id).run();
       return reply(200, { message: '게시물을 수정했습니다.', id });
     }
     if (request.method === 'GET') {
@@ -50,8 +50,8 @@ export async function onRequest({ request, env }) {
     try { post = validatePost(await readJSON(request, 2300000)); }
     catch (error) { return reply(400, { message: ['invalid', 'too_large'].includes(error.message) ? '입력 내용과 이미지 크기를 확인해 주세요.' : error.message }); }
     await ensurePosts(db);
-    const result = await db.prepare('INSERT INTO recipe_posts (author_id, title, body, category, image_base64, image_type, attachment_base64, attachment_name, attachment_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-      .bind(identity?.id || null, post.title, post.body, post.category, post.imageBase64, post.imageType, post.attachmentBase64, post.attachmentName, post.attachmentType, new Date().toISOString()).run();
+    const result = await db.prepare('INSERT INTO recipe_posts (author_id, title, body, category, ingredients, image_base64, image_type, attachment_base64, attachment_name, attachment_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .bind(identity?.id || null, post.title, post.body, post.category, JSON.stringify(post.ingredients), post.imageBase64, post.imageType, post.attachmentBase64, post.attachmentName, post.attachmentType, new Date().toISOString()).run();
     return reply(201, { message: '게시물을 올렸습니다.', id: result.meta.last_row_id });
   } catch { return reply(503, { message: '게시물을 저장하지 못했습니다. 작성 내용은 유지됩니다.' }); }
 }

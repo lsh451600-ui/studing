@@ -26,6 +26,10 @@ on:
       - 'assets/js/login.js'
       - 'assets/js/site-menu.js'
       - 'assets/js/recipes.js'
+      - 'assets/js/ingredient-*.js'
+      - 'tests/ingredient-search.test.js'
+      - 'tests/ingredient-search-ui.cjs'
+      - 'docs/ingredient-search.md'
       - 'assets/css/recipe-board.css'
       - 'tests/recipe-board-ui.cjs'
       - 'tests/recipe-access.test.js'
@@ -89,7 +93,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m unittest discover -s tests -p 'test_weekly_guide.py'
-      - run: node --test tests/seo.test.js tests/journal.test.js tests/account.test.js tests/member-levels.test.js tests/nickname.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
+      - run: node --test tests/ingredient-search.test.js tests/recipes.test.js tests/seo.test.js tests/journal.test.js tests/account.test.js tests/member-levels.test.js tests/nickname.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js
       - run: python tests/test_update_news.py
 
   browser:
@@ -112,6 +116,7 @@ jobs:
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/account-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/member-levels-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/login-ui.cjs
+          NODE_PATH=/tmp/login-browser-check/node_modules node tests/ingredient-search-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/recipe-board-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/private-board-ui.cjs
           NODE_PATH=/tmp/login-browser-check/node_modules node tests/board-ui.cjs
