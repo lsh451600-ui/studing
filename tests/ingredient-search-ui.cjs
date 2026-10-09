@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
   const pathname=new URL(req.url,'http://localhost').pathname;const file=resolve(root,pathname==='/recipes'?'recipes.html':pathname.slice(1));
   if(!file.startsWith(root+'/'))return res.writeHead(403).end();
   try{res.writeHead(200,{'Content-Type':{'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp'}[extname(file)]||'application/octet-stream'}).end(await readFile(file));}catch{res.writeHead(404).end();}
- });await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;const browser=await chromium.launch();
+ });await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+server.address().port;const browser=await chromium.launch({args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
  try{for(const width of [320,768,1280])for(const theme of ['light','dark']){
   const context=await browser.newContext({viewport:{width,height:900},colorScheme:theme});let recommendations=0,fail=false,visionFails=false,emptyMatches=false,emptyDetection=false,lastCategory=null;
   await context.route('**/*',async route=>{
@@ -36,6 +36,49 @@ const { chromium } = require('playwright');
   await page.locator('#ingredient-photo').setInputFiles(resolve(root,'assets/logo-small.webp'));
   await page.locator('.ingredient-result').first().waitFor();
   assert.equal(recommendations,1,'photo selection must automatically search exactly once');
+  // Adding a file must leave camera capture available and use the same search flow.
+  await page.locator('#ingredient-camera-open').click();
+  await page.waitForFunction(()=>document.querySelector('#ingredient-camera-video').videoWidth>0);
+  await page.evaluate(()=>window.cameraTestTrack=document.querySelector('#ingredient-camera-video').srcObject.getVideoTracks()[0]);
+  await page.locator('#ingredient-camera-capture').click();
+  await page.waitForFunction(()=>document.querySelectorAll('#ingredient-preview img').length===2 && document.querySelectorAll('.ingredient-result').length===3);
+  assert.equal(recommendations,2,'captured photo automatically searches with uploaded photo');
+  assert.equal(await page.evaluate(()=>window.cameraTestTrack.readyState),'ended');
+  assert.ok(await page.locator('#ingredient-camera').isHidden());
+  await page.locator('#ingredient-camera-open').click();
+  await page.waitForFunction(()=>document.querySelector('#ingredient-camera-video').videoWidth>0);
+  await page.evaluate(()=>window.cameraTestTrack=document.querySelector('#ingredient-camera-video').srcObject.getVideoTracks()[0]);
+  await page.locator('#ingredient-camera-close').click();
+  assert.equal(await page.evaluate(()=>window.cameraTestTrack.readyState),'ended');
+  assert.ok(await page.locator('#ingredient-camera-open').isEnabled());
+  // Cancel a pending permission request without reopening a closed camera.
+  await page.evaluate(()=>{
+    window.originalGetUserMedia=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+    navigator.mediaDevices.getUserMedia=()=>new Promise(resolve=>window.resolvePendingCamera=resolve);
+  });
+  await page.locator('#ingredient-camera-open').click();
+  await page.evaluate(async()=>{
+    document.querySelector('#ingredient-camera-close').click();
+    const stream=await window.originalGetUserMedia({video:true}); window.cameraTestTrack=stream.getVideoTracks()[0];
+    window.resolvePendingCamera(stream);
+  });
+  await page.waitForFunction(()=>window.cameraTestTrack.readyState==='ended');
+  assert.ok(await page.locator('#ingredient-camera').isHidden());
+  await page.evaluate(()=>navigator.mediaDevices.getUserMedia=()=>Promise.reject(new DOMException('denied','NotAllowedError')));
+  await page.locator('#ingredient-camera-open').click();
+  await page.waitForFunction(()=>document.querySelector('#ingredient-photo-status').textContent.includes('카메라 사용을 허용'));
+  assert.ok(await page.locator('#ingredient-camera-open').isEnabled());
+  await page.evaluate(()=>navigator.mediaDevices.getUserMedia=window.originalGetUserMedia);
+  await page.locator('#menu-open').click();
+  await page.evaluate(()=>document.querySelector('#menu-account-status').textContent='test-user님');
+  const menuBoxes=await page.evaluate(()=>{
+    const account=document.querySelector('.menu-account').getBoundingClientRect(),close=document.querySelector('#menu-close').getBoundingClientRect();
+    return {gap:close.left-account.right,centerDifference:Math.abs((close.top+close.height/2)-(account.top+account.height/2))};
+  });
+  assert.ok(menuBoxes.gap>=0 && menuBoxes.gap<=10,'account is beside close button');
+  assert.ok(menuBoxes.centerDifference<2,'account and close button align');
+  await page.locator('#menu-close').click();
+
   assert.match(await page.locator('#ingredient-detected').textContent(),/달걀, 두부, 대파/);
   assert.equal(await page.locator('.ingredient-result').count(),3);
   assert.match(await page.locator('.ingredient-result h4').first().textContent(),/두부달걀전.*67%/);

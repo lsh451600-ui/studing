@@ -1,11 +1,58 @@
 const byId = id => document.getElementById(id);
 const fileInput = byId('ingredient-photo'), detected = byId('ingredient-detected'), results = byId('ingredient-results');
 const analyze = byId('ingredient-analyze');
+const cameraOpen = byId('ingredient-camera-open'), cameraPhoto = byId('ingredient-camera-photo');
+const cameraPanel = byId('ingredient-camera'), cameraVideo = byId('ingredient-camera-video');
+let cameraStream = null, cameraVersion = 0;
+function closeCamera() {
+  cameraVersion++;
+  cameraStream?.getTracks().forEach(track => track.stop()); cameraStream = null;
+  cameraVideo.srcObject = null; cameraPanel.hidden = true; cameraOpen.disabled = false;
+}
+function hasPhotoSpace() {
+  if (selectedFiles.length < 3) return true;
+  byId('ingredient-photo-status').textContent = '사진은 최대 3장까지 추가할 수 있습니다.';
+  return false;
+}
+cameraOpen.addEventListener('click', async () => {
+  if (!hasPhotoSpace()) return;
+  if (!navigator.mediaDevices?.getUserMedia) { cameraPhoto.click(); return; }
+  closeCamera(); const current = cameraVersion; cameraOpen.disabled = true;
+  byId('ingredient-photo-status').textContent = '카메라를 준비하고 있습니다…';
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } }, audio: false });
+    if (current !== cameraVersion) { stream.getTracks().forEach(track => track.stop()); return; }
+    cameraStream = stream; cameraVideo.srcObject = stream; cameraPanel.hidden = false;
+    await cameraVideo.play();
+    if (current === cameraVersion) byId('ingredient-photo-status').textContent = '식재료가 보이도록 맞춘 뒤 사진 촬영을 눌러 주세요.';
+  } catch (error) {
+    if (current !== cameraVersion) return;
+    closeCamera();
+    byId('ingredient-photo-status').textContent = error.name === 'NotAllowedError' ? '브라우저 설정에서 카메라 사용을 허용한 뒤 다시 눌러 주세요.' : '카메라를 켜지 못했습니다. 다른 앱에서 카메라를 사용 중인지 확인하거나 사진을 추가해 주세요.';
+  }
+});
+byId('ingredient-camera-close').addEventListener('click', closeCamera);
+byId('ingredient-camera-capture').addEventListener('click', () => {
+  if (!hasPhotoSpace()) { closeCamera(); return; }
+  if (!cameraVideo.videoWidth || !cameraVideo.videoHeight) {
+    byId('ingredient-photo-status').textContent = '카메라 영상이 준비되면 다시 촬영해 주세요.'; return;
+  }
+  const current = cameraVersion;
+  const canvas = document.createElement('canvas'); canvas.width = cameraVideo.videoWidth; canvas.height = cameraVideo.videoHeight;
+  canvas.getContext('2d').drawImage(cameraVideo, 0, 0);
+  canvas.toBlob(blob => {
+    if (current !== cameraVersion) return;
+    if (!blob) { byId('ingredient-photo-status').textContent = '사진을 촬영하지 못했습니다. 다시 시도해 주세요.'; return; }
+    closeCamera(); addPhotos([new File([blob], 'ingredient-camera.jpg', { type: 'image/jpeg' })]);
+  }, 'image/jpeg', .9);
+});
+cameraPhoto.addEventListener('change', () => { const incoming = Array.from(cameraPhoto.files); cameraPhoto.value = ''; addPhotos(incoming); });
 let analysisTimeout = null, lastIngredients = [];
 let selectedFiles = [], previewUrls = [];
 let worker = null, version = 0, searching = false, requestController = null;
 function stopAnalysis() { clearTimeout(analysisTimeout); analysisTimeout = null; worker?.terminate(); worker = null; analyze.disabled = searching || !selectedFiles.length; }
 function clear() {
+  closeCamera(); cameraPhoto.value = '';
   version++; lastIngredients = []; stopAnalysis(); requestController?.abort(); requestController = null;
   selectedFiles = []; fileInput.value = ''; analyze.disabled = true; detected.textContent = ''; detected.hidden = true; results.replaceChildren();
   previewUrls.forEach(url => URL.revokeObjectURL(url)); previewUrls = [];
@@ -15,6 +62,9 @@ function clear() {
 }
 fileInput.addEventListener('change', () => {
   const incoming = Array.from(fileInput.files); fileInput.value = '';
+  addPhotos(incoming);
+});
+function addPhotos(incoming) {
   if (!incoming.length) return;
   if (selectedFiles.length + incoming.length > 3) {
     byId('ingredient-photo-status').textContent = '사진은 최대 3장까지 추가할 수 있습니다.'; return;
@@ -31,7 +81,7 @@ fileInput.addEventListener('change', () => {
     const image = document.createElement('img'); image.src = url; image.alt = '선택한 식재료 사진 ' + previewUrls.length; preview.append(image);
   }
   analyzePhoto();
-});
+}
 async function analyzePhoto() {
   const files = [...selectedFiles]; if (!files.length || worker || searching) return;
   const current = ++version; lastIngredients = []; analyze.disabled = true; results.replaceChildren(); detected.textContent = ''; detected.hidden = true; byId('ingredient-match-status').textContent = '';

@@ -128,3 +128,12 @@ header .brand .site-logo .logo-base{max-width:calc(64px * 600 / 255);max-height:
 @media(max-width:540px){header .brand .site-logo .logo-base{max-width:calc(46px * 600 / 255)}}
 header.is-compact .brand .site-logo .logo-base{max-width:calc(48px * 600 / 255)}
 @media(max-width:800px){header.is-compact .brand .site-logo .logo-base{max-width:calc(42px * 600 / 255)}}
+
+/* Keep the menu identity beside the close button. */
+.site-menu .menu-heading{justify-content:flex-end}
+.site-menu .menu-heading .menu-account{flex:0 1 auto;margin-left:auto}
+.site-menu .menu-heading .menu-account p{text-align:right}
+/* Camera capture shares the uploaded-photo search flow. */
+.ingredient-search #ingredient-camera-photo[hidden],.ingredient-search #ingredient-camera[hidden]{display:none}
+#ingredient-camera-open{margin-top:12px}
+#ingredient-camera-video{display:block;width:100%;max-width:480px;max-height:360px;object-fit:contain;margin:12px 0;border-radius:10px;background:#000}
