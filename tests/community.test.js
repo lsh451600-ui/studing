@@ -369,3 +369,20 @@ test('members can create and edit level-up request posts', async t => {
   detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
   assert.equal(detail.post.category, '등업신청');
 });
+
+test('promotion updates badges on existing board posts and comments without rewriting them', async t => {
+  auth(t); const settings = env(t);
+  const created = await posts({ env: settings, request: request('board-posts', { title: '등업 전 작성한 글', body: '기존 본문' }, true) });
+  assert.equal(created.status, 201); const id = (await created.json()).id;
+  assert.equal((await comments({ env: settings, request: request('board-comments', { postId: id, body: '등업 전 댓글' }, true) })).status, 201);
+  const read = async () => (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+  let detail = await read();
+  assert.equal(detail.post.authorLevel, 'regular'); assert.equal(detail.comments[0].authorLevel, 'regular');
+  await ensureLevels(settings.MEMBERS_DB);
+  await settings.MEMBERS_DB.prepare('INSERT INTO member_levels (member_id, level, updated_by, updated_at) VALUES (?, ?, ?, ?)').bind('member-id', 'special', 'operator', new Date().toISOString()).run();
+  detail = await read();
+  assert.equal(detail.post.authorLevel, 'special'); assert.equal(detail.comments[0].authorLevel, 'special');
+  assert.equal(detail.post.body, '기존 본문'); assert.equal(detail.comments[0].body, '등업 전 댓글');
+  const list = await (await posts({ env: settings, request: request('board-posts') })).json();
+  assert.equal(list.posts.find(post => post.id === id).authorLevel, 'special');
+});

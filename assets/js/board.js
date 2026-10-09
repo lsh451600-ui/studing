@@ -26,7 +26,7 @@ function rows(posts, append) {
   if (!append) byId('board-list').replaceChildren();
   if (!posts.length && !append) byId('board-list').append(node('p', '첫 이야기를 남겨 주세요.', 'board-empty'));
   for (const post of posts) {
-    const link = node('a', '', 'board-row'); link.href = '/board?post=' + post.id;
+    const link = node('a', '', 'board-row'); link.href = '/board?post=' + post.id; link.dataset.postId = post.id;
     link.classList.toggle('board-notice', post.category === '공지');
     const title = node('strong', ''); title.append(node('span', post.category || '잡담', 'board-category'), node('span', post.title));
     if (post.is_secret) title.prepend(node('span', '🔒 비밀글', 'board-secret-label'));
@@ -72,7 +72,7 @@ async function loadDetail(id, focus = true) {
     byId('board-edit-body').value = data.post.body;
     byId('board-comments').replaceChildren();
     for (const comment of data.comments) {
-      const item = node('li', '', 'board-comment');
+      const item = node('li', '', 'board-comment'); item.dataset.commentId = comment.id;
       const header = node('div', '', 'board-comment-header');
       const meta = node('p', '', 'board-meta');
       meta.append(decorateMember(node('strong', comment.author, 'board-author-name'), comment.authorLevel), node('span', ' · ' + date(comment.created_at)));
@@ -237,3 +237,40 @@ function navigate() { const id = new URLSearchParams(location.search).get('post'
 window.addEventListener('pageshow', event => { if (event.persisted) navigate(); });
 window.addEventListener('pagehide', () => { generation++; byId('board-detail').hidden = true; byId('board-body').textContent = ''; byId('board-comments').replaceChildren(); byId('board-edit-body').value = ''; });
 window.addEventListener('popstate', navigate); updateAuth(); syncSession(true); navigate();
+
+// Update badges on already displayed older content without resetting writing forms.
+let refreshingBadges = false;
+async function refreshBadges() {
+  if (refreshingBadges || document.visibilityState === 'hidden') return;
+  refreshingBadges = true; const version = generation, postId = selected;
+  try {
+    if (postId) {
+      const data = await api('/api/board-posts?id=' + postId);
+      if (version !== generation || selected !== postId) return;
+      const author = byId('board-author').querySelector('.board-author-name');
+      if (author) decorateMember(author, data.post.authorLevel);
+      for (const comment of data.comments) {
+        const name = byId('board-comments').querySelector('[data-comment-id="' + comment.id + '"] .board-author-name');
+        if (name) decorateMember(name, comment.authorLevel);
+      }
+    } else {
+      const links = new Map([...byId('board-list').querySelectorAll('[data-post-id]')].map(link => [Number(link.dataset.postId), link]));
+      let cursor = null; const visited = new Set();
+      while (links.size) {
+        const data = await api('/api/board-posts' + (cursor ? '?before=' + cursor : ''));
+        if (version !== generation || selected !== postId) return;
+        for (const post of data.posts) {
+          const meta = links.get(post.id)?.querySelector('.board-meta');
+          if (meta) decorateMember(meta, post.authorLevel);
+          links.delete(post.id);
+        }
+        if (!data.next || visited.has(data.next)) break;
+        cursor = data.next; visited.add(cursor);
+      }
+    }
+  } catch { /* Retry badge updates when the board becomes active again. */ }
+  finally { refreshingBadges = false; }
+}
+window.addEventListener('focus', refreshBadges);
+document.addEventListener('visibilitychange', refreshBadges);
+setInterval(refreshBadges, 30000);
