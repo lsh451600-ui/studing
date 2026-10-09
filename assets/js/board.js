@@ -29,6 +29,7 @@ function rows(posts, append) {
     const link = node('a', '', 'board-row'); link.href = '/board?post=' + post.id;
     link.classList.toggle('board-notice', post.category === '공지');
     const title = node('strong', ''); title.append(node('span', post.category || '잡담', 'board-category'), node('span', post.title));
+    if (post.is_secret) title.prepend(node('span', '🔒 비밀글', 'board-secret-label'));
     link.append(title, decorateMember(node('span', post.author + ' · ' + date(post.created_at) + ' · 조회수 ' + (post.views || 0) + ' · 댓글 ' + post.comments, 'board-meta'), post.authorLevel));
     link.addEventListener('click', event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, '', link.href); loadDetail(post.id); });
     byId('board-list').append(link);
@@ -48,6 +49,9 @@ async function loadList(append = false) {
 }
 async function loadDetail(id, focus = true) {
   const version = ++generation;
+  selected = null; byId('board-detail').hidden = true;
+  byId('board-body').textContent = ''; byId('board-comments').replaceChildren();
+  byId('board-edit-body').value = ''; byId('board-comment-form').reset();
   byId('board-status').textContent = '게시물을 불러오고 있습니다.';
   try {
     const data = await api('/api/board-posts?id=' + id);
@@ -55,7 +59,8 @@ async function loadDetail(id, focus = true) {
     selected = data.post.id; byId('board-index').hidden = true; byId('board-editor').hidden = true; byId('board-detail').hidden = false;
     byId('board-title').textContent = data.post.title;
     byId('board-title').classList.toggle('board-notice-title', data.post.category === '공지');
-    byId('board-detail-category').textContent = data.post.category || '잡담';
+    byId('board-detail-category').textContent = (data.post.is_secret ? '🔒 비밀글 · ' : '') + (data.post.category || '잡담');
+    byId('board-edit-secret').checked = Boolean(data.post.is_secret);
     byId('board-edit-category').value = data.post.category || '잡담';
     byId('board-author').replaceChildren(decorateMember(node('strong', data.post.author, 'board-author-name'), data.post.authorLevel), node('span', ' · ' + date(data.post.created_at)));
     byId('board-body').textContent = data.post.body;
@@ -151,7 +156,7 @@ byId('board-post-form').addEventListener('submit', async event => {
   try {
     const data = await api('/api/board-posts', {
       method: 'POST',
-      body: { category: byId('board-post-category').value, title: byId('board-post-title').value, body: byId('board-post-body').value }
+      body: { is_secret: byId('board-post-secret').checked, category: byId('board-post-category').value, title: byId('board-post-title').value, body: byId('board-post-body').value }
     });
     event.target.reset(); byId('board-post-status').textContent = '';
     history.pushState(null, '', '/board?post=' + data.id);
@@ -168,7 +173,7 @@ byId('board-edit-form').addEventListener('submit', async event => {
   event.preventDefault(); if (writing || !authenticated() || !event.target.reportValidity()) return;
   writing = true; byId('board-edit-submit').disabled = true; byId('board-edit-status').textContent = '수정 내용을 저장하고 있습니다.';
   try {
-    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { category: byId('board-edit-category').value, title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
+    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { is_secret: byId('board-edit-secret').checked, category: byId('board-edit-category').value, title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
     byId('board-edit-status').textContent = '수정했습니다.';
     await loadDetail(selected, false);
   } catch (error) { byId('board-edit-status').textContent = error.message; }
@@ -204,7 +209,12 @@ window.addEventListener('member-session-change', event => {
   sessionAdmin = false;
   syncSession(true);
   updateAuth();
-  if (selected) loadDetail(selected, false);
+  generation++; byId('board-detail').hidden = true;
+  byId('board-body').textContent = ''; byId('board-comments').replaceChildren();
+  byId('board-edit-form').reset(); byId('board-comment-form').reset();
+  const postId = new URLSearchParams(location.search).get('post');
+  if (/^[1-9][0-9]*$/.test(postId || '')) loadDetail(postId, false);
+  else loadList();
 });
 async function syncSession(fresh = false) {
   const version = authVersion;
@@ -224,4 +234,6 @@ async function syncSession(fresh = false) {
   }
 }
 function navigate() { const id = new URLSearchParams(location.search).get('post'); if (/^[1-9][0-9]*$/.test(id || '')) loadDetail(id); else loadList(); }
+window.addEventListener('pageshow', event => { if (event.persisted) navigate(); });
+window.addEventListener('pagehide', () => { generation++; byId('board-detail').hidden = true; byId('board-body').textContent = ''; byId('board-comments').replaceChildren(); byId('board-edit-body').value = ''; });
 window.addEventListener('popstate', navigate); updateAuth(); syncSession(true); navigate();

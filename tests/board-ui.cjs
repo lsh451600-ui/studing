@@ -37,7 +37,7 @@ const { chromium } = require('playwright');
           if (missing) return route.fulfill({ status: 503, json: { message: '게시판 저장소 연결이 필요합니다.' } });
           if (req.method() === 'POST') {
             assert.ok(authenticated); const data = req.postDataJSON(); postWrites++;
-            posts.unshift({ ...data, id: 2, author: '회원', created_at: '2026-10-07T02:00:00Z', comments: 0 });
+            assert.equal(typeof data.is_secret, 'boolean'); posts.unshift({ ...data, id: 2, author: '회원', created_at: '2026-10-07T02:00:00Z', comments: 0 });
             return route.fulfill({ json: { id: 2 } });
           }
           if (req.method() === 'PATCH') { assert.ok(authenticated); Object.assign(posts[0], req.postDataJSON()); return route.fulfill({ json: { id: 1 } }); }
@@ -98,7 +98,7 @@ const { chromium } = require('playwright');
       await page.getByRole('button', { name: '댓글 수정', exact: true }).click();
       await page.locator('.board-comment-edit textarea').fill('수정한 댓글');
       await page.locator('.board-comment-edit button[type=submit]').click();
-      await page.waitForFunction(() => document.querySelector('.board-comment-body').textContent === '수정한 댓글');
+      await page.waitForFunction(() => document.querySelector('.board-comment-body')?.textContent === '수정한 댓글');
       page.once('dialog', dialog => dialog.accept());
       await page.getByRole('button', { name: '댓글 삭제', exact: true }).click();
       await page.waitForFunction(() => document.querySelectorAll('.board-comment').length === 0);
@@ -107,7 +107,7 @@ const { chromium } = require('playwright');
       await page.locator('#board-heading-link').click();
       await page.waitForSelector('.board-row');
       assert.equal(new URL(page.url()).pathname, '/board');
-      await page.waitForFunction(() => document.querySelector('.board-row .board-meta').textContent.includes('조회수 1 · 댓글'));
+      await page.waitForFunction(() => document.querySelector('.board-row .board-meta')?.textContent.includes('조회수 1 · 댓글'));
       assert.match(await page.locator('.board-row .board-meta').textContent(), /조회수 1 · 댓글/);
       if (width >= 768) assert.ok(await page.locator('.board-row .board-meta').evaluate(meta => {
         const row = meta.parentElement.getBoundingClientRect(), box = meta.getBoundingClientRect(), title = meta.previousElementSibling.getBoundingClientRect();
@@ -128,13 +128,14 @@ const { chromium } = require('playwright');
       await page.locator('#board-write').click();
       assert.equal(await page.locator('#board-post-category option[value=공지]').evaluate(el => el.disabled), true);
       await page.locator('#board-post-category').selectOption('질문');
+      await page.locator('#board-post-secret').check();
       await page.locator('#board-post-title').fill('새 게시글');
       await page.locator('#board-post-body').fill('새 게시글 본문');
       await page.locator('#board-post-submit').click();
       await page.waitForFunction(() => document.querySelector('#board-title').textContent === '새 게시글');
       assert.equal(postWrites, 1);
       assert.equal(posts[0].category, '질문');
-      assert.equal(await page.locator('#board-detail-category').textContent(), '질문');
+      assert.equal(await page.locator('#board-detail-category').textContent(), '🔒 비밀글 · 질문');
       await page.locator('#board-write').click();
       assert.ok(await page.locator('#board-post-form').isVisible());
       assert.equal(new URL(page.url()).pathname, '/board');

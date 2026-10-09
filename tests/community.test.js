@@ -333,3 +333,28 @@ test('notices stay above newer ordinary posts without duplicating or skipping ol
   assert.deepEqual(filtered.posts.slice(0, 2).map(p => p.id), [12, 1]);
   assert.ok(filtered.posts.every(p => p.title.includes('제목 1')));
 });
+
+test('secret posts protect bodies and comments from other members and allow owner/operator', async t => {
+  const settings = env(t); let id = 'owner', username = 'owner';
+  t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id }) : Response.json([{ username }]));
+  const created = await posts({ env: settings, request: request('board-posts', { title: '비밀 문의', body: 'hidden-needle', is_secret: true }, true) });
+  assert.equal(created.status, 201); const postId = (await created.json()).id;
+  const detail = () => posts({ env: settings, request: request('board-posts?id=' + postId, null, true) });
+  const added = await comments({ env: settings, request: request('board-comments', { postId, body: 'secret-comment' }, true) });
+  assert.equal(added.status, 201); const commentId = (await added.json()).id;
+  assert.equal((await (await detail()).json()).post.body, 'hidden-needle');
+  id = 'other'; username = 'other';
+  const denied = await detail(); assert.equal(denied.status, 403); assert.ok(!(await denied.text()).includes('hidden-needle'));
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + postId) })).status, 403);
+  const list = await (await posts({ env: settings, request: request('board-posts') })).json(); assert.equal(list.posts[0].is_secret, 1); assert.equal(list.posts[0].body, undefined);
+  const search = await (await posts({ env: settings, request: request('board-posts?q=hidden-needle') })).json(); assert.equal(search.posts.length, 0);
+  assert.equal((await comments({ env: settings, request: request('board-comments', { postId, body: 'intrusion' }, true) })).status, 403);
+  assert.equal((await comments({ env: settings, request: request('board-comments?id=' + commentId, { body: 'intrusion' }, true, undefined, 'PATCH') })).status, 403);
+  assert.equal((await views({ env: settings, request: request('board-views?id=' + postId, {}, true) })).status, 403);
+  username = 'lsh451600'; assert.equal((await detail()).status, 200);
+  assert.equal((await comments({ env: settings, request: request('board-comments', { postId, body: '운영자 답변' }, true) })).status, 201);
+  id = 'owner'; username = 'owner';
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + postId, { title: '공개 문의', body: 'now-public', is_secret: false }, true, undefined, 'PATCH') })).status, 200);
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + postId) })).status, 200);
+  assert.equal((await posts({ env: settings, request: request('board-posts', { title: 'x', body: 'y', is_secret: 'false' }, true) })).status, 400);
+});

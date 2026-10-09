@@ -11,8 +11,10 @@ export async function onRequest({ request, env }) {
     if (request.method === 'DELETE' || request.method === 'PATCH') {
       const id = idOf(new URL(request.url).searchParams.get('id'));
       if (!id) return reply(400, '댓글 번호를 확인해 주세요.', {}, auth.session.cookies);
-      const comment = await db.prepare('SELECT id, author_id FROM community_comments WHERE id = ?').bind(id).first();
+      const comment = await db.prepare('SELECT id, author_id, post_id FROM community_comments WHERE id = ?').bind(id).first();
       if (!comment) return reply(404, '댓글이 없습니다.', {}, auth.session.cookies);
+      const parent = await db.prepare('SELECT author_id, is_secret FROM community_posts WHERE id = ?').bind(comment.post_id).first();
+      if (parent?.is_secret && parent.author_id !== auth.session.user.id && !auth.isAdmin) return reply(403, '비밀글은 작성자와 운영자만 이용할 수 있습니다.');
       if (comment.author_id !== auth.session.user.id && !auth.isAdmin) return reply(403, '작성자 또는 운영자만 댓글을 수정·삭제할 수 있습니다.', {}, auth.session.cookies);
       if (request.method === 'PATCH') {
         let data;
@@ -29,7 +31,9 @@ export async function onRequest({ request, env }) {
     try { data = await readJSON(request, 16384); } catch { return reply(400, '입력 내용을 확인해 주세요.', {}, auth.session.cookies); }
     const postId = idOf(data.postId), body = typeof data.body === 'string' ? data.body.trim() : '';
     if (!postId || !body || body.length > 2000) return reply(400, '댓글은 2,000자 이내로 입력해 주세요.', {}, auth.session.cookies);
-    if (!await db.prepare('SELECT id FROM community_posts WHERE id = ?').bind(postId).first()) return reply(404, '게시물이 없습니다.', {}, auth.session.cookies);
+    const parent = await db.prepare('SELECT id, author_id, is_secret FROM community_posts WHERE id = ?').bind(postId).first();
+    if (!parent) return reply(404, '게시물이 없습니다.', {}, auth.session.cookies);
+    if (parent.is_secret && parent.author_id !== auth.session.user.id && !auth.isAdmin) return reply(403, '비밀글은 작성자와 운영자만 이용할 수 있습니다.');
     if (!await allowWrite(db, auth.session.user.id, 'comment')) return reply(429, '댓글 작성이 많습니다. 잠시 후 다시 시도해 주세요.', {}, auth.session.cookies);
     const result = await db.prepare('INSERT INTO community_comments (post_id, author_id, author, body, created_at) VALUES (?, ?, ?, ?, ?)').bind(postId, auth.session.user.id, auth.author, body, new Date().toISOString()).run();
     return reply(201, '댓글을 등록했습니다.', { id: result.meta.last_row_id }, auth.session.cookies);

@@ -6,7 +6,7 @@ export async function onRequest({ request, env }) {
   if (request.method === 'GET') {
     try {
       const auth = await membership(request, env);
-      if (!auth.canAccessRecipes) return reply(auth.authenticated ? 403 : 401, { message: '외식산업 자료는 특별회원만 이용할 수 있습니다.' });
+      if (!auth.canAccessRecipes) return reply(auth.authenticated ? 403 : 401, { message: '외식 산업 자료는 특별회원만 이용할 수 있습니다.' });
       return reply(200, { available: Boolean(env.RECIPE_PASSWORD) });
     } catch { return reply(503, { message: '회원 등급을 확인하지 못했습니다.' }); }
   }
@@ -15,9 +15,9 @@ export async function onRequest({ request, env }) {
   if (request.method === 'DELETE') return reply(200, { message: '잠금 처리했습니다.' }, [clearCookie('viewer'), clearCookie('admin')]);
   try {
     const auth = await membership(request, env);
-    if (!auth.canAccessRecipes) return reply(auth.authenticated ? 403 : 401, { message: '외식산업 자료는 특별회원만 이용할 수 있습니다.' });
+    if (!auth.canAccessRecipes) return reply(auth.authenticated ? 403 : 401, { message: '외식 산업 자료는 특별회원만 이용할 수 있습니다.' });
   } catch { return reply(503, { message: '회원 등급을 확인하지 못했습니다.' }); }
-  if (!env.RECIPE_PASSWORD) return reply(503, { message: '외식산업 자료 페이지를 준비 중입니다.' });
+  if (!env.RECIPE_PASSWORD) return reply(503, { message: '외식 산업 자료 페이지를 준비 중입니다.' });
   let data;
   try { data = await readJSON(request); } catch { return reply(400, { message: '입력 내용을 확인해 주세요.' }); }
   if (typeof data?.password !== 'string' || !data.password.length || data.password.length > 128) return reply(400, { message: '비밀번호를 입력해 주세요.' });
@@ -28,6 +28,6 @@ export async function onRequest({ request, env }) {
     const identity = await boardIdentity(request, env);
     const canWrite = Boolean(identity?.isAdmin);
     const listing = env.MEMBERS_DB ? await listPosts(env.MEMBERS_DB, null, { identity }) : { posts: [], next: null };
-    return reply(200, { title: '외식산업 자료', ...listing, storageAvailable: Boolean(env.MEMBERS_DB), adminConfigured: adminReady(env) || Boolean(identity?.isAdmin), accountWriter: Boolean(identity?.isAdmin), canWrite }, [await sessionCookie(env, 'viewer'), passwordCanWrite ? await sessionCookie(env, 'admin') : clearCookie('admin')]);
+    return reply(200, { title: '외식 산업 자료', ...listing, storageAvailable: Boolean(env.MEMBERS_DB), adminConfigured: adminReady(env) || Boolean(identity?.isAdmin), accountWriter: Boolean(identity?.isAdmin), canWrite }, [await sessionCookie(env, 'viewer'), passwordCanWrite ? await sessionCookie(env, 'admin') : clearCookie('admin')]);
   } catch { return reply(503, { message: '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' }); }
 }
