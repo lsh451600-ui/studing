@@ -1,3 +1,4 @@
+import { decorateMember } from './member-badge.js?v=20261009';
 const byId = id => document.getElementById(id);
 let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, sessionAdmin = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
@@ -28,7 +29,7 @@ function rows(posts, append) {
     const link = node('a', '', 'board-row'); link.href = '/board?post=' + post.id;
     link.classList.toggle('board-notice', post.category === '공지');
     const title = node('strong', ''); title.append(node('span', post.category || '잡담', 'board-category'), node('span', post.title));
-    link.append(title, node('span', post.author + ' · ' + date(post.created_at) + ' · 조회수 ' + (post.views || 0) + ' · 댓글 ' + post.comments, 'board-meta'));
+    link.append(title, decorateMember(node('span', post.author + ' · ' + date(post.created_at) + ' · 조회수 ' + (post.views || 0) + ' · 댓글 ' + post.comments, 'board-meta'), post.authorLevel));
     link.addEventListener('click', event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, '', link.href); loadDetail(post.id); });
     byId('board-list').append(link);
   }
@@ -56,7 +57,7 @@ async function loadDetail(id, focus = true) {
     byId('board-title').classList.toggle('board-notice-title', data.post.category === '공지');
     byId('board-detail-category').textContent = data.post.category || '잡담';
     byId('board-edit-category').value = data.post.category || '잡담';
-    byId('board-author').replaceChildren(node('strong', data.post.author, 'board-author-name'), node('span', ' · ' + date(data.post.created_at)));
+    byId('board-author').replaceChildren(decorateMember(node('strong', data.post.author, 'board-author-name'), data.post.authorLevel), node('span', ' · ' + date(data.post.created_at)));
     byId('board-body').textContent = data.post.body;
     byId('board-post-actions').hidden = !(data.permissions?.canEdit || data.permissions?.canDelete);
     byId('board-edit-open').hidden = !data.permissions?.canEdit;
@@ -69,7 +70,7 @@ async function loadDetail(id, focus = true) {
       const item = node('li', '', 'board-comment');
       const header = node('div', '', 'board-comment-header');
       const meta = node('p', '', 'board-meta');
-      meta.append(node('strong', comment.author, 'board-author-name'), node('span', ' · ' + date(comment.created_at)));
+      meta.append(decorateMember(node('strong', comment.author, 'board-author-name'), comment.authorLevel), node('span', ' · ' + date(comment.created_at)));
       header.append(meta);
       const actions = node('div', '', 'board-comment-actions');
       header.append(actions);

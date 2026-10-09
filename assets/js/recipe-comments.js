@@ -1,3 +1,4 @@
+import { decorateMember } from './member-badge.js?v=20261009';
 const make = (tag, text, className) => {
   const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el;
 };
@@ -26,7 +27,7 @@ export function appendRecipeComments(card, detail, post, api, { endpoint = '/api
       if (count) { count.textContent = String(post.comment_count); count.setAttribute('aria-label', '댓글 ' + post.comment_count + '개'); }
       for (const comment of data.comments) {
         const item = make('article', '', 'recipe-comment'), meta = make('div', '', 'recipe-comment-meta');
-        const author = make('strong', comment.author), time = make('time', date(comment.created_at)); time.dateTime = comment.created_at; meta.append(author, time);
+        const author = decorateMember(make('strong', comment.author), comment.authorLevel), time = make('time', date(comment.created_at)); time.dateTime = comment.created_at; meta.append(author, time);
         const body = make('p', comment.body, 'recipe-comment-body'), actions = make('div', '', 'recipe-comment-controls'); item.append(meta, body);
         if (comment.canEdit) {
           const edit = make('button', '수정'); edit.type = 'button'; actions.append(edit);

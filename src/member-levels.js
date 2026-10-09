@@ -18,3 +18,17 @@ export async function membership(request, env) {
   const level = await levelOf(env.MEMBERS_DB, session.user.id);
   return { authenticated: true, id: session.user.id, session, profile, isAdmin, level, canAccessRecipes: isAdmin || level === 'special' };
 }
+
+// Resolve current grades when rendering, so old posts follow promotions and demotions.
+export async function authorLevels(db, rows) {
+  const ids = [...new Set(rows.map(row => row.author_id).filter(Boolean))];
+  if (!ids.length || !db) return rows.map(({ author_id, ...row }) => ({ ...row, authorLevel: 'regular' }));
+  await ensureLevels(db);
+  const levels = new Map();
+  for (let start = 0; start < ids.length; start += 90) {
+    const batch = ids.slice(start, start + 90);
+    const { results } = await db.prepare('SELECT member_id, level FROM member_levels WHERE member_id IN (' + batch.map(() => '?').join(',') + ')').bind(...batch).all();
+    for (const row of results) levels.set(row.member_id, row.level);
+  }
+  return rows.map(({ author_id, ...row }) => ({ ...row, authorLevel: levels.get(author_id) || 'regular' }));
+}

@@ -1,4 +1,4 @@
-import { appendRecipeComments } from './recipe-comments.js?v=20261009-count';
+import { appendRecipeComments } from './recipe-comments.js?v=crown-20261009-count';
 import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
 const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');

@@ -1,3 +1,4 @@
+import { authorLevels } from '../../src/member-levels.js';
 import { reply, sameOrigin } from '../../src/member-auth.js';
 import { readJSON } from '../../src/recipe-server.js';
 import { initialize, member, allowWrite, idOf, postPermissions } from '../../src/community.js';
@@ -16,14 +17,15 @@ export async function onRequest({ request, env }) {
         if (!row) return reply(404, '게시물이 없습니다.');
         const comments = await db.prepare('SELECT id, author_id, author, body, created_at FROM community_comments WHERE post_id = ? ORDER BY id DESC LIMIT 100').bind(id).all();
         const { deletableCommentIds, ...permissions } = await postPermissions(request, env, row.author_id, comments.results);
-        const { author_id, ...post } = row;
-        return reply(200, '', { post, comments: comments.results.reverse().map(({ author_id, ...comment }) => ({ ...comment, canEdit: deletableCommentIds.includes(comment.id), canDelete: deletableCommentIds.includes(comment.id) })), permissions });
+        const [post] = await authorLevels(db, [row]);
+        const gradedComments = await authorLevels(db, comments.results);
+        return reply(200, '', { post, comments: gradedComments.reverse().map(comment => ({ ...comment, canEdit: deletableCommentIds.includes(comment.id), canDelete: deletableCommentIds.includes(comment.id) })), permissions });
       }
       const before = params.has('before') ? idOf(params.get('before')) : null;
       if (params.has('before') && !before) return reply(400, '페이지 정보를 확인해 주세요.');
       const search = (params.get('q') || '').trim();
       if (search.length > 100) return reply(400, '검색어는 100자 이내로 입력해 주세요.');
-      const fields = 'p.id, p.author, p.title, p.category, p.created_at, p.views, (SELECT COUNT(*) FROM community_comments c WHERE c.post_id = p.id) AS comments';
+      const fields = 'p.id, p.author_id, p.author, p.title, p.category, p.created_at, p.views, (SELECT COUNT(*) FROM community_comments c WHERE c.post_id = p.id) AS comments';
       const filters = [], values = [];
       if (search) { filters.push('(instr(lower(p.title), lower(?)) > 0 OR instr(lower(p.body), lower(?)) > 0)'); values.push(search, search); }
       // Pinned notices are included once; the cursor only paginates ordinary posts.
@@ -32,7 +34,7 @@ export async function onRequest({ request, env }) {
       if (before) { filters.push('p.id < ?'); values.push(before); }
       const query = db.prepare('SELECT ' + fields + ' FROM community_posts p WHERE ' + filters.join(' AND ') + ' ORDER BY p.id DESC LIMIT 21').bind(...values);
       const rows = (await query.all()).results, ordinary = rows.slice(0, 20);
-      return reply(200, '', { posts: [...notices, ...ordinary], next: rows.length > 20 ? ordinary.at(-1).id : null });
+      return reply(200, '', { posts: await authorLevels(db, [...notices, ...ordinary]), next: rows.length > 20 ? ordinary.at(-1).id : null });
     }
     const auth = await member(request, env); if (auth.response) return auth.response;
     const params = new URL(request.url).searchParams;

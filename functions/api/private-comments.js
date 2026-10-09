@@ -1,3 +1,4 @@
+import { authorLevels } from '../../src/member-levels.js';
 import { reply, sameOrigin } from '../../src/member-auth.js';
 import { readJSON } from '../../src/recipe-server.js';
 import { member, allowWrite, idOf } from '../../src/community.js';
@@ -17,7 +18,8 @@ export async function onRequest({ request, env }) {
       if (!await db.prepare('SELECT id FROM private_posts WHERE id = ?').bind(postId).first()) return reply(404, '자료가 없습니다.', {});
       const { results } = await db.prepare('SELECT id, author_id, author, body, created_at FROM private_comments WHERE post_id = ? ORDER BY id').bind(postId).all();
       const identity = await boardIdentity(request, env);
-      const comments = results.map(({ author_id, ...comment }) => ({ ...comment, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id) }));
+      const graded = await authorLevels(db, results);
+      const comments = results.map(({ author_id, ...comment }, index) => ({ ...graded[index], canEdit: canManagePost(identity, results[index].author_id), canDelete: canManagePost(identity, results[index].author_id) }));
       return reply(200, '', { comments });
     }
     const auth = await member(request, env); if (auth.response) return auth.response;

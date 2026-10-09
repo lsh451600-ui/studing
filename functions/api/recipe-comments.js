@@ -1,3 +1,4 @@
+import { authorLevels } from '../../src/member-levels.js';
 import { reply, sameOrigin } from '../../src/member-auth.js';
 import { readJSON, authorized } from '../../src/recipe-server.js';
 import { member, allowWrite, idOf } from '../../src/community.js';
@@ -16,7 +17,8 @@ export async function onRequest({ request, env }) {
       if (!postId) return reply(400, '레시피 번호를 확인해 주세요.', {}, auth.session.cookies);
       if (!await db.prepare('SELECT id FROM recipe_posts WHERE id = ?').bind(postId).first()) return reply(404, '레시피가 없습니다.', {}, auth.session.cookies);
       const { results } = await db.prepare('SELECT id, author_id, author, body, created_at FROM recipe_comments WHERE post_id = ? ORDER BY id').bind(postId).all();
-      const comments = results.map(({ author_id, ...comment }) => ({ ...comment, canEdit: auth.isAdmin || author_id === auth.session.user.id, canDelete: auth.isAdmin || author_id === auth.session.user.id }));
+      const graded = await authorLevels(db, results);
+      const comments = results.map(({ author_id, ...comment }, index) => ({ ...graded[index], canEdit: auth.isAdmin || author_id === auth.session.user.id, canDelete: auth.isAdmin || author_id === auth.session.user.id }));
       return reply(200, '', { comments }, auth.session.cookies);
     }
     if (request.method === 'PATCH' || request.method === 'DELETE') {

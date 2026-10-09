@@ -14,7 +14,7 @@ import { onRequest as recipeImage } from '../functions/api/recipe-image.js';
 import { onRequest as recipeFile } from '../functions/api/recipe-file.js';
 import { onRequest as recipeComments } from '../functions/api/recipe-comments.js';
 import { onRequest as middleware } from '../functions/_middleware.js';
-import { ensureLevels } from '../src/member-levels.js';
+import { authorLevels, ensureLevels } from '../src/member-levels.js';
 import { sessionCookie } from '../src/recipe-server.js';
 const adminId='11111111-1111-1111-1111-111111111111', targetId='22222222-2222-2222-2222-222222222222';
 function setup(t) {
@@ -66,4 +66,14 @@ test('industry materials require special membership and their password, includin
   assert.equal((await industryPosts({env,request:req('/api/private-posts',{cookie})})).status,200);
   await db.prepare("UPDATE member_levels SET level='regular' WHERE member_id=?").bind(targetId).run();
   for(const[path,handler]of endpoints)assert.equal((await handler({env,request:req(path,{cookie})})).status,403,path);
+});
+
+test('author badges use current grades and omit private author identifiers',async t=>{
+  const {db}=setup(t); await ensureLevels(db);
+  const rows=[{author_id:targetId,author:'nickname'},{author_id:adminId,author:'ordinary'}];
+  assert.equal((await authorLevels(db,rows))[0].authorLevel,'regular');
+  await db.prepare('INSERT INTO member_levels(member_id,level,updated_by,updated_at) VALUES (?,?,?,?)').bind(targetId,'special',adminId,new Date().toISOString()).run();
+  const graded=await authorLevels(db,rows); assert.equal(graded[0].authorLevel,'special'); assert.equal(graded[0].author,'nickname'); assert.equal(graded[0].author_id,undefined); assert.equal(graded[1].authorLevel,'regular');
+  await db.prepare("UPDATE member_levels SET level='regular' WHERE member_id=?").bind(targetId).run();
+  assert.equal((await authorLevels(db,rows))[0].authorLevel,'regular');
 });
