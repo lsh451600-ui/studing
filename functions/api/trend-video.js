@@ -3,7 +3,7 @@ const PERIOD = 12 * 60 * 60 * 1000;
 export const refreshSlot = now => Math.floor(now / PERIOD) * PERIOD;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
 const QUERY = '외식 트렌드|외식 산업|푸드 트렌드';
-const CACHE_KEY = 'dining-latest-v5';
+const CACHE_KEY = 'dining-latest-v6';
 const inFlight = new Map();
 const reasons = new Set(['api_key_invalid', 'api_not_enabled', 'api_key_restricted', 'quota_exceeded', 'youtube_forbidden', 'youtube_unavailable', 'youtube_connection_failed', 'youtube_timeout', 'youtube_response_invalid', 'youtube_redirect_blocked', 'youtube_internal_error', 'no_video']);
 export function classifyYouTubeError(data = {}, status = 0) {
@@ -79,7 +79,7 @@ async function edgeResponse(request, env) {
   if (!cache) return reply({ available: false, reason: 'storage_unavailable' }, 503);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(env.YOUTUBE_API_KEY)));
   const fingerprint = Array.from(digest.slice(0, 12), byte => byte.toString(16).padStart(2, '0')).join('');
-  const key = new Request(new URL('/__video-cache/v5/' + fingerprint + '/' + refreshSlot(Date.now()), request.url));
+  const key = new Request(new URL('/__video-cache/v6/' + fingerprint + '/' + refreshSlot(Date.now()), request.url));
   let cached;
   try { cached = await cache.match(key); } catch { /* Cache outages must not block video lookup. */ }
   if (cached) return cached;

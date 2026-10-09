@@ -24,7 +24,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install article URL decoder
-        run: pip install googlenewsdecoder==0.1.7
+        run: pip install googlenewsdecoder==0.1.7 'selectolax<1'
+      - run: python -c 'from googlenewsdecoder import gnewsdecoder'
       - name: Load previously published articles to prevent repeats
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,43 @@
+/* Shared visual language: quiet navy, warm paper and restrained brand orange. */
+:root{--paper:#fcfbf8;--surface:#f2f3f0;--ink:#173347;--muted:#61717c;--accent:#176a73;--hover:#10535b;--line:#dce3e2;--shadow:0 14px 40px #1733470b;--brand-orange:#ed742d}
+:root[data-theme="dark"]{--paper:#111e28;--surface:#192b36;--ink:#edf4f4;--muted:#a8bac2;--accent:#82d1cc;--hover:#a6e5df;--line:#304550;--shadow:0 14px 40px #0002}
+body{line-height:1.65;letter-spacing:-.02em;background:var(--paper)}
+.wrap{width:min(1200px,calc(100% - 64px))}
+h1,h2,h3{font-feature-settings:"kern";text-wrap:balance}p{ text-wrap:pretty }
+header{border-bottom:1px solid var(--line);background:var(--paper);box-shadow:none;min-height:84px;padding:12px 0}
+header .menu-trigger{border-radius:50%;background:transparent}
+header .brand img,.home-page header .brand img{width:180px;max-height:64px;object-fit:contain}
+header nav a{font-weight:600}header nav a:hover{color:var(--accent)}
+.menu-trigger:hover,.theme-toggle:hover{background:var(--surface)}
+.hero{grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,72px);padding:64px 0 56px}
+.hero .hero-copy{padding-inline-start:0;text-align:left}
+.hero h1{font-size:clamp(38px,4.6vw,62px);letter-spacing:-.06em;line-height:1.22;margin:24px 0}
+.hero h1 em{color:var(--accent)}
+.hero .intro{font-size:15px;line-height:1.95;max-width:440px}
+.eyebrow{border:0;background:var(--surface);color:var(--accent);padding:8px 13px;letter-spacing:1.2px;font-weight:700}
+.eyebrow:before{background:var(--brand-orange)}
+.cta,.inquiry-submit{background:var(--ink);color:var(--paper);border-radius:999px;box-shadow:none;font-weight:650}
+.cta{gap:30px;padding:14px 24px;margin-top:28px}.cta:hover,.inquiry-submit:hover{background:var(--accent);color:#fff}
+.trend-video{border-radius:20px;background:var(--surface);box-shadow:none}.video-heading{padding:22px 24px 0}.trend-video h2{font-size:25px;letter-spacing:-1px}.video-badge{background:var(--paper);color:var(--accent)}
+.ribbon{padding:20px 0;gap:28px}.ribbon span{color:var(--accent)}
+.section-head{margin:56px 0 26px;align-items:end}.section-head small,.guide-feature>.meta{font-size:10px;letter-spacing:1.8px;color:var(--accent);font-weight:700}.section-head h2{font-size:32px;letter-spacing:-1.4px;line-height:1.35}
+.cards{gap:24px}.card{padding:0 0 20px;border-radius:16px;background:var(--paper);border:1px solid var(--line);box-shadow:none}.card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 45%,var(--line));box-shadow:var(--shadow)}
+.card .news-photo{border-radius:0;margin:0;overflow:hidden;aspect-ratio:16/10;height:auto}.card .news-photo img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}.card:hover .news-photo img{transform:scale(1.025)}
+.card .news-photo-credit{margin:8px 20px 0;font-size:10px;color:var(--muted)}.card .cat{margin:16px 20px 10px}.card h3{margin:0 20px;font-size:19px;line-height:1.65;letter-spacing:-.6px}.card .desc{margin:12px 20px 20px;font-size:13px;line-height:1.85}.card .read{margin:0 20px;padding-top:14px}
+.home-page #trends + .guide-feature{margin-top:56px;padding-top:40px;border-top:1px solid var(--line)}
+.guide-feature{background:transparent}.guide-feature h2{font-size:clamp(25px,3vw,34px);letter-spacing:-1.2px}.guide-grid{gap:18px}.guide-tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:none}.guide-tile h3{font-size:19px;line-height:1.6}.guide-tile a{font-weight:650;color:var(--accent)}
+.board-page,.recipe-page,.about-page{padding-top:42px}.board-heading h1,.recipe-page>h1,.about-page h1{font-size:clamp(32px,4vw,44px);letter-spacing:-1.7px;line-height:1.3}
+.board-form,.board-comment,.recipe-panel,#recipe-editor,.partnership,.about{background:var(--surface);border-color:var(--line);border-radius:16px;box-shadow:none}
+.board-row{padding-top:22px;padding-bottom:22px}.board-row:hover{background:var(--surface)}
+.board-page input,.board-page textarea,.recipe-page input,.recipe-page textarea,.recipe-page select,.inquiry-field input,.inquiry-field textarea{border-radius:10px;border-color:var(--line)}
+#board-write,#board-post-submit,#board-comment-submit,#board-edit-submit,#board-edit-open,#recipe-post-submit{background:var(--accent);border-color:var(--accent);color:#fff;border-radius:10px}
+.recipe-search{border-radius:14px;background:var(--surface)}.recipe-row{transition:none}.recipe-category{background:var(--surface);color:var(--accent);border-color:var(--line)}
+footer{margin-top:48px;padding-top:24px}.journal-footer a:hover{text-decoration:underline;text-underline-offset:4px}
+.theme-toggle,.share-floating-button,.visitor-counter{box-shadow:0 4px 18px #1733470b;border-color:var(--line)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+@media(max-width:800px){.wrap{width:calc(100% - 32px)}header{min-height:64px;padding:6px 0}header .brand img,.home-page header .brand img{width:min(155px,32vw);max-height:50px}.hero{grid-template-columns:1fr;gap:28px;padding:36px 0}.hero .hero-copy{text-align:left;max-width:620px}.hero h1{font-size:clamp(36px,7vw,52px)}.hero .intro{max-width:540px;font-size:14px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.section-head{margin-top:40px}.section-head h2{font-size:28px}.board-page,.recipe-page,.about-page{padding-top:28px}}
+@media(max-width:540px){header .brand img,.home-page header .brand img{width:min(132px,35vw);max-height:46px}.hero{padding:28px 0;gap:26px}.hero h1{font-size:38px;margin:20px 0;letter-spacing:-1.8px}.hero .intro{font-size:13px}.hero .eyebrow{font-size:8px}.cta{padding:12px 21px;font-size:12px}.cards{grid-template-columns:1fr;gap:20px}.card h3{font-size:20px}.section-head{align-items:flex-start}.section-head h2{font-size:26px}.ribbon{gap:12px;padding:16px 0}.home-page #trends + .guide-feature{margin-top:36px;padding-top:28px}.guide-tile{padding:20px}.trend-video h2{font-size:23px}.board-form,.board-comment{padding:18px}footer{margin-top:32px}.journal-footer{gap:clamp(5px,1.5vw,10px)}}
+@media(prefers-reduced-motion:reduce){.card,.card .news-photo img,.recipe-row{transition:none}.card:hover{transform:none}}
+#trends .card{padding:0 0 20px}#trends .card .cat{margin-top:16px}
+.home-introduction .about-cta,.journal-tool button,.print-guide{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:none}
+@media(max-width:700px){footer{flex-wrap:nowrap;align-items:center;gap:10px}.footer-brand{flex:none;align-self:center}.footer-brand img,.footer-brand .site-logo{width:80px}.journal-footer{flex:1 1 auto;flex-basis:auto;gap:3px 8px;align-self:center}.journal-footer a{font-size:clamp(8px,2vw,11px);min-height:24px}}

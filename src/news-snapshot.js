@@ -1,5 +1,5 @@
 export const snapshot = {
-  "updated_at": "2026-10-09T00:21:49.982716+00:00",
+  "updated_at": "2026-10-09T00:33:37.501588+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -36,6 +36,28 @@ export const snapshot = {
       "image_source": "https://www.nbnnews.co.kr/news/articleView.html?idxno=1061097"
     },
     {
+      "title": "[인터뷰] 농식품부 전통주 담당, 유재형 식품외식산업과장",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBrVGFWamZZekdmMTJUWDMtVDk0b2JZUjMweUJwRElheEx2VUp0d1kyeWpGRXdqUURKclQwQnN0ZTJlY1FxMDlpODBiLThTNHhfNTV4R3pJNFc2ajZKZTBodDNDT1J2Uzlza3M4?oc=5",
+      "source": "더바이어",
+      "published_at": "2026-10-06T02:28:56+00:00",
+      "original_url": "https://www.withbuyer.com/news/articleView.html?idxno=33500",
+      "image": "/assets/news/7da75676aecdba7c1aa9b8d1.png",
+      "image_original": "https://cdn.withbuyer.com/news/photo/202610/33500_25680_2038.png",
+      "image_alt": "[인터뷰] 농식품부 전통주 담당, 유재형 식품외식산업과장 · 더바이어 제공 사진",
+      "image_source": "https://www.withbuyer.com/news/articleView.html?idxno=33500"
+    },
+    {
+      "title": "가을 외식물가 상승에 배달 대신 집밥 택한다",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5EOTlxeXN6elg4bUs4UDVGOUltS0RONmR4NHkxal83TW04dEtNYjVFbzJPWWh6b2RjNUdmTGxUNmdtZkllRVhQVlZ1Qzk1LS02Y2lFcFFTWDJDOEJvVmtwb2loMXNFZUE2?oc=5",
+      "source": "공감신문",
+      "published_at": "2026-10-05T03:35:03+00:00",
+      "original_url": "https://www.gokorea.kr/news/articleView.html?idxno=880442",
+      "image": "/assets/news/9457edd54c71c9e02603f52f.jpg",
+      "image_original": "https://cdn.gokorea.kr/news/thumbnail/202610/880442_157802_3159_v150.jpg",
+      "image_alt": "가을 외식물가 상승에 배달 대신 집밥 택한다 · 공감신문 제공 사진",
+      "image_source": "https://www.gokorea.kr/news/articleView.html?idxno=880442"
+    },
+    {
       "title": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령!",
       "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1wUTh3VUdfenp1d2x1ZEp1Rml4by1Kb2gxUktuOUU4OWtkLTgzY2I2WHNEXzVVZ1lnT09sYW1NY2QxRldIcGVGYWhQRXVkQWtpazdxV3RBVTFxbktFWFE?oc=5",
       "source": "YTN",
@@ -45,28 +67,6 @@ export const snapshot = {
       "image_alt": "LA는 지금 '치맥' 열풍…한인타운 넘어 美 외식 시장 점령! · YTN 제공 사진",
       "image_source": "https://www.ytn.co.kr/_ln/1230_202610041925261824",
       "image_original": "https://image.ytn.co.kr/special/jpg/global_common/2026/202610041925261824_h.jpg"
-    },
-    {
-      "title": "교촌치킨, 중국 장쑤성 우시에 신규 매장 ‘우시점’ 오픈... 중국 시장 공략 박차",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1pamNkckp0Y01SZ2VKczZ3LWN1OGdsZ1NQYV9sYUxUaWFzUkZkakF0RWRSbHRtTWxrME1EdTFXcVg3OGRWV21aLUJrRTdkNmEyckYyLWRqSE5KUm9RRUlvbGwteS10ckY3eWQtUw?oc=5",
-      "source": "식품외식경제",
-      "published_at": "2026-10-02T08:37:10+00:00",
-      "original_url": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607",
-      "image": "/assets/news/7116b8aaa28c8ed422b956fa.jpg",
-      "image_alt": "교촌치킨, 중국 장쑤성 우시에 신규 매장 ‘우시점’ 오픈... 중국 시장 공략 박차 · 식품외식경제 제공 사진",
-      "image_source": "https://www.foodbank.co.kr/news/articleView.html?idxno=68607",
-      "image_original": "https://www.foodbank.co.kr/news/thumbnail/202610/68607_30138_3642_v150.jpg"
-    },
-    {
-      "title": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력”",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42VTVTTXM0RWJBMkExVFNfeDgxU3VVWGNPbVRTTmd2WWdoS1RiVGFaTUcyaXRTR3FjT255YmF1UVJfTTRkX0F5UEpmbXFvc0Ezcm5EOXdmaWFrT2hXNzFIRjZBT0FOOVI3OFgxYmlB?oc=5",
-      "source": "식품저널 foodnews",
-      "published_at": "2026-10-02T02:31:09+00:00",
-      "original_url": "https://www.foodnews.co.kr/news/articleView.html?idxno=120398",
-      "image": "/assets/news/b26171f6ad61c7780c2ae5ca.jpg",
-      "image_original": "https://cdn.foodnews.co.kr/news/thumbnail/202610/120398_86820_2438_v150.jpg",
-      "image_alt": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력” · 식품저널 foodnews 제공 사진",
-      "image_source": "https://www.foodnews.co.kr/news/articleView.html?idxno=120398"
     }
   ],
   "history": [
@@ -104,7 +104,17 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE42VTVTTXM0RWJBMkExVFNfeDgxU3VVWGNPbVRTTmd2WWdoS1RiVGFaTUcyaXRTR3FjT255YmF1UVJfTTRkX0F5UEpmbXFvc0Ezcm5EOXdmaWFrT2hXNzFIRjZBT0FOOVI3OFgxYmlB?oc=5",
       "title": "원자재ㆍ환율 급등, 식품ㆍ외식 물가 압박…농식품부 “가격 인상 최소화 총력”",
       "published_at": "2026-10-02T02:31:09+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBrVGFWamZZekdmMTJUWDMtVDk0b2JZUjMweUJwRElheEx2VUp0d1kyeWpGRXdqUURKclQwQnN0ZTJlY1FxMDlpODBiLThTNHhfNTV4R3pJNFc2ajZKZTBodDNDT1J2Uzlza3M4?oc=5",
+      "title": "[인터뷰] 농식품부 전통주 담당, 유재형 식품외식산업과장",
+      "published_at": "2026-10-06T02:28:56+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5EOTlxeXN6elg4bUs4UDVGOUltS0RONmR4NHkxal83TW04dEtNYjVFbzJPWWh6b2RjNUdmTGxUNmdtZkllRVhQVlZ1Qzk1LS02Y2lFcFFTWDJDOEJvVmtwb2loMXNFZUE2?oc=5",
+      "title": "가을 외식물가 상승에 배달 대신 집밥 택한다",
+      "published_at": "2026-10-05T03:35:03+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 2
 };

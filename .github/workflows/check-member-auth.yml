@@ -39,6 +39,7 @@ on:
       - 'tests/trend-news-ui.cjs'
       - 'src/news-snapshot.js'
       - 'assets/css/page-layout.css'
+      - 'assets/css/refinement.css'
       - 'tests/trend-video.test.js'
       - 'assets/css/signup.css'
       - '*.html'

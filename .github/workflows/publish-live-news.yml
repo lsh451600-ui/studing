@@ -23,7 +23,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install googlenewsdecoder==0.1.7
+      - run: pip install googlenewsdecoder==0.1.7 'selectolax<1'
+      - run: python -c 'from googlenewsdecoder import gnewsdecoder'
       - uses: actions/setup-node@v4
         with:
           node-version: '24'

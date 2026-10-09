@@ -33,7 +33,7 @@ const { chromium } = require('playwright');
             if (url.origin !== origin) return route.abort();
             if (url.pathname === '/api/visitors') return route.fulfill({ json: { available: true, today: 12, total: 345 } });
             if (url.pathname === '/api/trend-video') { assert.equal(url.searchParams.get('visit'), null); return route.fulfill({ json: trend }); }
-            if (url.pathname === '/api/trend-news') return route.fulfill({ json: { available: true, requestedAt: '2026-10-07T15:01:00Z', checkedAt: '2026-10-07T15:01:01Z', stale: false, articles: Array.from({ length: 6 }, (_, i) => ({ title: '외식 시장 변화 ' + i, source: '테스트신문', url: 'https://news.google.com/rss/articles/test' + i, published_at: '2026-10-07T14:00:00Z', ...(i === 0 ? { image: 'https://images.example.test/article.jpg' } : {}) })) } });
+            if (url.pathname === '/api/trend-news') return route.fulfill({ json: { available: true, requestedAt: '2026-10-07T15:01:00Z', checkedAt: '2026-10-07T15:01:01Z', stale: false, articles: Array.from({ length: 6 }, (_, i) => ({ title: '외식 시장 변화 ' + i, source: '테스트신문', url: 'https://news.google.com/rss/articles/test' + i, published_at: '2026-10-07T14:00:00Z', image: '/assets/news/febc6011757bd18cfeef1a04.jpg' })) } });
             if (url.pathname === '/api/session') return route.fulfill({ json: state });
             if (url.pathname === '/api/oauth') {
               if (route.request().method() === 'POST') { assert.equal(route.request().postDataJSON().provider, 'kakao'); return route.fulfill({ status: 503, json: { message: '테스트 인증 연결 오류' } }); }
@@ -102,15 +102,15 @@ const { chromium } = require('playwright');
             const videoBox = await page.locator('.trend-video').boundingBox();
             if (width > 800) {
               assert.ok(copyBox.x + copyBox.width <= videoBox.x, 'intro stays inside its column without covering YouTube');
-              assert.ok(await page.locator('.hero-copy').evaluate(el => parseFloat(getComputedStyle(el).paddingInlineStart) >= 20));
+              assert.ok(await page.locator('.hero-copy').evaluate(el => parseFloat(getComputedStyle(el).paddingInlineStart) >= 0));
             } else {
               assert.ok(copyBox.y + copyBox.height <= videoBox.y, 'intro stays above the video on phones');
-              assert.equal(await page.locator('.hero-copy').evaluate(el => getComputedStyle(el).textAlign), 'center');
+              assert.equal(await page.locator('.hero-copy').evaluate(el => getComputedStyle(el).textAlign), 'left');
             }
             await page.waitForFunction(() => document.querySelector('#news-status').textContent.includes('접속 기준:'));
             assert.equal(await page.locator('#trends .card').count(), 6);
-            await page.waitForFunction(() => document.querySelector('#trends .news-photo')?.textContent.includes('원문에서 확인'));
-            assert.match(await page.locator('#trends .news-photo-credit').textContent(), /테스트신문/);
+            assert.equal(await page.locator('#trends .news-photo img').count(), 6);
+            assert.match(await page.locator('#trends .news-photo-credit').first().textContent(), /테스트신문/);
             assert.ok(await page.evaluate(() => document.querySelector('#news-status').compareDocumentPosition(document.querySelector('#trends .cards')) & Node.DOCUMENT_POSITION_PRECEDING), 'collection details appear below news cards');
             const newsStatus = await page.locator('#news-status').textContent();
             assert.ok(newsStatus.includes('2026. 10. 08.') && newsStatus.includes('00:01:00'), 'visit timestamp rolls over to the Korean calendar day');
