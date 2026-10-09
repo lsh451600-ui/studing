@@ -177,11 +177,16 @@ const { chromium } = require('playwright');
           assert.ok(!(await page.locator('#signup-open').isVisible()));
           if (width <= 768) {
             const headerBox = await page.locator('header').boundingBox();
-            assert.ok(headerBox.height <= (width < 700 ? 110 : 82), 'mobile header stays compact');
+            assert.ok(headerBox.height <= 150, 'member row fits below the logo');
             assert.ok(await page.locator('#member-status').evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= 11), 'member ID uses compact text');
             await page.evaluate(() => window.dispatchEvent(new CustomEvent('member-authenticated', { detail: { id: 'member', username: 'abcdefghijklmnopqrst', kakaoLinked: true } })));
             assert.ok(await page.locator('#member-status').evaluate(el => el.scrollWidth <= el.clientWidth && getComputedStyle(el).textOverflow !== 'ellipsis'), 'complete member ID fits without truncation');
             assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'long member ID does not overflow');
+            assert.ok(await page.locator('#member-status .member-profile-link').evaluate(el => {
+              const range = document.createRange(); range.selectNodeContents(el);
+              const box = document.querySelector('#member-status').getBoundingClientRect();
+              return [...range.getClientRects()].every(rect => rect.left >= box.left && rect.right <= box.right && rect.top >= box.top && rect.bottom <= box.bottom);
+            }), 'every character of the name is visible inside its container');
           }
           const logout = await page.locator('#logout-button').boundingBox();
           assert.ok(logout.x >= 0 && logout.x + logout.width <= width, 'logout must fit viewport');

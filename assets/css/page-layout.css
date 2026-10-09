@@ -208,3 +208,13 @@ body button.share-floating-button{display:grid;width:46px;height:46px;min-height
 /* Keep the complete member ID readable at every viewport width. */
 header .member-status,header .member-controls[data-state="authenticated"] .member-status{max-width:none;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
 header .member-controls{flex-wrap:wrap}
+
+/* Give signed-in names their own available row on narrow screens. */
+header .member-status .member-profile-link{white-space:normal;overflow-wrap:anywhere;word-break:break-word;text-overflow:clip;max-width:100%}
+.site-menu .menu-heading .menu-account p{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+@media(max-width:1100px){
+  header:has(.member-controls[data-state="authenticated"]){flex-wrap:wrap}
+  header:has(.member-controls[data-state="authenticated"])>nav{flex:1 0 100%;width:100%;max-width:100%;margin:0}
+  header .member-controls[data-state="authenticated"]{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;flex:1;width:100%;min-width:0}
+  header .member-controls[data-state="authenticated"] .member-status{width:100%;min-width:0;max-width:100%;border-radius:10px;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+}
