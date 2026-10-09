@@ -137,3 +137,8 @@ header.is-compact .brand .site-logo .logo-base{max-width:calc(48px * 600 / 255)}
 .ingredient-search #ingredient-camera-photo[hidden],.ingredient-search #ingredient-camera[hidden]{display:none}
 #ingredient-camera-open{margin-top:12px}
 #ingredient-camera-video{display:block;width:100%;max-width:480px;max-height:360px;object-fit:contain;margin:12px 0;border-radius:10px;background:#000}
+
+/* Leave room around the native file button so its rounded edges stay visible. */
+.recipe-page input[type="file"]{box-sizing:border-box;width:100%;max-width:100%;min-width:0;height:auto;min-height:52px;padding:4px 2px;border:0;border-radius:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;line-height:1.5}
+.recipe-page input[type="file"]::file-selector-button{box-sizing:border-box;min-height:44px;margin:0 10px 0 0;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font:inherit;line-height:1.5;cursor:pointer}
+.recipe-page input[type="file"]::file-selector-button:hover{border-color:var(--accent);background:var(--surface)}
