@@ -180,7 +180,7 @@ const { chromium } = require('playwright');
             assert.ok(headerBox.height <= (width < 700 ? 110 : 82), 'mobile header stays compact');
             assert.ok(await page.locator('#member-status').evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= 11), 'member ID uses compact text');
             await page.evaluate(() => window.dispatchEvent(new CustomEvent('member-authenticated', { detail: { id: 'member', username: 'abcdefghijklmnopqrst', kakaoLinked: true } })));
-            assert.ok(await page.locator('#member-status').evaluate(el => getComputedStyle(el).whiteSpace === 'nowrap' && getComputedStyle(el).textOverflow === 'ellipsis'), 'long member ID stays on one line');
+            assert.ok(await page.locator('#member-status').evaluate(el => el.scrollWidth <= el.clientWidth && getComputedStyle(el).textOverflow !== 'ellipsis'), 'complete member ID fits without truncation');
             assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'long member ID does not overflow');
           }
           const logout = await page.locator('#logout-button').boundingBox();

@@ -204,3 +204,7 @@ body button.share-floating-button{display:grid;width:46px;height:46px;min-height
 .site-menu .menu-session-actions #menu-account-action{min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font-size:12px}
 .site-menu .menu-footer .menu-session-actions .menu-inquiry{display:inline-flex;justify-content:center;min-height:40px;width:auto;padding:4px 0;border:0;border-radius:0;background:transparent;color:var(--muted);font-size:11px}
 .site-menu .menu-footer .menu-session-actions .menu-inquiry:hover{color:var(--accent);text-decoration:underline;text-underline-offset:4px}
+
+/* Keep the complete member ID readable at every viewport width. */
+header .member-status,header .member-controls[data-state="authenticated"] .member-status{max-width:none;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+header .member-controls{flex-wrap:wrap}

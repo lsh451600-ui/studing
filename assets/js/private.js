@@ -81,7 +81,15 @@ byId('industry-post-form').addEventListener('submit', async event => {
   } catch (error) { status.textContent = error.message; }
   finally { posting = false; byId('industry-submit').disabled = false; }
 });
+byId('industry-show-password').addEventListener('change', event => {
+  byId('industry-password').type = event.target.checked ? 'text' : 'password';
+});
+function hidePassword() {
+  byId('industry-show-password').checked = false;
+  byId('industry-password').type = 'password';
+}
 function lock() {
+  hidePassword();
   unlocked = false; generation++; authGeneration++;
   byId('recipe-content').replaceChildren(); byId('recipe-pagination').replaceChildren();
   byId('recipe-board').hidden = true; byId('industry-gate').hidden = false;
@@ -100,7 +108,7 @@ byId('industry-access-form').addEventListener('submit', async event => {
     byId('recipe-board').hidden = false; byId('industry-gate').hidden = true;
     byId('industry-write').hidden = !data.canWrite; byId('industry-access-status').textContent = '';
   } catch (error) { if (version === generation) byId('industry-access-status').textContent = error.message; }
-  finally { byId('industry-password').value = ''; byId('industry-access-submit').disabled = false; }
+  finally { hidePassword(); byId('industry-password').value = ''; byId('industry-access-submit').disabled = false; }
 });
 window.addEventListener('member-session-change', lock);
 window.addEventListener('pageshow', event => { if (event.persisted) lock(); });
