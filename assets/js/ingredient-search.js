@@ -86,9 +86,9 @@ async function searchRecipes(ingredients, current) {
       const card = document.createElement('article'); card.className = 'ingredient-result';
       const heading = document.createElement('h4');
       heading.textContent = (index+1)+'. '+recipe.title;
-      const total = recipe.matched.length + recipe.missing.length;
-      const score = document.createElement('span'); score.textContent = ' · 재료 일치도 '+recipe.score+'% ('+recipe.matched.length+'/'+total+'개)'; heading.append(score); card.append(heading);
-      for (const text of ['일치 재료: '+recipe.matched.join(', '), '부족한 재료: '+(recipe.missing.join(', ')||'없음')]) {
+      const total = recipe.photoIngredientCount;
+      const score = document.createElement('span'); score.textContent = ' · 사진 재료 포함률 '+recipe.score+'% ('+recipe.matched.length+'/'+total+'개)'; heading.append(score); card.append(heading);
+      for (const text of ['사진과 일치하는 재료: '+recipe.matched.join(', ')]) {
         const line = document.createElement('p'); line.textContent = text; card.append(line);
       }
       if (recipe.estimated) {

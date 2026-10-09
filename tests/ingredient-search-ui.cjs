@@ -22,7 +22,7 @@ const { chromium } = require('playwright');
     assert.equal(req.method(),'GET');assert.equal(req.postData(),null);recommendations++;lastCategory=url.searchParams.get('category');
     if(fail)return route.fulfill({status:403,json:{message:'특별회원 인증과 열람 비밀번호가 필요합니다.'}});
     const ingredients=url.searchParams.get('ingredients');assert.ok(ingredients.includes('달걀'));
-    return route.fulfill({json:{recommendations:emptyMatches?[]:[{id:1,title:'두부달걀전',body:'두부와 달걀을 섞어 굽습니다.',score:100,matched:['달걀','두부'],missing:[],estimated:false},{id:2,title:'달걀볶음밥',body:'밥을 볶습니다.',score:67,matched:['달걀','대파'],missing:['밥'],estimated:true},{id:3,title:'두부찌개',body:'두부를 끓입니다.',score:50,matched:['두부'],missing:['김치'],estimated:false}]}});
+    return route.fulfill({json:{recommendations:emptyMatches?[]:[{id:1,title:'두부달걀전',body:'두부와 달걀을 섞어 굽습니다.',score:67,photoIngredientCount:3,matched:['달걀','두부'],estimated:false},{id:2,title:'달걀볶음밥',body:'밥을 볶습니다.',score:67,photoIngredientCount:3,matched:['달걀','대파'],estimated:true},{id:3,title:'두부찌개',body:'두부를 끓입니다.',score:33,photoIngredientCount:3,matched:['두부'],estimated:false}]}});
    }
    if(url.pathname.startsWith('/api/'))return route.fulfill({json:{}});return route.continue();
   });
@@ -38,7 +38,7 @@ const { chromium } = require('playwright');
   assert.equal(recommendations,1,'photo selection must automatically search exactly once');
   assert.match(await page.locator('#ingredient-detected').textContent(),/달걀, 두부, 대파/);
   assert.equal(await page.locator('.ingredient-result').count(),3);
-  assert.match(await page.locator('.ingredient-result h4').first().textContent(),/두부달걀전.*100%/);
+  assert.match(await page.locator('.ingredient-result h4').first().textContent(),/두부달걀전.*67%/);
   assert.equal(await page.locator('#ingredient-search-title').textContent(),'식재료 사진으로 검색');
   assert.equal(await page.locator('.ingredient-note').count(),0);
   await page.locator('#recipe-filter-category').selectOption('한식');

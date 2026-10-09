@@ -13,8 +13,7 @@ export function extractIngredients(text) {
   // Prefer a labelled ingredient section. Do not invent amounts or optional substitutions.
   const section = text.match(/(?:^|\n)\s*(?:\[|【|#|\*|재료\s*[:：])*(?:주재료|준비\s*재료|재료|ingredients)\s*[\]】:*：]*\s*([\s\S]*?)(?=\n\s*(?:조리|만드는|만들기|요리\s*순서|조리\s*순서|방법|과정|steps)|$)/i);
   if (section) {
-    // Preserve unlisted ingredients too: otherwise they disappear from both
-    // the missing list and the coverage denominator.
+    // Preserve unlisted ingredients in the recipe comparison.
     const items = section[1].split(/[,，、;\n·]+/).map(item => item
       .replace(/^\s*[-*•]\s*/, '').replace(/\([^)]*\)/g, '')
       .replace(/\s*[:：]?\s*(?:\d[\d./\s~–-]*|[½¼¾]|반\s*(?=모|개|컵|큰술|작은술)|약간|조금|적당량|취향껏).*$/, '')
@@ -43,8 +42,9 @@ export function rankRecipes(posts, available) {
   const pantry = new Set(normalizeIngredients(available));
   return posts.map(post => {
     const { ingredients, estimated } = recipeIngredients(post);
-    const matched = ingredients.filter(name => pantry.has(name)), missing = ingredients.filter(name => !pantry.has(name));
-    const ratio = ingredients.length ? matched.length / ingredients.length : 0;
-    return { ...post, ingredients, estimated, matched, missing, ratio, score: missing.length ? Math.min(99, Math.round(100 * ratio)) : Math.round(100 * ratio) };
-  }).filter(post => post.matched.length > 0).sort((a,b) => b.ratio-a.ratio || b.matched.length-a.matched.length || a.missing.length-b.missing.length || Number(b.id)-Number(a.id)).slice(0,3);
+    const matched = ingredients.filter(name => pantry.has(name));
+    const ratio = pantry.size ? matched.length / pantry.size : 0;
+    const complete = matched.length === pantry.size;
+    return { ...post, ingredients, estimated, matched, photoIngredientCount: pantry.size, complete, ratio, score: complete ? 100 : Math.min(99, Math.round(100 * ratio)) };
+  }).filter(post => post.matched.length > 0).sort((a,b) => b.ratio-a.ratio || Number(b.id)-Number(a.id)).slice(0,3);
 }

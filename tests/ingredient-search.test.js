@@ -22,23 +22,31 @@ test('aliases deduplicate and compound words do not turn peppers into chili or s
 });
 test('rank by exact coverage then matching count; return at most three and never fabricate zero-match results',()=>{
  const ranked=rankRecipes([{id:1,ingredients:['달걀','대파'],body:''},{id:2,ingredients:['달걀','대파','소금'],body:''},{id:3,ingredients:['계란'],body:''},{id:4,ingredients:['감자'],body:''},{id:5,ingredients:['대파','달걀','두부'],body:''}],['계란','쪽파']);
- assert.deepEqual(ranked.map(p=>p.id),[1,3,5]);assert.deepEqual(ranked[2].missing,['두부']);assert.equal(ranked[0].score,100);
+ assert.deepEqual(ranked.map(p=>p.id),[5,2,1]);assert.equal(ranked[0].missing,undefined);assert.equal(ranked[0].score,100);
  assert.deepEqual(rankRecipes([{id:1,ingredients:['감자']}],['달걀']),[]);
  const estimated=rankRecipes([{id:9,body:'재료: 달걀 1개, 대파 1대'}],['달걀']);
  assert.equal(rankRecipes(estimated,['달걀'])[0].estimated,true);
 });
-test('unlisted ingredients and seasonings remain missing and count toward coverage',()=>{
+test('all detected ingredients take priority even when recipes include other ingredients',()=>{
  const [recipe]=rankRecipes([{id:1,body:'재료: 계란 2개, 굴소스 1큰술, 소금 약간, 피시소스 1/2작은술\n만드는 방법\n달걀을 볶습니다.'}],['달걀']);
  assert.deepEqual(recipe.ingredients,['달걀','굴소스','소금','피시소스']);
- assert.deepEqual(recipe.missing,['굴소스','소금','피시소스']);
- assert.equal(recipe.score,25);
+ assert.equal(recipe.missing,undefined);
+ assert.equal(recipe.score,100);
  assert.deepEqual(extractIngredients('재료\n- 계란 2개\n- 렌틸콩 100g\n- 두부 반모\n조리 순서\n섞습니다.'),['달걀','렌틸콩','두부']);
 });
-test('coverage deduplicates aliases and never shows 100 percent with missing ingredients',()=>{
- const [recipe]=rankRecipes([{id:1,ingredients:['계란','달걀','대파','쪽파','굴소스']}],['달걀','계란','대파']);
- assert.equal(recipe.score,67);assert.deepEqual(recipe.missing,['굴소스']);
+test('photo coverage deduplicates aliases and ranks complete recipes above partial ones',()=>{
+ const ranked=rankRecipes([
+  {id:1,ingredients:['계란','달걀','대파','쪽파','굴소스','소금']},
+  {id:9,ingredients:['달걀']},
+  {id:8,ingredients:['대파']}
+ ],['달걀','계란','대파']);
+ assert.equal(ranked[0].id,1);assert.equal(ranked[0].score,100);
+ assert.equal(ranked[0].photoIngredientCount,2);assert.equal(ranked[0].complete,true);
+ assert.equal(ranked[1].score,50);assert.equal(ranked[1].complete,false);
+ assert.equal(ranked[0].missing,undefined);
  const ingredients=Array.from({length:201},(_,i)=>'재료'+i);
- assert.equal(rankRecipes([{id:1,ingredients}],ingredients.slice(1))[0].score,99);
+ assert.equal(rankRecipes([{id:1,ingredients:ingredients.slice(1)}],ingredients)[0].score,99);
+ assert.deepEqual(rankRecipes([{id:1,ingredients:['달걀']}],[]),[]);
 });
 test('recommendation API protects content, searches past first 100 recipes, and includes legacy recipes',async t=>{
  const {db,env,request}=setup(t);await ensurePosts(db);await ensureLevels(db);
@@ -47,7 +55,7 @@ test('recommendation API protects content, searches past first 100 recipes, and 
  for(let id=1;id<=105;id++)await db.prepare('INSERT INTO recipe_posts(id,title,body,ingredients,created_at) VALUES(?,?,?,?,?)').bind(id,'글 '+id,'재료: 감자 1개',JSON.stringify(['감자']),'2026-10-09').run();
  await db.prepare('UPDATE recipe_posts SET body=?, ingredients=? WHERE id=105').bind('재료: 계란 2개, 두부 반모','[]').run();
  const response=await onRequest({env,request:request('recipe-recommendations?ingredients=계란,두부',cookie)});assert.equal(response.status,200);
- const data=await response.json();assert.equal(data.recommendations.length,1);assert.equal(data.recommendations[0].id,105);assert.equal(data.recommendations[0].score,100);assert.equal(data.recommendations[0].estimated,true);assert.equal(data.recommendations[0].author_id,undefined);
+ const data=await response.json();assert.equal(data.recommendations.length,1);assert.equal(data.recommendations[0].id,105);assert.equal(data.recommendations[0].score,100);assert.equal(data.recommendations[0].estimated,true);assert.equal(data.recommendations[0].author_id,undefined);assert.equal(data.recommendations[0].missing,undefined);
  await db.prepare('UPDATE recipe_posts SET category=? WHERE id=105').bind('한식').run();
  assert.equal((await (await onRequest({env,request:request('recipe-recommendations?ingredients=달걀&category=한식',cookie)})).json()).recommendations[0].id,105);
  assert.deepEqual((await (await onRequest({env,request:request('recipe-recommendations?ingredients=달걀&category=양식',cookie)})).json()).recommendations,[]);
