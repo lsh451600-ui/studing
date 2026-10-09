@@ -41,10 +41,11 @@ let errorOpener;
 const upgradeMessage = '일반회원은 이용할 수 없습니다. 자유게시판을 이용해 등업을 신청해 주세요.';
 const upgradeLink = document.createElement('a');
 upgradeLink.href = '/board'; upgradeLink.textContent = '자유게시판에서 등업 신청하기'; upgradeLink.hidden = true;
-upgradeLink.style.cssText = 'margin:16px 0;color:var(--accent);text-decoration:underline';
+upgradeLink.style.cssText = 'margin:16px 0 28px;color:var(--accent);text-decoration:underline';
 byId('auth-error-close').before(upgradeLink);
 function showAuthError(message) {
   upgradeLink.hidden = message !== upgradeMessage;
+  upgradeLink.style.display = upgradeLink.hidden ? 'none' : 'block';
   byId('auth-error-title').textContent = message === upgradeMessage ? '이용 안내' : '로그인 확인';
   byId('member-feedback').textContent = '';
   byId('auth-error-message').textContent = message;
