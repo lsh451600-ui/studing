@@ -3,10 +3,11 @@ import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
 const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
 const json = body => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+let unlocked = false;
 let page = 1, totalPages = 1, sort = 'latest', query = '', generation = 0, authGeneration = 0, posting = false;
 async function api(path, options = {}) {
   const response = await fetch(path, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000), ...options });
-  const data = await response.json(); if (!response.ok) throw new Error(data.message || '자료를 불러오지 못했습니다.'); return data;
+  const data = await response.json(); if (!response.ok) { const error = new Error(data.message || '자료를 불러오지 못했습니다.'); error.status = response.status; throw error; } return data;
 }
 function render(posts) {
   const content = byId('recipe-content'); content.replaceChildren();
@@ -46,19 +47,20 @@ function paginate() {
   if (end < totalPages - 1) nav.append(make('span', '…')); if (end < totalPages) add(String(totalPages), totalPages); add('다음', page + 1, page === totalPages);
 }
 async function load() {
+  if (!unlocked) return;
   const version = ++generation; byId('industry-status').textContent = '자료를 불러오고 있습니다.';
   try {
     const params = new URLSearchParams({ page, sort }); if (query) params.set('q', query);
     const data = await api('/api/private-posts?' + params);
     if (version !== generation) return; page = data.page; totalPages = data.totalPages; render(data.posts); paginate(); byId('industry-status').textContent = '';
-  } catch (error) { if (version === generation) byId('industry-status').textContent = error.message; }
+  } catch (error) { if (version === generation) { if ([401, 403].includes(error.status)) lock(); byId(unlocked ? 'industry-status' : 'industry-access-status').textContent = error.message; } }
 }
 async function syncWriter() {
   const version = ++authGeneration;
   try {
     const data = await api('/api/session'); if (version !== authGeneration) return;
     const admin = data.authenticated && data.user?.isAdmin === true;
-    byId('industry-write').hidden = !admin; if (!admin) byId('recipe-editor').hidden = true;
+    byId('industry-write').hidden = !admin || !unlocked; if (!admin) byId('recipe-editor').hidden = true;
   } catch { if (version === authGeneration) { byId('industry-write').hidden = true; byId('recipe-editor').hidden = true; } }
 }
 byId('industry-heading').addEventListener('click', event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); query = ''; page = 1; byId('industry-query').value = ''; byId('recipe-editor').hidden = true; load(); });
@@ -79,6 +81,28 @@ byId('industry-post-form').addEventListener('submit', async event => {
   } catch (error) { status.textContent = error.message; }
   finally { posting = false; byId('industry-submit').disabled = false; }
 });
-window.addEventListener('member-session-change', () => { syncWriter(); load(); });
-window.addEventListener('pageshow', event => { if (event.persisted) { syncWriter(); load(); } });
-syncWriter(); load();
+function lock() {
+  unlocked = false; generation++; authGeneration++;
+  byId('recipe-content').replaceChildren(); byId('recipe-pagination').replaceChildren();
+  byId('recipe-board').hidden = true; byId('industry-gate').hidden = false;
+  byId('industry-write').hidden = true; byId('recipe-editor').hidden = true;
+  byId('industry-password').value = ''; byId('industry-post-form').reset();
+}
+byId('industry-access-form').addEventListener('submit', async event => {
+  event.preventDefault(); const version = ++generation;
+  byId('industry-access-submit').disabled = true;
+  byId('industry-access-status').textContent = '확인하고 있습니다.';
+  try {
+    const data = await api('/api/private', json({ password: byId('industry-password').value }));
+    if (version !== generation) return;
+    unlocked = true; page = data.page || 1; totalPages = data.totalPages || 1; query = ''; sort = 'latest';
+    byId('industry-query').value = ''; render(data.posts); paginate();
+    byId('recipe-board').hidden = false; byId('industry-gate').hidden = true;
+    byId('industry-write').hidden = !data.canWrite; byId('industry-access-status').textContent = '';
+  } catch (error) { if (version === generation) byId('industry-access-status').textContent = error.message; }
+  finally { byId('industry-password').value = ''; byId('industry-access-submit').disabled = false; }
+});
+window.addEventListener('member-session-change', lock);
+window.addEventListener('pageshow', event => { if (event.persisted) lock(); });
+window.addEventListener('pagehide', lock);
+lock();

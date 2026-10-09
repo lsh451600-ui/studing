@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - functions/api/recipe*.js
+      - functions/api/private*.js
+      - src/private-server.js
       - src/recipe-server.js
       - src/member-levels.js
       - tests/member-levels.test.js
@@ -25,7 +27,7 @@ jobs:
         with:
           node-version: '24'
       - name: Test owner permissions and persistent recipe storage
-        run: node --test tests/recipes.test.js
+        run: node --test tests/recipes.test.js tests/private.test.js tests/member-levels.test.js
       - name: Verify deployed anonymous recipe restrictions
         run: |
           node --input-type=module <<'JS'
@@ -33,7 +35,7 @@ jobs:
           let verified = false;
           for (let attempt = 0; attempt < 24; attempt++) {
             try {
-              for (const path of ['/api/recipes', '/api/recipe-posts', '/api/recipe-image?id=1', '/api/recipe-file?id=1', '/api/recipe-comments?postId=1']) {
+              for (const path of ['/api/recipes', '/api/recipe-posts', '/api/recipe-image?id=1', '/api/recipe-file?id=1', '/api/recipe-comments?postId=1', '/api/private', '/api/private-posts', '/api/private-image?id=1', '/api/private-file?id=1', '/api/private-comments?postId=1']) {
                 const response = await fetch(origin + path, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
                 if (![401, 403].includes(response.status)) throw new Error('Anonymous access was not blocked: ' + path);
               }

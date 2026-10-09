@@ -20,7 +20,7 @@ function canonicalPublicPath(path) {
 }
 
 const protectedPages = new Set([
-  '/recipes', '/recipes.html',
+  '/recipes', '/recipes.html', '/private', '/private.html',
   '/board', '/board.html',
   '/startup', '/startup.html',
   '/mypage', '/mypage.html',
@@ -86,9 +86,9 @@ export async function onRequest({ request, env, next }) {
       login.searchParams.set('next', url.pathname + url.search);
       return withCookies(Response.redirect(login.href, 302), session.cookies);
     }
-    if (pathname === '/recipes' || pathname === '/recipes.html') {
+    if (['/recipes', '/recipes.html', '/private', '/private.html'].includes(pathname)) {
       const access = await membership(request, env);
-      if (!access.canAccessRecipes) return withCookies(Response.redirect(new URL('/mypage?recipe_access=restricted', url.origin).href, 302), session.cookies);
+      if (!access.canAccessRecipes) return withCookies(Response.redirect(new URL('/mypage?' + (pathname.startsWith('/private') ? 'industry_access' : 'recipe_access') + '=restricted', url.origin).href, 302), session.cookies);
     }
     return withCookies(await next(), session.cookies);
   } catch {

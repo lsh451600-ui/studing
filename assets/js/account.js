@@ -18,7 +18,7 @@ async function load() {
     const { account } = await accountAPI();
     byId('account-username').textContent = account.username;
     byId('account-level').textContent = account.isAdmin ? '운영자' : account.level === 'special' ? '특별회원' : '일반회원';
-    byId('recipe-access-notice').hidden = !new URLSearchParams(location.search).has('recipe_access');
+    byId('recipe-access-notice').hidden = !['recipe_access', 'industry_access'].some(key => new URLSearchParams(location.search).has(key));
     byId('member-level-panel').hidden = !account.isAdmin;
     if (account.isAdmin) loadMembers();
     byId('account-nickname').value = account.nickname || '';

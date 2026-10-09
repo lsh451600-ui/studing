@@ -26,6 +26,7 @@ const { chromium } = require('playwright');
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url()); if (url.origin !== origin) return route.abort();
         if (url.pathname === '/api/session') return route.fulfill({json:{available:true,authenticated:admin,user:admin?{id:'admin',username:'운영팀',isAdmin:true}:null}});
+        if (url.pathname === '/api/private') return route.fulfill({json:{posts:posts.slice().reverse().slice(0,10),page:1,totalPages:3,canWrite:admin}});
         if (url.pathname === '/api/private-comments') return route.fulfill({json:{comments:[]}});
         if (url.pathname === '/api/private-posts') {
           if(req.method()==='POST'){assert.ok(admin); const body=req.postDataJSON();posts.push({...body,id:99,downloads:0,created_at:'2026-10-09T00:00:00Z'});submissions++;return route.fulfill({json:{id:99}});}
@@ -37,7 +38,7 @@ const { chromium } = require('playwright');
         }
         if(url.pathname.startsWith('/api/'))return route.fulfill({json:{available:true,authenticated:false,providers:{}}});return route.continue();
       });
-      const page=await context.newPage();await page.goto(origin+'/private');await page.locator('.recipe-row').first().waitFor();
+      const page=await context.newPage();await page.goto(origin+'/private'); await page.waitForTimeout(300); assert.equal(await page.locator('.recipe-row').count(),0); await page.locator('#industry-password').fill('0018'); await page.locator('#industry-access-submit').click(); await page.locator('.recipe-row').first().waitFor();
       assert.equal(await page.title(),'외모Check-외식산업 자료');
       assert.equal(await page.locator('input[type=password]#recipe-password').count(),0);
       assert.equal(await page.locator('main select').count(),0);
@@ -52,11 +53,11 @@ const { chromium } = require('playwright');
       await page.locator('#industry-heading').click();await page.waitForFunction(()=>document.querySelectorAll('.recipe-row').length===10);
       await page.locator('[data-industry-sort=title]').click();await page.waitForFunction(()=>document.querySelector('.recipe-row-title').textContent==='자료 00');
       await page.locator('[data-industry-sort=downloads]').click();await page.waitForFunction(()=>document.querySelector('.recipe-downloads').textContent==='22');
-      admin=true;await page.evaluate(()=>dispatchEvent(new CustomEvent('member-session-change',{detail:true})));await page.locator('#industry-write').waitFor();
+      admin=true;await page.evaluate(()=>dispatchEvent(new CustomEvent('member-session-change',{detail:true})));assert.ok(await page.locator('#recipe-board').isHidden()); await page.locator('#industry-password').fill('0018'); await page.locator('#industry-access-submit').click(); await page.locator('#industry-write').waitFor();
       await page.locator('#industry-write').click();await page.locator('#industry-title').fill('운영 자료');await page.locator('#industry-body').fill('자료 내용');await page.locator('#industry-submit').click();
       await page.waitForFunction(()=>document.querySelector('#recipe-editor').hidden);assert.equal(submissions,1);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-      await context.close();console.log('PASS public industry library, search, pagination, sorting and operator publishing',width);
+      await context.close();console.log('PASS password-protected industry library, search, pagination, sorting and operator publishing',width);
     }
   } finally { if(browser)await browser.close(); await new Promise(done=>server.close(done)); }
 })().catch(error=>{console.error(error);process.exitCode=1});

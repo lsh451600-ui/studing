@@ -191,7 +191,7 @@ for (const [kind, entry, handler] of [['recipe', recipeEntry, recipePosts], ['pr
     const settings = { ...env(t), RECIPE_PASSWORD: 'reader-password' };
     await ensureLevels(settings.MEMBERS_DB);
     for (const id of ['member-id', 'other-id', 'other-member', 'owner-id']) await settings.MEMBERS_DB.prepare("INSERT OR IGNORE INTO member_levels (member_id,level,updated_by,updated_at) VALUES (?,'special','operator','now')").bind(id).run();
-    const entered = await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', kind === 'recipe' ? { password: settings.RECIPE_PASSWORD } : null, true) });
+    const entered = await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: settings.RECIPE_PASSWORD }, true) });
     assert.equal(entered.status, 200);
     const access = await entered.json(); assert.equal(access.canWrite, true); assert.equal(access.accountWriter, true); assert.equal(access.adminConfigured, true);
     const cookies = entered.headers.getSetCookie().filter(c => !c.includes('Max-Age=0')).map(c => c.split(';')[0]).join('; ');
@@ -203,7 +203,7 @@ for (const [kind, entry, handler] of [['recipe', recipeEntry, recipePosts], ['pr
     assert.equal((await create()).status, 201);
     operator = false;
     assert.equal((await create()).status, 403);
-    const normal = await (await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', kind === 'recipe' ? { password: settings.RECIPE_PASSWORD } : null, true) })).json();
+    const normal = await (await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: settings.RECIPE_PASSWORD }, true) })).json();
     assert.equal(normal.canWrite, false); assert.equal(normal.accountWriter, false);
     operator = true;
     if (kind === 'recipe') assert.equal((await entry({ env: settings, request: request('recipes', { password: 'wrong-password' }, true) })).status, 401);
