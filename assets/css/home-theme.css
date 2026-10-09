@@ -55,3 +55,6 @@ header{background:var(--paper)}
 header .signup-open{background:var(--accent);border-color:var(--accent);color:var(--paper);font-family:inherit;font-weight:700}
 header .signup-open:hover{background:var(--hover);border-color:var(--hover)}
 header .login-open,header .logout-button,header .member-status{font-family:inherit;border-color:var(--line);color:var(--muted)}
+/* Keep the complete brand lockup readable on the dark header. */
+:root[data-theme="dark"] header .site-logo{padding:4px 8px;background:#faf8f5;border-radius:8px}
+:root[data-theme="dark"] header .site-logo .logo-lighten{display:none}
