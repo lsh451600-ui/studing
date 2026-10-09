@@ -69,4 +69,4 @@
 
 .ingredient-result .ingredient-recipe-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:8px;padding:0 16px;border:1px solid #235dde;border-radius:9px;background:#235dde;color:#fff;font-size:14px;font-weight:700;text-decoration:none}.ingredient-result a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 
-.ingredient-search #ingredient-preview{display:flex;flex-wrap:wrap;gap:12px;max-height:none}.ingredient-search #ingredient-preview[hidden]{display:none}.ingredient-search #ingredient-preview img{width:calc((100% - 24px)/3);min-width:0;max-height:200px;object-fit:contain;border-radius:10px}
+.ingredient-search #ingredient-preview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:480px;max-height:none}.ingredient-search #ingredient-preview[hidden]{display:none}.ingredient-search #ingredient-preview img{display:block;width:100%;height:auto;aspect-ratio:1;min-width:0;max-width:100%;max-height:154px;object-fit:contain;border-radius:10px}
