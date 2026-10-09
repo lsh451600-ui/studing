@@ -26,10 +26,13 @@ export async function onRequest({ request, env }) {
       const fields = 'p.id, p.author, p.title, p.category, p.created_at, p.views, (SELECT COUNT(*) FROM community_comments c WHERE c.post_id = p.id) AS comments';
       const filters = [], values = [];
       if (search) { filters.push('(instr(lower(p.title), lower(?)) > 0 OR instr(lower(p.body), lower(?)) > 0)'); values.push(search, search); }
+      // Pinned notices are included once; the cursor only paginates ordinary posts.
+      const notices = before ? [] : (await db.prepare('SELECT ' + fields + ' FROM community_posts p WHERE p.category = ?' + (filters.length ? ' AND ' + filters.join(' AND ') : '') + ' ORDER BY p.id DESC').bind('공지', ...values).all()).results;
+      filters.push('p.category <> ?'); values.push('공지');
       if (before) { filters.push('p.id < ?'); values.push(before); }
-      const query = db.prepare('SELECT ' + fields + ' FROM community_posts p' + (filters.length ? ' WHERE ' + filters.join(' AND ') : '') + ' ORDER BY p.id DESC LIMIT 21').bind(...values);
-      const rows = (await query.all()).results, posts = rows.slice(0, 20);
-      return reply(200, '', { posts, next: rows.length > 20 ? posts.at(-1).id : null });
+      const query = db.prepare('SELECT ' + fields + ' FROM community_posts p WHERE ' + filters.join(' AND ') + ' ORDER BY p.id DESC LIMIT 21').bind(...values);
+      const rows = (await query.all()).results, ordinary = rows.slice(0, 20);
+      return reply(200, '', { posts: [...notices, ...ordinary], next: rows.length > 20 ? ordinary.at(-1).id : null });
     }
     const auth = await member(request, env); if (auth.response) return auth.response;
     const params = new URL(request.url).searchParams;

@@ -304,3 +304,25 @@ test('verified operator can create and edit notices even with a different nickna
   const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
   assert.equal(detail.post.category, '공지'); assert.equal(detail.post.title, '공지 수정');
 });
+
+
+test('notices stay above newer ordinary posts without duplicating or skipping older pages', async t => {
+  const settings = env(t); await initialize(settings.MEMBERS_DB);
+  for (let id = 1; id <= 45; id++) {
+    await settings.MEMBERS_DB.prepare('INSERT INTO community_posts (id,author_id,author,title,body,category,created_at) VALUES (?,?,?,?,?,?,?)')
+      .bind(id, 'member', '작성자', '제목 ' + id, '본문', [1, 12, 44].includes(id) ? '공지' : '잡담', '2026-10-09T00:00:00Z').run();
+  }
+  const get = async path => (await posts({ env: settings, request: request(path) })).json();
+  const first = await get('board-posts');
+  assert.deepEqual(first.posts.slice(0, 3).map(p => p.id), [44, 12, 1]);
+  assert.equal(first.posts[3].id, 45); assert.equal(first.posts.length, 23);
+  const second = await get('board-posts?before=' + first.next);
+  const third = await get('board-posts?before=' + second.next);
+  assert.equal(second.posts.some(p => p.category === '공지'), false);
+  assert.equal(third.next, null);
+  const all = [...first.posts, ...second.posts, ...third.posts];
+  assert.equal(all.length, 45); assert.equal(new Set(all.map(p => p.id)).size, 45);
+  const filtered = await get('board-posts?q=' + encodeURIComponent('제목 1'));
+  assert.deepEqual(filtered.posts.slice(0, 2).map(p => p.id), [12, 1]);
+  assert.ok(filtered.posts.every(p => p.title.includes('제목 1')));
+});
