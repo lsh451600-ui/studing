@@ -16,7 +16,7 @@ if (!location.pathname.startsWith('/reset-password') && recoveryFragment.get('ty
 const byId = id => document.getElementById(id);
 const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('login-status');
 const params = new URLSearchParams(location.search);
-const SESSION_CACHE_KEY = 'member-session-v1';
+const SESSION_CACHE_KEY = 'member-session-v2';
 const SESSION_CACHE_MS = 120000;
 const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/startup', '/startup.html', '/private', '/private.html', '/mypage', '/mypage.html']);
 const protectedNext = (() => {
@@ -86,7 +86,7 @@ function showUser(user) {
   byId('menu-account-status').title = user ? user.username + '님' : '';
   byId('menu-account-action').hidden = false;
   byId('menu-account-action').textContent = user ? '로그아웃' : '로그인';
-  linkButton.hidden = !user || Boolean(user.kakaoLinked);
+  linkButton.hidden = !user || Boolean(user.kakaoLinked || user.googleLinked);
   linkButton.disabled = false;
   linkButton.textContent = '카카오 연결';
   linkButton.setAttribute('aria-label', '카카오 계정 연결');

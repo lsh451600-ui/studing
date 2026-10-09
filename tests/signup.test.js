@@ -5,7 +5,7 @@ import {onRequest as login} from '../functions/api/login.js';
 import {onRequest as session} from '../functions/api/session.js';
 import {onRequest as logout} from '../functions/api/logout.js';
 import {onRequest as confirm} from '../functions/api/auth-confirm.js';
-import {validate} from '../src/member-auth.js';
+import {validate, publicUser} from '../src/member-auth.js';
 const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_PUBLISHABLE_KEY:'sb_publishable_test',SUPABASE_SECRET_KEY:'sb_secret_test'};
 const member={username:'tester',password:'a-strong-password',phone:'010-1234-5678',email:'TEST@example.com'};
 const user={id:'member-id',user_metadata:{username:'tester'}};
@@ -33,4 +33,11 @@ test('session reports Kakao linked from trusted provider metadata',async t=>{
  const done=mock(t,[{path:'/user',data:{...user,app_metadata:{providers:['email','kakao']}}},{path:'/member_profiles',data:[{username:'tester',phone:'01012345678'}]}]);
  const r=await session({env,request:req('/api/session',undefined,{Cookie:'__Host-member-access=access-test'})});
  assert.equal((await r.json()).user.kakaoLinked,true);done();
+});
+
+test('linked Google and Kakao identities are recognized across all auth metadata forms', () => {
+  for (const provider of ['google', 'kakao']) {
+    for (const fields of [{identities:[{provider}]}, {app_metadata:{providers:[provider]}}, {app_metadata:{provider}}]) assert.equal(publicUser({id:'member',...fields})[provider+'Linked'],true);
+  }
+  assert.equal(publicUser({id:'member'}).googleLinked,false); assert.equal(publicUser({id:'member'}).kakaoLinked,false);
 });

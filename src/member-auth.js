@@ -78,7 +78,8 @@ export async function currentSession(request, env) {
 }
 export function publicUser(user) {
   return { id: user.id, username: user.user_metadata?.username || '회원',
-    kakaoLinked: user.identities?.some(identity => identity.provider === 'kakao') === true || user.app_metadata?.providers?.includes('kakao') === true };
+    kakaoLinked: user.identities?.some(identity => identity.provider === 'kakao') === true || user.app_metadata?.providers?.includes('kakao') === true || user.app_metadata?.provider === 'kakao',
+    googleLinked: user.identities?.some(identity => identity.provider === 'google') === true || user.app_metadata?.providers?.includes('google') === true || user.app_metadata?.provider === 'google' };
 }
 export async function limitAttempts(request, env, scope, maximum = 10) {
   const period = Math.floor(Date.now() / 900000);
