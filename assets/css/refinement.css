@@ -117,3 +117,7 @@ header .login-open,header .logout-button,header .member-status{font-family:inher
 .guide-tile a,.journal a{color:var(--accent)}
 
 :root[data-theme="dark"] .site-logo::before{content:"";position:absolute;inset:0;pointer-events:none;background:#fff;mask:url('/assets/logo-small.webp?v=20261009') left center/contain no-repeat;clip-path:inset(30% 42% 45% 38%)}
+/* Keep the illustration in color and make the complete wordmark white. */
+:root[data-theme="dark"] header .site-logo::before{content:none}
+:root[data-theme="dark"] header .site-logo::after{content:"";clip-path:inset(0 0 0 38%)}
+:root[data-theme="dark"] header .site-logo .logo-base{filter:brightness(1.15);opacity:1}
