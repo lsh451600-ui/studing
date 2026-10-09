@@ -1,5 +1,5 @@
 const byId = id => document.getElementById(id);
-let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, writing = false, commenting = false;
+let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, sessionAdmin = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 async function api(url, { method = 'GET', body } = {}) {
   const response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000),
@@ -12,6 +12,11 @@ function node(tag, text, className) { const element = document.createElement(tag
 function authenticated() { return sessionAuthenticated; }
 function updateAuth() {
   const ready = authenticated();
+  for (const id of ['board-post-category', 'board-edit-category']) {
+    const select = byId(id), notice = select.querySelector('option[value=공지]');
+    notice.hidden = !sessionAdmin; notice.disabled = !sessionAdmin;
+    if (!sessionAdmin && select.value === '공지') select.value = '잡담';
+  }
   byId('board-login-hint').hidden = !sessionKnown || ready;
   byId('board-post-submit').disabled = !ready || writing;
   byId('board-comment-submit').disabled = !ready || commenting;
@@ -21,7 +26,9 @@ function rows(posts, append) {
   if (!posts.length && !append) byId('board-list').append(node('p', '첫 이야기를 남겨 주세요.', 'board-empty'));
   for (const post of posts) {
     const link = node('a', '', 'board-row'); link.href = '/board?post=' + post.id;
-    link.append(node('strong', post.title), node('span', post.author + ' · ' + date(post.created_at) + ' · 조회수 ' + (post.views || 0) + ' · 댓글 ' + post.comments, 'board-meta'));
+    link.classList.toggle('board-notice', post.category === '공지');
+    const title = node('strong', ''); title.append(node('span', post.category || '잡담', 'board-category'), node('span', post.title));
+    link.append(title, node('span', post.author + ' · ' + date(post.created_at) + ' · 조회수 ' + (post.views || 0) + ' · 댓글 ' + post.comments, 'board-meta'));
     link.addEventListener('click', event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, '', link.href); loadDetail(post.id); });
     byId('board-list').append(link);
   }
@@ -46,6 +53,9 @@ async function loadDetail(id, focus = true) {
     if (version !== generation) return;
     selected = data.post.id; byId('board-index').hidden = true; byId('board-editor').hidden = true; byId('board-detail').hidden = false;
     byId('board-title').textContent = data.post.title;
+    byId('board-title').classList.toggle('board-notice-title', data.post.category === '공지');
+    byId('board-detail-category').textContent = data.post.category || '잡담';
+    byId('board-edit-category').value = data.post.category || '잡담';
     byId('board-author').replaceChildren(node('strong', data.post.author, 'board-author-name'), node('span', ' · ' + date(data.post.created_at)));
     byId('board-body').textContent = data.post.body;
     byId('board-post-actions').hidden = !(data.permissions?.canEdit || data.permissions?.canDelete);
@@ -140,7 +150,7 @@ byId('board-post-form').addEventListener('submit', async event => {
   try {
     const data = await api('/api/board-posts', {
       method: 'POST',
-      body: { title: byId('board-post-title').value, body: byId('board-post-body').value }
+      body: { category: byId('board-post-category').value, title: byId('board-post-title').value, body: byId('board-post-body').value }
     });
     event.target.reset(); byId('board-post-status').textContent = '';
     history.pushState(null, '', '/board?post=' + data.id);
@@ -157,7 +167,7 @@ byId('board-edit-form').addEventListener('submit', async event => {
   event.preventDefault(); if (writing || !authenticated() || !event.target.reportValidity()) return;
   writing = true; byId('board-edit-submit').disabled = true; byId('board-edit-status').textContent = '수정 내용을 저장하고 있습니다.';
   try {
-    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
+    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { category: byId('board-edit-category').value, title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
     byId('board-edit-status').textContent = '수정했습니다.';
     await loadDetail(selected, false);
   } catch (error) { byId('board-edit-status').textContent = error.message; }
@@ -190,17 +200,20 @@ window.addEventListener('member-session-change', event => {
   authVersion++;
   sessionKnown = true;
   sessionAuthenticated = event.detail === true;
+  sessionAdmin = false;
+  syncSession(true);
   updateAuth();
   if (selected) loadDetail(selected, false);
 });
-async function syncSession() {
+async function syncSession(fresh = false) {
   const version = authVersion;
   try {
-    const data = await (window.memberSessionReady || api('/api/session'));
+    const data = await (fresh ? api('/api/session') : (window.memberSessionReady || api('/api/session')));
     if (!data) throw new Error('session unavailable');
     if (version !== authVersion) return;
     sessionKnown = true;
     sessionAuthenticated = data.authenticated === true;
+    sessionAdmin = sessionAuthenticated && data.user?.isAdmin === true;
     updateAuth();
   } catch (error) {
     if (version !== authVersion) return;
@@ -210,4 +223,4 @@ async function syncSession() {
   }
 }
 function navigate() { const id = new URLSearchParams(location.search).get('post'); if (/^[1-9][0-9]*$/.test(id || '')) loadDetail(id); else loadList(); }
-window.addEventListener('popstate', navigate); updateAuth(); syncSession(); navigate();
+window.addEventListener('popstate', navigate); updateAuth(); syncSession(true); navigate();

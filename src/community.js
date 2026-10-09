@@ -9,6 +9,10 @@ export async function initialize(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS community_limits (key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires_at INTEGER NOT NULL)')
   ]);
   const columns = (await db.prepare('PRAGMA table_info(community_posts)').all()).results;
+  if (!columns.some(column => column.name === 'category')) {
+    try { await db.prepare("ALTER TABLE community_posts ADD COLUMN category TEXT NOT NULL DEFAULT '잡담'").run(); }
+    catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
+  }
   if (!columns.some(column => column.name === 'views')) {
     try { await db.prepare('ALTER TABLE community_posts ADD COLUMN views INTEGER NOT NULL DEFAULT 0').run(); }
     catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }

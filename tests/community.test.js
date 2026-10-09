@@ -280,3 +280,27 @@ for (const nickname of [null, '', '   ']) {
     assert.equal(detail.comments[0].author, 'verified-author');
   });
 }
+
+test('board categories persist and ordinary authors cannot create or promote notices', async t => {
+  auth(t); const settings = env(t);
+  const write = category => posts({ env: settings, request: request('board-posts', { title: '분류 테스트', body: '본문', category }, true) });
+  assert.equal((await write('공지')).status, 403);
+  assert.equal((await write('잘못된 분류')).status, 400);
+  const created = await write('질문'); assert.equal(created.status, 201); const id = (await created.json()).id;
+  const edit = category => posts({ env: settings, request: request('board-posts?id=' + id, { title: '수정', body: '본문', category }, true, 'https://example.test', 'PATCH') });
+  assert.equal((await edit('공지')).status, 403);
+  assert.equal((await edit('정보')).status, 200);
+  const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+  assert.equal(detail.post.category, '정보');
+  const list = await (await posts({ env: settings, request: request('board-posts') })).json();
+  assert.equal(list.posts[0].category, '정보');
+});
+
+test('verified operator can create and edit notices even with a different nickname', async t => {
+  auth(t, { username: 'lsh451600', nickname: '운영팀' }); const settings = env(t);
+  const created = await posts({ env: settings, request: request('board-posts', { title: '공지사항', body: '안내', category: '공지' }, true) });
+  assert.equal(created.status, 201); const id = (await created.json()).id;
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: '공지 수정', body: '안내 수정' }, true, 'https://example.test', 'PATCH') })).status, 200);
+  const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+  assert.equal(detail.post.category, '공지'); assert.equal(detail.post.title, '공지 수정');
+});
