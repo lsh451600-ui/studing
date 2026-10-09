@@ -224,3 +224,8 @@ header .member-controls[data-state="authenticated"] .member-status{flex:none;max
   header .member-controls[data-state="authenticated"] .member-status{padding:4px 3px;font-size:10px}
   header .member-controls[data-state="authenticated"] button{padding:6px 5px;font-size:10px}
 }
+
+/* Bring the logo closer to the menu button. */
+header{column-gap:2px}
+header:has(.member-controls[data-state="authenticated"]){column-gap:2px}
+header>.brand{margin-left:-2px}

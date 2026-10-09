@@ -88,7 +88,7 @@ export async function onRequest({ request, env, next }) {
     }
     if (['/recipes', '/recipes.html', '/private', '/private.html'].includes(pathname)) {
       const access = await membership(request, env);
-      if (!access.canAccessRecipes) return withCookies(Response.redirect(new URL('/mypage?' + (pathname.startsWith('/private') ? 'industry_access' : 'recipe_access') + '=restricted', url.origin).href, 302), session.cookies);
+      if (!access.canAccessRecipes) return withCookies(Response.redirect(new URL('/?membership_required=1', url.origin).href, 302), session.cookies);
     }
     return withCookies(await next(), session.cookies);
   } catch {

@@ -38,7 +38,14 @@ errorDialog.setAttribute('aria-describedby', 'auth-error-message');
 errorDialog.innerHTML = '<div class="auth-error-icon" aria-hidden="true">!</div><h2 id="auth-error-title">로그인 확인</h2><p id="auth-error-message"></p><button id="auth-error-close" type="button">확인</button>';
 document.body.append(errorDialog);
 let errorOpener;
+const upgradeMessage = '일반회원은 이용할 수 없습니다. 자유게시판을 이용해 등업을 신청해 주세요.';
+const upgradeLink = document.createElement('a');
+upgradeLink.href = '/board'; upgradeLink.textContent = '자유게시판에서 등업 신청하기'; upgradeLink.hidden = true;
+upgradeLink.style.cssText = 'margin:16px 0;color:var(--accent);text-decoration:underline';
+byId('auth-error-close').before(upgradeLink);
 function showAuthError(message) {
+  upgradeLink.hidden = message !== upgradeMessage;
+  byId('auth-error-title').textContent = message === upgradeMessage ? '이용 안내' : '로그인 확인';
   byId('member-feedback').textContent = '';
   byId('auth-error-message').textContent = message;
   if (!errorDialog.open) { errorOpener = document.activeElement; errorDialog.showModal(); }
@@ -340,3 +347,20 @@ byId('profile-form').addEventListener('submit', async event => {
   } catch (error) { byId('profile-status').textContent = error.message; }
   finally { byId('profile-submit').disabled = false; byId('profile-logout').disabled = false; }
 });
+
+// Keep regular members on the current page and explain how to request access.
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[href]');
+  if (!link || event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  const target = new URL(link.href, location.href);
+  if (target.origin !== location.origin || !['/recipes', '/recipes.html', '/private', '/private.html'].includes(target.pathname.replace(/\/+$/, ''))) return;
+  if (!currentUser || currentUser.isAdmin || currentUser.level === 'special') return;
+  event.preventDefault();
+  if (byId('site-menu').open) byId('site-menu').close();
+  showAuthError(upgradeMessage);
+});
+if (params.get('membership_required') === '1') {
+  showAuthError(upgradeMessage);
+  const cleanURL = new URL(location.href); cleanURL.searchParams.delete('membership_required');
+  history.replaceState(null, '', cleanURL.pathname + cleanURL.search + cleanURL.hash);
+}

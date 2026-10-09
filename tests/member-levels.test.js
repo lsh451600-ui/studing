@@ -42,7 +42,7 @@ test('general members cannot access any recipe endpoint; promotion and demotion 
   const cookie=(await sessionCookie(env,'viewer')).split(';')[0];
   const endpoints=[['/api/recipes',recipes],['/api/recipe-posts',recipePosts],['/api/recipe-image?id=1',recipeImage],['/api/recipe-file?id=1',recipeFile],['/api/recipe-comments?postId=1',recipeComments]];
   for(const[path,handler]of endpoints)assert.equal((await handler({env,request:req(path,{cookie})})).status,403,path);
-  const denied=await middleware({env,request:req('/recipes'),next:()=>new Response('RECIPE CONTENT')});assert.equal(denied.status,302);assert.ok(denied.headers.get('location').includes('recipe_access=restricted'));
+  const denied=await middleware({env,request:req('/recipes'),next:()=>new Response('RECIPE CONTENT')});assert.equal(denied.status,302);assert.equal(new URL(denied.headers.get('location')).pathname, '/');assert.ok(denied.headers.get('location').includes('membership_required=1'));
   await db.prepare('INSERT INTO member_levels(member_id,level,updated_by,updated_at) VALUES (?,?,?,?)').bind(targetId,'special',adminId,new Date().toISOString()).run();
   assert.equal((await recipes({env,request:req('/api/recipes')})).status,200);
   assert.equal((await recipePosts({env,request:req('/api/recipe-posts',{cookie})})).status,200);
@@ -58,7 +58,7 @@ test('industry materials require special membership and their password, includin
   const endpoints=[['/api/private',industry],['/api/private-posts',industryPosts],['/api/private-image?id=1',industryImage],['/api/private-file?id=1',industryFile],['/api/private-comments?postId=1',industryComments]];
   for(const[path,handler]of endpoints)assert.equal((await handler({env,request:req(path,{cookie})})).status,403,path);
   assert.equal((await industry({env,request:req('/api/private',{method:'POST',body:{password:env.RECIPE_PASSWORD}})})).status,403);
-  const denied=await middleware({env,request:req('/private'),next:()=>new Response('CONTENT')}); assert.equal(denied.status,302); assert.ok(denied.headers.get('location').includes('industry_access=restricted'));
+  const denied=await middleware({env,request:req('/private'),next:()=>new Response('CONTENT')}); assert.equal(denied.status,302); assert.equal(new URL(denied.headers.get('location')).pathname, '/');assert.ok(denied.headers.get('location').includes('membership_required=1'));
   await db.prepare('INSERT INTO member_levels(member_id,level,updated_by,updated_at) VALUES (?,?,?,?)').bind(targetId,'special',adminId,new Date().toISOString()).run();
   assert.equal((await industryPosts({env,request:req('/api/private-posts')})).status,403);
   assert.equal((await industry({env,request:req('/api/private',{method:'POST',body:{password:'wrong'}})})).status,401);
