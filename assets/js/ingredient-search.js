@@ -69,7 +69,7 @@ async function searchRecipes(ingredients, current) {
     for (const [index,recipe] of data.recommendations.entries()) {
       const card = document.createElement('article'); card.className = 'ingredient-result';
       const heading = document.createElement('h4');
-      const titleLink = document.createElement('a'); titleLink.href = '/recipes?recipe=' + recipe.id; titleLink.dataset.recipeId = String(recipe.id); titleLink.textContent = (index+1)+'. '+recipe.title; heading.append(titleLink);
+      heading.textContent = (index+1)+'. '+recipe.title;
       const score = document.createElement('span'); score.textContent = ' · 재료 일치도 '+recipe.score+'%'; heading.append(score); card.append(heading);
       for (const text of ['일치 재료: '+recipe.matched.join(', '), '부족한 재료: '+(recipe.missing.join(', ')||'없음')]) {
         const line = document.createElement('p'); line.textContent = text; card.append(line);
