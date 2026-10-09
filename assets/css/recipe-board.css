@@ -70,3 +70,5 @@
 .ingredient-result .ingredient-recipe-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:8px;padding:0 16px;border:1px solid #235dde;border-radius:9px;background:#235dde;color:#fff;font-size:14px;font-weight:700;text-decoration:none}.ingredient-result a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 
 .ingredient-search #ingredient-preview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:480px;max-height:none}.ingredient-search #ingredient-preview[hidden]{display:none}.ingredient-search #ingredient-preview img{display:block;width:100%;height:auto;aspect-ratio:1;min-width:0;max-width:100%;max-height:154px;object-fit:contain;border-radius:10px}
+
+.ingredient-search .recipe-post-actions{align-items:center}.ingredient-search #ingredient-clear{flex:0 0 auto;min-height:34px;width:auto;padding:6px 10px;font-size:12px;line-height:1.4;white-space:nowrap}.ingredient-search #ingredient-analyze{min-width:0;margin-top:0;white-space:nowrap}@media(max-width:540px){.ingredient-search #ingredient-analyze{flex:1;width:auto;padding:8px 10px;font-size:12px}}
