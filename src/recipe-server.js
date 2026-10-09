@@ -1,3 +1,4 @@
+import { membership } from './member-levels.js';
 import { ensureRecipeComments } from './recipe-comments.js';
 import { canManagePost } from './board-permissions.js';
 export function reply(status, data, cookies = []) {
@@ -61,6 +62,7 @@ async function validSession(request, env, role) {
   return matchesPassword(parts[3], await sign(parts.slice(0, 3).join('.'), secret));
 }
 export async function authorized(request, env, role = 'viewer') {
+  if (!(await membership(request, env)).canAccessRecipes) return false;
   if (await validSession(request, env, 'admin')) return true;
   return role === 'viewer' && await validSession(request, env, 'viewer');
 }

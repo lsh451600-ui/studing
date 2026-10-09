@@ -1,3 +1,4 @@
+import { membership } from '../src/member-levels.js';
 import { currentSession, settings } from '../src/member-auth.js';
 
 const canonicalHost = 'dining.win';
@@ -84,6 +85,10 @@ export async function onRequest({ request, env, next }) {
       login.searchParams.set('login_required', '1');
       login.searchParams.set('next', url.pathname + url.search);
       return withCookies(Response.redirect(login.href, 302), session.cookies);
+    }
+    if (pathname === '/recipes' || pathname === '/recipes.html') {
+      const access = await membership(request, env);
+      if (!access.canAccessRecipes) return withCookies(Response.redirect(new URL('/mypage?recipe_access=restricted', url.origin).href, 302), session.cookies);
     }
     return withCookies(await next(), session.cookies);
   } catch {

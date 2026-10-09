@@ -1,3 +1,4 @@
+import { ensureLevels } from '../src/member-levels.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
@@ -131,6 +132,8 @@ for (const [kind, handler, cookie, ensure] of [['recipe', recipePosts, recipeCoo
     t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: viewer.id, user_metadata: { username: 'lsh451600' } }) : Response.json([{ username: viewer.username }]));
     const settings = { ...env(t), RECIPE_PASSWORD: '0018', RECIPE_ADMIN_PASSWORD: 'a-secure-admin-password' };
     await ensure(settings.MEMBERS_DB);
+    await ensureLevels(settings.MEMBERS_DB);
+    for (const id of ['owner-id', 'other-id']) await settings.MEMBERS_DB.prepare("INSERT INTO member_levels (member_id,level,updated_by,updated_at) VALUES (?,'special','operator','now')").bind(id).run();
     const reader = (await cookie(settings, 'viewer')).split(';')[0];
     const writer = (await cookie(settings, 'admin')).split(';')[0];
     const call = (method, id, data, { signed = true, access = reader, origin } = {}) => {
@@ -186,6 +189,8 @@ for (const [kind, entry, handler] of [['recipe', recipeEntry, recipePosts], ['pr
       ? Response.json({ id: 'member-id', user_metadata: { username: 'lsh451600' } })
       : Response.json([{ username: operator ? 'lsh451600' : 'ordinary-member' }]));
     const settings = { ...env(t), RECIPE_PASSWORD: 'reader-password' };
+    await ensureLevels(settings.MEMBERS_DB);
+    for (const id of ['member-id', 'other-id', 'other-member', 'owner-id']) await settings.MEMBERS_DB.prepare("INSERT OR IGNORE INTO member_levels (member_id,level,updated_by,updated_at) VALUES (?,'special','operator','now')").bind(id).run();
     const entered = await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', kind === 'recipe' ? { password: settings.RECIPE_PASSWORD } : null, true) });
     assert.equal(entered.status, 200);
     const access = await entered.json(); assert.equal(access.canWrite, true); assert.equal(access.accountWriter, true); assert.equal(access.adminConfigured, true);
@@ -216,6 +221,8 @@ test('view-count migration preserves existing posts and starts them at zero', as
 
 async function recipeCommentSetup(t) {
   const settings = { ...env(t), RECIPE_PASSWORD: 'reader-password' };
+    await ensureLevels(settings.MEMBERS_DB);
+    for (const id of ['member-id', 'other-id', 'other-member', 'owner-id']) await settings.MEMBERS_DB.prepare("INSERT OR IGNORE INTO member_levels (member_id,level,updated_by,updated_at) VALUES (?,'special','operator','now')").bind(id).run();
   await ensureRecipes(settings.MEMBERS_DB);
   for (let i = 0; i < 2; i++) await settings.MEMBERS_DB.prepare('INSERT INTO recipe_posts (author_id,title,body,created_at) VALUES (?,?,?,?)').bind('owner-id', 'Recipe ' + i, 'Body', new Date().toISOString()).run();
   const cookie = (await recipeCookie(settings, 'viewer')).split(';')[0];
@@ -229,7 +236,7 @@ async function recipeCommentSetup(t) {
 test('recipe comments require member and reader access, reject foreign origins and validate inputs', async t => {
   auth(t); const { settings, req } = await recipeCommentSetup(t);
   assert.equal((await recipeComments({ env: settings, request: request('recipe-comments?postId=1', null, true) })).status, 403);
-  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?postId=1', null, false) })).status, 401);
+  assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?postId=1', null, false) })).status, 403);
   assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body: 'Hi' }, true, 'https://other.test') })).status, 403);
   for (const body of ['', '   ', 'x'.repeat(2001)]) assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body }) })).status, 400);
   assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?postId=invalid') })).status, 400);

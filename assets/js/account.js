@@ -2,7 +2,7 @@ const byId = id => document.getElementById(id);
 const status = byId('account-status'), dialog = byId('withdrawal-dialog');
 let pending = false;
 function clearLocalSession() {
-  try { sessionStorage.removeItem('member-session-v1'); sessionStorage.removeItem('member-login-next'); } catch {}
+  try { sessionStorage.removeItem('member-session-v1'); sessionStorage.removeItem('member-session-v2'); sessionStorage.removeItem('member-login-next'); } catch {}
 }
 async function accountAPI(options = {}) {
   const response = await fetch('/api/account', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(75000), ...options });
@@ -17,6 +17,10 @@ async function load() {
   try {
     const { account } = await accountAPI();
     byId('account-username').textContent = account.username;
+    byId('account-level').textContent = account.isAdmin ? '운영자' : account.level === 'special' ? '특별회원' : '일반회원';
+    byId('recipe-access-notice').hidden = !new URLSearchParams(location.search).has('recipe_access');
+    byId('member-level-panel').hidden = !account.isAdmin;
+    if (account.isAdmin) loadMembers();
     byId('account-nickname').value = account.nickname || '';
     byId('account-email').textContent = account.email || '등록된 이메일 없음';
     byId('account-phone').textContent = account.phone || '등록된 전화번호 없음';
@@ -74,3 +78,38 @@ byId('withdrawal-form').addEventListener('submit', async event => {
 load();
 
 window.addEventListener('pageshow', event => { if (event.persisted) { byId('account-content').hidden = true; load(); } });
+
+let memberPage = 1, memberQuery = '', memberGeneration = 0;
+async function levelAPI(path, options = {}) {
+  const response = await fetch(path, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000), ...options });
+  const data = await response.json(); if (!response.ok) throw new Error(data.message || '회원 등급을 확인하지 못했습니다.'); return data;
+}
+async function loadMembers() {
+  const version = ++memberGeneration, status = byId('member-level-status'); status.textContent = '회원 목록을 불러오고 있습니다.';
+  try {
+    const params = new URLSearchParams({ page: memberPage, q: memberQuery });
+    const data = await levelAPI('/api/member-levels?' + params); if (version !== memberGeneration) return;
+    const list = byId('member-level-list'); list.replaceChildren();
+    for (const member of data.members) {
+      const row = document.createElement('div'); row.className = 'member-level-row';
+      const name = document.createElement('strong'); name.textContent = member.username;
+      if (member.isAdmin) { const label = document.createElement('span'); label.textContent = '운영자'; row.append(name, label); }
+      else {
+        const select = document.createElement('select'); select.setAttribute('aria-label', member.username + ' 회원 등급');
+        for (const [value, label] of [['regular', '일반회원'], ['special', '특별회원']]) { const option = document.createElement('option'); option.value = value; option.textContent = label; select.append(option); }
+        select.value = member.level;
+        const save = document.createElement('button'); save.type = 'button'; save.textContent = '저장'; save.setAttribute('aria-label', member.username + ' 등급 저장');
+        save.addEventListener('click', async () => { save.disabled = true; select.disabled = true;
+          try { await levelAPI('/api/member-levels', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ memberId: member.id, level: select.value }) }); member.level = select.value; status.textContent = member.username + '님의 등급을 ' + select.selectedOptions[0].textContent + '으로 변경했습니다.'; }
+          catch (error) { status.textContent = error.message; select.value = member.level; }
+          finally { save.disabled = false; select.disabled = false; }
+        }); row.append(name, select, save);
+      } list.append(row);
+    }
+    if (!data.members.length) list.textContent = '검색 결과가 없습니다.';
+    byId('member-level-page').textContent = String(memberPage); byId('member-level-prev').disabled = memberPage <= 1; byId('member-level-next').disabled = !data.hasMore; status.textContent = '';
+  } catch (error) { if (version === memberGeneration) status.textContent = error.message; }
+}
+byId('member-level-search').addEventListener('submit', event => { event.preventDefault(); memberPage = 1; memberQuery = byId('member-level-query').value.trim(); loadMembers(); });
+byId('member-level-prev').addEventListener('click', () => { memberPage--; loadMembers(); });
+byId('member-level-next').addEventListener('click', () => { memberPage++; loadMembers(); });

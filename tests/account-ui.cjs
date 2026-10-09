@@ -64,7 +64,7 @@ const { chromium } = require('playwright');
       await page.locator('.member-profile-link').waitFor({ state: 'visible' });
       assert.equal(await page.locator('.member-profile-link').getAttribute('href'), '/mypage');
       const nicknamePanel = page.locator('#nickname-form').locator('xpath=..');
-      assert.ok(await nicknamePanel.evaluate(panel => [...document.querySelectorAll('.account-panel')].every(item => item.getBoundingClientRect().width === panel.getBoundingClientRect().width)));
+      assert.ok(await nicknamePanel.evaluate(panel => [...document.querySelectorAll('.account-panel')].filter(item => !item.hidden).every(item => item.getBoundingClientRect().width === panel.getBoundingClientRect().width)));
       assert.equal(await page.locator('#account-nickname').getAttribute('pattern'), null);
       assert.equal(await page.locator('#account-nickname').getAttribute('maxlength'), '40');
       await page.locator('#account-nickname').fill('새 닉네임 🍜');

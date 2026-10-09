@@ -1,3 +1,5 @@
+import { levelOf } from '../../src/member-levels.js';
+import { isOperator } from '../../src/board-permissions.js';
 import { settings, reply, sameOrigin, readJSON, currentSession, upstream, clearCookies, limitAttempts } from '../../src/member-auth.js';
 import { hasRecentAuthentication } from '../../src/account-auth.js';
 import { memberProfile, clearOAuth } from '../../src/social-auth.js';
@@ -16,7 +18,7 @@ export async function onRequest({ request, env }) {
     if (request.method === 'GET') {
       const profile = await memberProfile(env, session);
       return reply(200, '', { account: { username: profile?.username || user.user_metadata?.username || '회원',
-        nickname: profile?.nickname || '',
+        nickname: profile?.nickname || '', level: await levelOf(env.MEMBERS_DB, user.id), isAdmin: isOperator(profile),
         email: user.email || '', phone: profile?.phone || '', createdAt: user.created_at || null,
         providers, passwordRequired: providers.includes('email') } }, session.cookies);
     }

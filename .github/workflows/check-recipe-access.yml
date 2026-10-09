@@ -1,10 +1,12 @@
-name: Verify recipe password deployment
+name: Verify recipe membership deployment
 on:
   push:
     branches: [main]
     paths:
       - functions/api/recipe*.js
       - src/recipe-server.js
+      - src/member-levels.js
+      - tests/member-levels.test.js
       - tests/recipes.test.js
       - .github/workflows/check-recipe-access.yml
   workflow_dispatch:
@@ -24,40 +26,20 @@ jobs:
           node-version: '24'
       - name: Test owner permissions and persistent recipe storage
         run: node --test tests/recipes.test.js
-      - name: Verify deployed password configuration and access rejection
+      - name: Verify deployed anonymous recipe restrictions
         run: |
-          python - <<'PY'
-          import json, time, urllib.request, urllib.error
-          url = 'https://studing.pages.dev/api/recipes'
-          for attempt in range(30):
-              try:
-                  request = urllib.request.Request(url, headers={'Cache-Control': 'no-cache'})
-                  with urllib.request.urlopen(request, timeout=10) as response:
-                      state = json.load(response)
-                  if 'available' not in state:
-                      raise ValueError('Waiting for latest deployment')
-                  if not state['available']:
-                      raise SystemExit('RECIPE_PASSWORD is not configured on the deployed Pages project.')
-                  break
-              except urllib.error.HTTPError as error:
-                  if error.code == 403:
-                      print('::warning::Cloudflare edge denied automated access; production password verification was not performed.')
-                      raise SystemExit(0)
-                  if attempt == 29:
-                      raise
-                  time.sleep(4)
-              except (urllib.error.URLError, ValueError):
-                  if attempt == 29:
-                      raise
-                  time.sleep(4)
-          request = urllib.request.Request(url, data=json.dumps({'password': '__deployment_invalid_password_probe__'}).encode(),
-              headers={'Content-Type':'application/json', 'Origin':'https://studing.pages.dev'}, method='POST')
-          try:
-              urllib.request.urlopen(request, timeout=15)
-              raise SystemExit('Invalid password was not rejected.')
-          except urllib.error.HTTPError as error:
-              if error.code != 401:
-                  raise SystemExit('Unexpected password verification response: ' + str(error.code))
-          print('PASS: production password configured; incorrect password rejected.')
-          PY
-
+          node --input-type=module <<'JS'
+          const origin = 'https://dining.win';
+          let verified = false;
+          for (let attempt = 0; attempt < 24; attempt++) {
+            try {
+              for (const path of ['/api/recipes', '/api/recipe-posts', '/api/recipe-image?id=1', '/api/recipe-file?id=1', '/api/recipe-comments?postId=1']) {
+                const response = await fetch(origin + path, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+                if (![401, 403].includes(response.status)) throw new Error('Anonymous access was not blocked: ' + path);
+              }
+              verified = true; break;
+            } catch (error) { console.log('Awaiting membership deployment:', error.message); await new Promise(resolve => setTimeout(resolve, 5000)); }
+          }
+          if (!verified) throw new Error('Production recipe membership protection was not verified.');
+          console.log('Anonymous recipe content, images, downloads and comments are blocked.');
+          JS

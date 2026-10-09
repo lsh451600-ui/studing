@@ -1,3 +1,4 @@
+import { levelOf } from '../../src/member-levels.js';
 import { isOperator } from '../../src/board-permissions.js';
 import { settings, reply, currentSession, publicUser } from '../../src/member-auth.js';
 import { memberProfile } from '../../src/social-auth.js';
@@ -16,6 +17,6 @@ export async function onRequest({ request, env }) {
     return reply(200, '', { available: true, authenticated: Boolean(session.user),
       needsProfile: Boolean(session.user && !profile && !profileUnavailable), profileUnavailable,
       user: session.user ? { id: session.user.id, username: profile?.nickname || profile?.username || fallback,
-        nickname: profile?.nickname || '', isAdmin: isOperator(profile), kakaoLinked: publicUser(session.user).kakaoLinked, googleLinked: publicUser(session.user).googleLinked } : null }, session.cookies);
+        nickname: profile?.nickname || '', level: await levelOf(env.MEMBERS_DB, session.user.id), isAdmin: isOperator(profile), kakaoLinked: publicUser(session.user).kakaoLinked, googleLinked: publicUser(session.user).googleLinked } : null }, session.cookies);
   } catch { return reply(503, '로그인 상태를 확인하지 못했습니다.'); }
 }

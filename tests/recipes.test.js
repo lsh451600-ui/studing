@@ -1,4 +1,6 @@
-import test from 'node:test';
+import test, { beforeEach } from 'node:test';
+import { ensureLevels } from '../src/member-levels.js';
+beforeEach(t => { t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: 'reader-id' }) : Response.json([{ username: 'reader' }])); });
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { onRequest as enter } from '../functions/api/recipes.js';
@@ -19,7 +21,7 @@ class D1 {
     };
   }
 }
-const makeEnv = () => ({ RECIPE_PASSWORD: '0018', RECIPE_ADMIN_PASSWORD: 'private-author-password-example', MEMBERS_DB: new D1() });
+const makeEnv = () => ({ SUPABASE_URL: 'https://project.supabase.co', SUPABASE_PUBLISHABLE_KEY: 'public', SUPABASE_SECRET_KEY: 'secret', RECIPE_PASSWORD: '0018', RECIPE_ADMIN_PASSWORD: 'private-author-password-example', MEMBERS_DB: new D1() });
 function request(path, { method = 'GET', data, cookie = '', origin = 'https://studing.pages.dev' } = {}) {
   const headers = { Cookie: cookie };
   if (method !== 'GET') { headers.Origin = origin; headers['Content-Type'] = 'application/json'; }
@@ -27,8 +29,10 @@ function request(path, { method = 'GET', data, cookie = '', origin = 'https://st
 }
 const cookieOf = response => response.headers.getSetCookie().filter(c => !c.includes('Max-Age=0')).map(c => c.split(';')[0]).join('; ');
 async function loginViewer(env) {
-  const response = await enter({ env, request: request('/api/recipes', { method: 'POST', data: { password: env.RECIPE_PASSWORD } }) });
-  assert.equal(response.status, 200); return cookieOf(response);
+  await ensureLevels(env.MEMBERS_DB);
+  await env.MEMBERS_DB.prepare("INSERT OR REPLACE INTO member_levels (member_id,level,updated_by,updated_at) VALUES ('reader-id','special','operator','now')").run();
+  const response = await enter({ env, request: request('/api/recipes', { method: 'POST', cookie: '__Host-member-access=verified', data: { password: env.RECIPE_PASSWORD } }) });
+  assert.equal(response.status, 200); return cookieOf(response) + '; __Host-member-access=verified';
 }
 async function loginAdmin(env, viewer) {
   const response = await admin({ env, request: request('/api/recipe-admin', { method: 'POST', cookie: viewer, data: { password: env.RECIPE_ADMIN_PASSWORD } }) });
@@ -41,9 +45,9 @@ function operator(t, env) {
 }
 test('exact passwords and missing configuration fail closed', async () => {
   assert.equal(await matchesPassword('0018', '18'), false);
-  assert.equal((await enter({ env: {}, request: request('/api/recipes', { method: 'POST', data: { password: '0018' } }) })).status, 503);
+  assert.equal((await enter({ env: {}, request: request('/api/recipes', { method: 'POST', data: { password: '0018' } }) })).status, 401);
   const response = await enter({ env: {}, request: request('/api/recipes') });
-  assert.deepEqual(await response.json(), { available: false });
+  assert.equal(response.status, 401);
 });
 test('anonymous, reader-only and forged requests cannot create posts', async () => {
   const env = makeEnv(), data = { title: '제목', body: '내용' };
@@ -113,7 +117,7 @@ test('recipe categories, literal search, and safe non-image downloads persist', 
 });
 test('session tampering, secret rotation and logout are enforced', async () => {
   const env = makeEnv(), viewer = await loginViewer(env);
-  assert.equal(await authorized(request('/api/recipe-posts', { cookie: viewer + '0' }), env), false);
+  assert.equal(await authorized(request('/api/recipe-posts', { cookie: viewer.replace(/recipe_viewer=([^;]+)/, 'recipe_viewer=$10') }), env), false);
   assert.equal(await authorized(request('/api/recipe-posts', { cookie: viewer }), { ...env, RECIPE_PASSWORD: 'changed' }), false);
   const response = await enter({ env, request: request('/api/recipes', { method: 'DELETE', cookie: viewer }) });
   assert.equal(response.status, 200); assert.equal(response.headers.getSetCookie().length, 2);
