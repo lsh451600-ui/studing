@@ -37,6 +37,8 @@ export async function onRequest({ request, env }) {
     if (request.method === 'GET') {
       const params = new URL(request.url).searchParams;
       const raw = params.get('before');
+      const id = params.has('id') ? idOf(params.get('id')) : null;
+      if (params.has('id') && !id) return reply(400, { message: '게시물 번호를 확인해 주세요.' });
       if (raw !== null && (!/^\d+$/.test(raw) || !Number.isSafeInteger(Number(raw)) || Number(raw) < 1)) return reply(400, { message: '페이지 정보를 확인해 주세요.' });
       const page = params.get('page') || '1';
       if (!/^[1-9]\d*$/.test(page) || !Number.isSafeInteger(Number(page))) return reply(400, { message: '페이지 정보를 확인해 주세요.' });
@@ -44,7 +46,7 @@ export async function onRequest({ request, env }) {
       if (!['latest', 'title', 'downloads'].includes(sort)) return reply(400, { message: '정렬 조건을 확인해 주세요.' });
       const q = (params.get('q') || '').trim(), category = params.get('category') || '';
       if (q.length > 100 || (category && !['한식', '중식', '일식', '양식', '베이커리'].includes(category))) return reply(400, { message: '검색 조건을 확인해 주세요.' });
-      return reply(200, await listPosts(db, raw ? Number(raw) : null, { q, category, identity, page: Number(page), sort }));
+      return reply(200, await listPosts(db, raw ? Number(raw) : null, { q, category, identity, id, page: Number(page), sort }));
     }
     let post;
     try { post = validatePost(await readJSON(request, 2300000)); }

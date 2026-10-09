@@ -35,6 +35,13 @@ test('recommendation API protects content, searches past first 100 recipes, and 
  await db.prepare('UPDATE recipe_posts SET body=?, ingredients=? WHERE id=105').bind('재료: 계란 2개, 두부 반모','[]').run();
  const response=await onRequest({env,request:request('recipe-recommendations?ingredients=계란,두부',cookie)});assert.equal(response.status,200);
  const data=await response.json();assert.equal(data.recommendations.length,1);assert.equal(data.recommendations[0].id,105);assert.equal(data.recommendations[0].score,100);assert.equal(data.recommendations[0].estimated,true);assert.equal(data.recommendations[0].author_id,undefined);
+ await db.prepare('UPDATE recipe_posts SET category=? WHERE id=105').bind('한식').run();
+ assert.equal((await (await onRequest({env,request:request('recipe-recommendations?ingredients=달걀&category=한식',cookie)})).json()).recommendations[0].id,105);
+ assert.deepEqual((await (await onRequest({env,request:request('recipe-recommendations?ingredients=달걀&category=양식',cookie)})).json()).recommendations,[]);
+ assert.equal((await onRequest({env,request:request('recipe-recommendations?ingredients=달걀&category=invalid',cookie)})).status,400);
+ const linked=await posts({env,request:request('recipe-posts?id=105',cookie)});assert.equal(linked.status,200);assert.deepEqual((await linked.json()).posts.map(p=>p.id),[105]);
+ assert.deepEqual((await (await posts({env,request:request('recipe-posts?id=999',cookie)})).json()).posts,[]);
+ assert.equal((await posts({env,request:request('recipe-posts?id=invalid',cookie)})).status,400);
  assert.equal((await onRequest({env,request:request('recipe-recommendations?ingredients=',cookie)})).status,400);
  assert.equal((await onRequest({env,request:request('recipe-recommendations?ingredients=달걀',cookie,'POST',{})})).status,405);
  t.mock.method(globalThis,'fetch',async url=>new URL(url).pathname==='/auth/v1/user'?Response.json({id:'reader'}):Response.json([{username:'ordinary'}]));

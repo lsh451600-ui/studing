@@ -34,7 +34,7 @@ function renderPosts(posts) {
     const empty = document.createElement('p'); empty.textContent = byId('recipe-search-query').value.trim() || byId('recipe-filter-category').value ? '검색 결과가 없습니다.' : '아직 등록된 레시피가 없습니다.'; content.append(empty);
   }
   for (const post of posts) {
-    const card = document.createElement('details'); card.className = 'recipe-post';
+    const card = document.createElement('details'); card.className = 'recipe-post'; card.id = 'recipe-post-' + post.id;
     const summary = document.createElement('summary'); summary.className = 'recipe-row';
     const category = document.createElement('span'); category.className = 'recipe-category'; category.textContent = post.category || '미분류';
     const title = document.createElement('span'); title.className = 'recipe-row-title'; title.textContent = post.title;
@@ -75,6 +75,25 @@ function renderPosts(posts) {
   }
   content.hidden = false;
 }
+async function openRecipe(id, updateURL = true) {
+  if (!/^[1-9]\d*$/.test(String(id))) return;
+  const current = ++generation;
+  try {
+    const data = await api('/api/recipe-posts?' + new URLSearchParams({ id }));
+    if (current !== generation) return;
+    if (!data.posts.length) throw new Error('삭제되었거나 찾을 수 없는 레시피입니다.');
+    renderPosts(data.posts); renderPagination(data);
+    const card = byId('recipe-post-' + id); card.open = true;
+    card.querySelector('summary').focus(); card.scrollIntoView({ block:'start', behavior:'smooth' });
+    if (updateURL) { const url = new URL(location.href); url.searchParams.set('recipe', id); history.pushState(null, '', url); }
+    byId('recipe-board-status').textContent = '';
+  } catch (error) { if (current === generation) byId('recipe-board-status').textContent = error.message; }
+}
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[data-recipe-id]');
+  if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+  event.preventDefault(); openRecipe(link.dataset.recipeId);
+});
 function renderPagination(data) {
   currentPage = data.page || 1;
   const pages = data.totalPages || 1, pagination = byId('recipe-pagination');
@@ -103,6 +122,7 @@ async function refreshPosts(page = currentPage) {
   const data = await api('/api/recipe-posts?' + params);
   if (current !== generation) return;
   renderPosts(data.posts); renderPagination(data); updateSortButtons();
+  const url = new URL(location.href); if (url.searchParams.has('recipe')) { url.searchParams.delete('recipe'); history.replaceState(null, '', url); }
 }
 byId('recipe-show-password').addEventListener('change', event => { input.type = event.target.checked ? 'text' : 'password'; });
 window.addEventListener('pagehide', resetView);
@@ -121,6 +141,8 @@ form.addEventListener('submit', async event => {
     byId('recipe-admin-open').hidden = !accountWriter;
     byId('recipe-board-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : '';
     byId('recipe-board-heading').focus();
+    const linkedId = new URL(location.href).searchParams.get('recipe');
+    if (linkedId) await openRecipe(linkedId, false);
   } catch (error) { status.textContent = error.message; }
   finally {
     input.value = ''; input.type = 'password'; byId('recipe-show-password').checked = false;
@@ -137,6 +159,7 @@ byId('recipe-heading-link').addEventListener('click', async event => {
   if (!gate.hidden) { byId('recipe-password').focus(); return; }
   generation++; currentPage = 1; editor.hidden = true;
   byId('recipe-search-form').reset();
+  window.dispatchEvent(new Event('recipe-filter-reset'));
   for (const post of content.querySelectorAll('details[open]')) post.open = false;
   try { await refreshPosts(); byId('recipe-board-heading').focus({ preventScroll: true }); }
   catch (error) { byId('recipe-board-status').textContent = error.message; }
@@ -162,6 +185,9 @@ byId('recipe-category-menu').addEventListener('click', async event => {
   if (!button) return;
   byId('recipe-filter-category').value = button.dataset.category;
   byId('recipe-category-menu').open = false;
+  byId('recipe-filter-category').dispatchEvent(new Event('change'));
+});
+byId('recipe-filter-category').addEventListener('change', async () => {
   generation++; currentPage = 1;
   try { await refreshPosts(); }
   catch (error) { byId('recipe-board-status').textContent = error.message; }

@@ -163,7 +163,7 @@ const { chromium } = require('playwright');
       await page.locator('#recipe-filter-category').selectOption('한식');
       await page.locator('#recipe-search-query').fill('검색어');
       await page.locator('#recipe-heading-link').click();
-      await page.waitForFunction(() => !document.querySelector('.recipe-post').open);
+      await page.waitForFunction(() => { const post = document.querySelector('.recipe-post'); return post && !post.open; });
       assert.equal(await page.locator('#recipe-filter-category').inputValue(), '');
       assert.equal(await page.locator('#recipe-search-query').inputValue(), '');
       assert.ok(await page.locator('#recipe-editor').isHidden());

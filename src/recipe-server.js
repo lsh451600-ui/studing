@@ -91,10 +91,11 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   await db.prepare('DELETE FROM recipe_limits WHERE expires_at < ?').bind(now).run();
   return row.attempts <= maximum;
 }
-export async function listPosts(db, before = null, { q = '', category = '', identity = null, page = 1, sort = 'latest' } = {}) {
+export async function listPosts(db, before = null, { q = '', category = '', identity = null, page = 1, sort = 'latest', id = null } = {}) {
   await ensureRecipeComments(db);
   const fields = 'id, author_id, title, body, category, ingredients, created_at, downloads, (SELECT COUNT(*) FROM recipe_comments WHERE post_id = recipe_posts.id) AS comment_count, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
   const filters = [], values = [];
+  if (id) { filters.push('id = ?'); values.push(id); }
   if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
   if (category) { filters.push('category = ?'); values.push(category); }
   if (before) { filters.push('id < ?'); values.push(before); }
