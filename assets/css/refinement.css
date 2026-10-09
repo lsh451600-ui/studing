@@ -123,8 +123,8 @@ header .login-open,header .logout-button,header .member-status{font-family:inher
 :root[data-theme="dark"] header .site-logo .logo-base{filter:brightness(1.15);opacity:1}
 
 /* Keep the wordmark mask and the visible image on the same aspect ratio. */
-.home-page header .site-logo .logo-base{max-width:calc(64px * 600 / 255);max-height:none;height:auto}
-@media(max-width:800px){.home-page header .site-logo .logo-base{max-width:calc(50px * 600 / 255)}}
-@media(max-width:540px){.home-page header .site-logo .logo-base{max-width:calc(46px * 600 / 255)}}
-.home-page header.is-compact .site-logo .logo-base{max-width:calc(48px * 600 / 255)}
-@media(max-width:800px){.home-page header.is-compact .site-logo .logo-base{max-width:calc(42px * 600 / 255)}}
+header .brand .site-logo .logo-base{max-width:calc(64px * 600 / 255);max-height:none;height:auto}
+@media(max-width:800px){header .brand .site-logo .logo-base{max-width:calc(50px * 600 / 255)}}
+@media(max-width:540px){header .brand .site-logo .logo-base{max-width:calc(46px * 600 / 255)}}
+header.is-compact .brand .site-logo .logo-base{max-width:calc(48px * 600 / 255)}
+@media(max-width:800px){header.is-compact .brand .site-logo .logo-base{max-width:calc(42px * 600 / 255)}}
