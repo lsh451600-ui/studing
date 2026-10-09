@@ -303,13 +303,15 @@ test('board categories persist and ordinary authors cannot create or promote not
   assert.equal(list.posts[0].category, '정보');
 });
 
-test('verified operator can create and edit notices even with a different nickname', async t => {
+test('verified operator can create, edit and delete notices even with a different nickname', async t => {
   auth(t, { username: 'lsh451600', nickname: '운영팀' }); const settings = env(t);
   const created = await posts({ env: settings, request: request('board-posts', { title: '공지사항', body: '안내', category: '공지' }, true) });
   assert.equal(created.status, 201); const id = (await created.json()).id;
   assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: '공지 수정', body: '안내 수정' }, true, 'https://example.test', 'PATCH') })).status, 200);
   const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
   assert.equal(detail.post.category, '공지'); assert.equal(detail.post.title, '공지 수정');
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, null, true, 'https://example.test', 'DELETE') })).status, 200);
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id) })).status, 404);
 });
 
 

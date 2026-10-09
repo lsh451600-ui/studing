@@ -179,17 +179,38 @@ byId('board-edit-form').addEventListener('submit', async event => {
   } catch (error) { byId('board-edit-status').textContent = error.message; }
   finally { writing = false; byId('board-edit-submit').disabled = false; }
 });
-byId('board-delete').addEventListener('click', async () => {
-  if (!selected || !confirm('이 게시물을 삭제할까요? 삭제한 글과 댓글은 복구할 수 없습니다.')) return;
-  const postId = selected;
-  byId('board-delete').disabled = true;
+const deleteDialog = node('dialog', '', 'board-delete-dialog');
+deleteDialog.id = 'board-delete-dialog';
+deleteDialog.setAttribute('aria-labelledby', 'board-delete-title');
+const deleteTitle = node('h2', '게시물 삭제'); deleteTitle.id = 'board-delete-title';
+const deleteMessage = node('p', '이 게시물을 삭제할까요? 삭제한 글과 댓글은 복구할 수 없습니다.');
+const deleteStatus = node('p'); deleteStatus.id = 'board-delete-status'; deleteStatus.setAttribute('role', 'status');
+const deleteControls = node('div', '', 'board-delete-controls');
+const deleteCancel = node('button', '취소'), deleteConfirm = node('button', '삭제하기');
+deleteCancel.type = deleteConfirm.type = 'button'; deleteConfirm.id = 'board-delete-confirm';
+deleteControls.append(deleteCancel, deleteConfirm); deleteDialog.append(deleteTitle, deleteMessage, deleteStatus, deleteControls); document.body.append(deleteDialog);
+let deleteTarget = null, deleting = false;
+byId('board-delete').addEventListener('click', () => {
+  if (!selected || deleting) return;
+  deleteTarget = selected; deleteStatus.textContent = '';
+  if (!deleteDialog.open) deleteDialog.showModal();
+  deleteCancel.focus();
+});
+deleteCancel.addEventListener('click', () => deleteDialog.close());
+deleteDialog.addEventListener('cancel', event => { if (deleting) event.preventDefault(); });
+deleteConfirm.addEventListener('click', async () => {
+  if (!deleteTarget || deleting) return;
+  const postId = deleteTarget; deleting = true;
+  deleteConfirm.disabled = deleteCancel.disabled = true;
+  deleteStatus.textContent = '삭제하고 있습니다.';
   try {
     await api('/api/board-posts?id=' + postId, { method: 'DELETE' });
+    deleteDialog.close(); deleteTarget = null;
     history.pushState(null, '', '/board');
     byId('board-comment-form').reset();
     await loadList();
-  } catch (error) { byId('board-status').textContent = error.message; }
-  finally { byId('board-delete').disabled = false; }
+  } catch (error) { deleteStatus.textContent = error.message; }
+  finally { deleting = false; deleteConfirm.disabled = deleteCancel.disabled = false; }
 });
 byId('board-comment-form').addEventListener('submit', async event => {
   event.preventDefault(); if (commenting || !selected || !authenticated() || !event.target.reportValidity()) return;
