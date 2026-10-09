@@ -52,3 +52,11 @@
 .recipe-collection-page .recipe-row,.recipe-collection-page .recipe-list-heading{grid-template-columns:80px minmax(0,1fr) 48px 64px 100px}
 .recipe-comment-count,.recipe-comment-count-heading{text-align:center;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
 @media(max-width:540px){.recipe-collection-page .recipe-row,.recipe-collection-page .recipe-list-heading{grid-template-columns:50px minmax(0,1fr) 26px 44px 60px;gap:5px}.recipe-collection-page .recipe-row time{grid-column:5}.recipe-comment-count,.recipe-comment-count-heading{font-size:10px}}
+
+.industry-page .recipe-row,.industry-page .recipe-list-heading{grid-template-columns:minmax(0,1fr) 48px 64px 100px;align-items:center;padding:18px 16px;gap:12px}
+.industry-page .recipe-search{grid-template-columns:minmax(0,1fr) auto}
+.industry-page .recipe-post[open]>.recipe-row,.industry-page .recipe-detail{background:#fff;color:#142b49;--paper:#fff;--surface:#f3f7fd;--ink:#142b49;--muted:#586d85;--line:#dfe8f3;--accent:#176a73}
+.industry-page .recipe-post[open]>.recipe-row{border-bottom:1px solid var(--line)}
+.industry-page [data-industry-sort=downloads]{text-align:center}.industry-page [data-industry-sort=latest]{text-align:right}
+.industry-page .recipe-sort[aria-pressed=true]{color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:4px}
+@media(max-width:540px){.industry-page .recipe-row,.industry-page .recipe-list-heading{grid-template-columns:minmax(0,1fr) 26px 44px 60px;gap:7px;padding:16px 8px}.industry-page .recipe-row time{grid-column:4;text-align:right;font-size:10px}.industry-page .recipe-row-title{font-size:13px}.industry-page .recipe-search button{grid-column:auto;width:auto}}

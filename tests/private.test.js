@@ -1,3 +1,4 @@
+import { onRequest as comments } from '../functions/api/private-comments.js';
 import test from 'node:test';
 import { onRequest as recipeEnter } from '../functions/api/recipes.js';
 import { onRequest as recipePosts } from '../functions/api/recipe-posts.js';
@@ -6,8 +7,9 @@ import { DatabaseSync } from 'node:sqlite';
 import { onRequest as enter } from '../functions/api/private.js';
 import { onRequest as admin } from '../functions/api/private-admin.js';
 import { onRequest as posts } from '../functions/api/private-posts.js';
+import { onRequest as file } from '../functions/api/private-file.js';
 import { onRequest as image } from '../functions/api/private-image.js';
-import { authorized, validatePost, matchesPassword, sessionCookie } from '../src/private-server.js';
+import { ensurePosts, validatePost } from '../src/private-server.js';
 class D1 {
   constructor() { this.sqlite = new DatabaseSync(':memory:'); }
   prepare(sql) {
@@ -26,91 +28,54 @@ function request(path, { method = 'GET', data, cookie = '', origin = 'https://st
   if (method !== 'GET') { headers.Origin = origin; headers['Content-Type'] = 'application/json'; }
   return new Request('https://studing.pages.dev' + path, { method, headers, ...(data === undefined ? {} : { body: JSON.stringify(data) }) });
 }
-const cookieOf = response => response.headers.getSetCookie().filter(c => !c.includes('Max-Age=0')).map(c => c.split(';')[0]).join('; ');
-async function loginViewer(env) {
-  const response = await enter({ env, request: request('/api/private', { method: 'POST', data: { password: env.RECIPE_PASSWORD } }) });
-  assert.equal(response.status, 200); return cookieOf(response);
+
+function identity(t, operator = true) {
+  t.mock.method(globalThis, 'fetch', async input => new URL(input).pathname === '/auth/v1/user' ? Response.json({ id: 'member-id' }) : Response.json([{ username: operator ? 'lsh451600' : 'member', nickname: '운영팀' }]));
 }
-async function loginAdmin(env, viewer) {
-  const response = await admin({ env, request: request('/api/private-admin', { method: 'POST', cookie: viewer, data: { password: env.RECIPE_ADMIN_PASSWORD } }) });
-  assert.equal(response.status, 200); return viewer + '; ' + cookieOf(response);
-}
-test('exact passwords and missing configuration fail closed', async () => {
-  assert.equal(await matchesPassword('0018', '18'), false);
-  assert.equal((await enter({ env: {}, request: request('/api/private', { method: 'POST', data: { password: '0018' } }) })).status, 503);
-  const response = await enter({ env: {}, request: request('/api/private') });
-  assert.deepEqual(await response.json(), { available: false });
-});
-test('anonymous, reader-only and forged requests cannot create posts', async () => {
-  const env = makeEnv(), data = { title: '제목', body: '내용' };
-  const call = cookie => posts({ env, request: request('/api/private-posts', { method: 'POST', cookie, data }) });
-  assert.equal((await call('')).status, 403);
-  assert.equal((await call(await loginViewer(env))).status, 403);
-  assert.equal((await call('private_admin=admin.9999999999.fake.fake')).status, 403);
-  assert.equal((await call('role=admin')).status, 403);
-});
-test('separate owner authentication is required and cookies cannot be promoted', async () => {
-  const env = makeEnv(), viewer = await loginViewer(env);
-  const wrong = await admin({ env, request: request('/api/private-admin', { method: 'POST', cookie: viewer, data: { password: env.RECIPE_PASSWORD } }) });
-  assert.equal(wrong.status, 401);
-  assert.equal(await authorized(request('/api/private-posts', { cookie: viewer }), env, 'admin'), false);
-  const promoted = viewer.replaceAll('viewer', 'admin');
-  assert.equal(await authorized(request('/api/private-posts', { cookie: promoted }), env, 'admin'), false);
-  const same = { ...env, RECIPE_ADMIN_PASSWORD: env.RECIPE_PASSWORD };
-  assert.equal((await admin({ env: same, request: request('/api/private-admin', { method: 'POST', cookie: await loginViewer(same), data: { password: same.RECIPE_ADMIN_PASSWORD } }) })).status, 503);
-});
-test('owner writes persist in SQLite, readers can read posts and protected images', async () => {
-  const env = makeEnv(), viewer = await loginViewer(env), owner = await loginAdmin(env, viewer);
-  const base64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2y3sAAAAASUVORK5CYII=';
-  const data = { title: '한식 비밀자료', body: '<script>literal text</script>\n재료와 순서', image: { type: 'image/png', base64 } };
-  const created = await posts({ env, request: request('/api/private-posts', { method: 'POST', cookie: owner, data }) });
+const operatorEnv = () => ({ ...makeEnv(), SUPABASE_URL: 'https://project.supabase.co', SUPABASE_PUBLISHABLE_KEY: 'public', SUPABASE_SECRET_KEY: 'secret' });
+const signed = '__Host-member-access=verified';
+test('industry materials and images are readable without passwords while anonymous uploads fail', async t => {
+  identity(t); const env = operatorEnv(); delete env.RECIPE_PASSWORD; delete env.RECIPE_ADMIN_PASSWORD;
+  assert.equal((await enter({ env, request: request('/api/private') })).status, 200);
+  const data = { title: '산업 자료', body: '공개 본문', image: { type: 'image/png', base64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2y3sAAAAASUVORK5CYII=' } };
+  assert.equal((await posts({ env, request: request('/api/private-posts', { method: 'POST', data }) })).status, 403);
+  const created = await posts({ env, request: request('/api/private-posts', { method: 'POST', data, cookie: signed }) });
   assert.equal(created.status, 201); const id = (await created.json()).id;
-  const listing = await posts({ env, request: request('/api/private-posts', { cookie: viewer }) });
-  const list = await listing.json(); assert.equal(list.posts.length, 1); assert.equal(list.posts[0].body, data.body);
-  assert.equal(list.posts[0].image_url, '/api/private-image?id=' + id); assert.equal(list.posts[0].image_base64, undefined);
-  assert.equal((await image({ env, request: request('/api/private-image?id=' + id) })).status, 403);
-  const photo = await image({ env, request: request('/api/private-image?id=' + id, { cookie: viewer }) });
-  assert.equal(photo.status, 200); assert.equal(photo.headers.get('Content-Type'), 'image/png');
-  assert.equal(new Uint8Array(await photo.arrayBuffer())[0], 137);
+  const listing = await (await posts({ env, request: request('/api/private-posts') })).json();
+  assert.equal(listing.posts[0].title, data.title); assert.equal(listing.posts[0].canEdit, false); assert.equal(listing.posts[0].image_base64, undefined);
+  assert.equal((await image({ env, request: request('/api/private-image?id=' + id) })).status, 200);
 });
-test('write and owner login reject cross-origin and invalid image payloads', async () => {
-  const env = makeEnv(), owner = await loginAdmin(env, await loginViewer(env));
-  assert.equal((await posts({ env, request: request('/api/private-posts', { method: 'POST', cookie: owner, origin: 'https://other.example', data: { title: 'x', body: 'y' } }) })).status, 403);
-  assert.throws(() => validatePost({ title: 'x', body: 'y', image: { type: 'image/png', base64: btoa('<script>not an image</script>') } }));
-  assert.throws(() => validatePost({ title: '', body: 'y' }));
-  assert.throws(() => validatePost({ title: 'x', body: 'y', image: { type: 'image/png', base64: 'A'.repeat(1398108) } }));
+test('ordinary members and old admin password cookies cannot upload; cross-origin writes fail', async t => {
+  identity(t, false); const env = operatorEnv(), data = { title: 'title', body: 'body' };
+  for (const cookie of [signed, 'private_admin=admin.9999999999.fake.fake']) assert.equal((await posts({ env, request: request('/api/private-posts', { method: 'POST', data, cookie }) })).status, 403);
+  assert.equal((await posts({ env, request: request('/api/private-posts', { method: 'POST', data, cookie: signed, origin: 'https://other.test' }) })).status, 403);
+  assert.throws(() => validatePost({ title: 'x', body: 'y', image: { type: 'image/png', base64: btoa('invalid image') } }));
 });
-test('session tampering, secret rotation and logout are enforced', async () => {
-  const env = makeEnv(), viewer = await loginViewer(env);
-  assert.equal(await authorized(request('/api/private-posts', { cookie: viewer + '0' }), env), false);
-  assert.equal(await authorized(request('/api/private-posts', { cookie: viewer }), { ...env, RECIPE_PASSWORD: 'changed' }), false);
-  const response = await enter({ env, request: request('/api/private', { method: 'DELETE', cookie: viewer }) });
-  assert.equal(response.status, 200); assert.equal(response.headers.getSetCookie().length, 2);
-  for (const cookie of response.headers.getSetCookie()) assert.ok(cookie.includes('Max-Age=0'));
-  const ownerCookie = await sessionCookie(env, 'admin');
-  assert.ok(ownerCookie.includes('HttpOnly; Secure; SameSite=Strict'));
-});
-test('pagination preserves older posts and missing storage cannot report successful upload', async () => {
-  const env = makeEnv(), viewer = await loginViewer(env);
-  for (let i = 0; i < 22; i++) await env.MEMBERS_DB.prepare('INSERT INTO private_posts (title, body, created_at) VALUES (?, ?, ?)').bind('Post '+i, 'body', new Date().toISOString()).run();
-  const page = await posts({ env, request: request('/api/private-posts', { cookie: viewer }) }); const first = await page.json();
-  assert.equal(first.posts.length, 20); assert.equal(first.next, 3);
-  const second = await posts({ env, request: request('/api/private-posts?before=3', { cookie: viewer }) });
-  assert.equal((await second.json()).posts.length, 2);
-  const owner = await loginAdmin(env, viewer);
-  assert.equal((await posts({ env: { ...env, MEMBERS_DB: undefined }, request: request('/api/private-posts', { method: 'POST', cookie: owner, data: { title: 'x', body: 'y' } }) })).status, 503);
+test('public search, pagination, sorting, migration and attachment counts preserve materials', async t => {
+  identity(t); const env = operatorEnv(); await ensurePosts(env.MEMBERS_DB);
+  for (let i = 0; i < 23; i++) await env.MEMBERS_DB.prepare('INSERT INTO private_posts (title,body,downloads,created_at) VALUES (?,?,?,?)').bind('자료 ' + String(i).padStart(2, '0'), '내용 ' + i, i, new Date().toISOString()).run();
+  const get = async query => (await posts({ env, request: request('/api/private-posts?' + query) })).json();
+  assert.equal((await get('')).posts.length, 10); assert.equal((await get('page=3')).posts.length, 3);
+  assert.equal((await get('q=' + encodeURIComponent('자료 00'))).posts[0].id, 1);
+  assert.equal((await get('sort=title')).posts[0].id, 1); assert.equal((await get('sort=downloads')).posts[0].downloads, 22);
+  const data = { title: 'PDF 자료', body: '첨부', attachment: { name: '자료.pdf', type: 'application/pdf', base64: btoa('%PDF-1.7 test') } };
+  const created = await posts({ env, request: request('/api/private-posts', { method: 'POST', data, cookie: signed }) }); assert.equal(created.status, 201);
+  const id = (await created.json()).id;
+  const download = await file({ env, request: request('/api/private-file?id=' + id) }); assert.equal(download.status, 200); assert.equal(download.headers.get('X-Recipe-Downloads'), '1');
+  assert.equal((await get('')).posts[0].downloads, 1); assert.equal((await get('')).posts[0].attachment_name, '자료.pdf');
 });
 
-test('recipe access does not unlock private materials and post storage is separate', async () => {
-  const env = makeEnv();
-  const recipeResponse = await recipeEnter({ env, request: request('/api/recipes', { method: 'POST', data: { password: env.RECIPE_ADMIN_PASSWORD } }) });
-  assert.equal(recipeResponse.status, 200);
-  const recipeCookie = cookieOf(recipeResponse);
-  assert.equal((await posts({ env, request: request('/api/private-posts', { cookie: recipeCookie }) })).status, 403);
-  const privateCookie = await loginViewer(env);
-  assert.equal((await recipePosts({ env, request: request('/api/recipe-posts', { cookie: privateCookie }) })).status, 403);
-  const owner = await loginAdmin(env, privateCookie);
-  assert.equal((await posts({ env, request: request('/api/private-posts', { method: 'POST', cookie: owner, data: { title: '비밀자료', body: '보호할 내용' } }) })).status, 201);
-  const recipeListing = await recipePosts({ env, request: request('/api/recipe-posts', { cookie: recipeCookie }) });
-  assert.deepEqual((await recipeListing.json()).posts, []);
+test('industry comments are public to read, require login to write and retain ownership checks', async t => {
+  identity(t); const env = operatorEnv();
+  const created = await posts({ env, request: request('/api/private-posts', { method: 'POST', cookie: signed, data: { title: '자료', body: '내용' } }) });
+  const id = (await created.json()).id;
+  const create = cookie => comments({ env, request: request('/api/private-comments', { method: 'POST', cookie, data: { postId: id, body: '자료 댓글' } }) });
+  assert.equal((await create('')).status, 401);
+  const added = await create(signed); assert.equal(added.status, 201); const commentId = (await added.json()).id;
+  const listing = await (await comments({ env, request: request('/api/private-comments?postId=' + id) })).json();
+  assert.equal(listing.comments[0].body, '자료 댓글'); assert.equal(listing.comments[0].canEdit, false); assert.equal(listing.comments[0].author_id, undefined);
+  assert.equal((await (await posts({ env, request: request('/api/private-posts') })).json()).posts[0].comment_count, 1);
+  assert.equal((await comments({ env, request: request('/api/private-comments?id=' + commentId, { method: 'PATCH', cookie: signed, data: { body: '수정 댓글' } }) })).status, 200);
+  assert.equal((await comments({ env, request: request('/api/private-comments?id=' + commentId, { method: 'DELETE', cookie: signed }) })).status, 200);
+  assert.equal((await (await posts({ env, request: request('/api/private-posts') })).json()).posts[0].comment_count, 0);
 });

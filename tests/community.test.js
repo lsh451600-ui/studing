@@ -186,7 +186,7 @@ for (const [kind, entry, handler] of [['recipe', recipeEntry, recipePosts], ['pr
       ? Response.json({ id: 'member-id', user_metadata: { username: 'lsh451600' } })
       : Response.json([{ username: operator ? 'lsh451600' : 'ordinary-member' }]));
     const settings = { ...env(t), RECIPE_PASSWORD: 'reader-password' };
-    const entered = await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: settings.RECIPE_PASSWORD }, true) });
+    const entered = await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', kind === 'recipe' ? { password: settings.RECIPE_PASSWORD } : null, true) });
     assert.equal(entered.status, 200);
     const access = await entered.json(); assert.equal(access.canWrite, true); assert.equal(access.accountWriter, true); assert.equal(access.adminConfigured, true);
     const cookies = entered.headers.getSetCookie().filter(c => !c.includes('Max-Age=0')).map(c => c.split(';')[0]).join('; ');
@@ -198,10 +198,10 @@ for (const [kind, entry, handler] of [['recipe', recipeEntry, recipePosts], ['pr
     assert.equal((await create()).status, 201);
     operator = false;
     assert.equal((await create()).status, 403);
-    const normal = await (await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: settings.RECIPE_PASSWORD }, true) })).json();
+    const normal = await (await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', kind === 'recipe' ? { password: settings.RECIPE_PASSWORD } : null, true) })).json();
     assert.equal(normal.canWrite, false); assert.equal(normal.accountWriter, false);
     operator = true;
-    assert.equal((await entry({ env: settings, request: request(kind === 'recipe' ? 'recipes' : 'private', { password: 'wrong-password' }, true) })).status, 401);
+    if (kind === 'recipe') assert.equal((await entry({ env: settings, request: request('recipes', { password: 'wrong-password' }, true) })).status, 401);
   });
 }
 

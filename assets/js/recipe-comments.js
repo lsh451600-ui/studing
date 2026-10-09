@@ -3,14 +3,14 @@ const make = (tag, text, className) => {
 };
 const options = (method, body) => ({ method, headers: { 'Content-Type': 'application/json' }, ...(body ? { body: JSON.stringify(body) } : {}) });
 const date = value => new Intl.DateTimeFormat('ko-KR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Seoul' }).format(new Date(value));
-export function appendRecipeComments(card, detail, post, api) {
+export function appendRecipeComments(card, detail, post, api, { endpoint = '/api/recipe-comments', subject = '레시피' } = {}) {
   const section = make('section', '', 'recipe-comments'), heading = make('h3', '댓글');
   section.setAttribute('aria-label', post.title + ' 댓글');
   const list = make('div', '', 'recipe-comment-list'), status = make('p'); status.setAttribute('role', 'status');
   const refresh = make('button', '댓글 새로고침'); refresh.type = 'button';
   const header = make('div', '', 'recipe-comment-heading'); header.append(heading, refresh);
   const form = make('form', '', 'recipe-comment-form'), label = make('label', '댓글 작성'), input = make('textarea');
-  input.rows = 3; input.maxLength = 2000; input.required = true; input.placeholder = '레시피에 대한 의견을 남겨 주세요.';
+  input.rows = 3; input.maxLength = 2000; input.required = true; input.placeholder = subject + '에 대한 의견을 남겨 주세요.';
   label.append(input);
   const controls = make('div', '', 'recipe-comment-controls'), submit = make('button', '댓글 등록'); submit.type = 'submit'; controls.append(submit);
   form.append(label, controls); section.append(header, list, form, status); detail.append(section);
@@ -19,7 +19,7 @@ export function appendRecipeComments(card, detail, post, api) {
     if (loading) return;
     loading = true; refresh.disabled = true; submit.disabled = true; status.textContent = '댓글을 불러오고 있습니다.';
     try {
-      const data = await api('/api/recipe-comments?postId=' + post.id);
+      const data = await api(endpoint + '?postId=' + post.id);
       list.replaceChildren(); heading.textContent = '댓글 ' + data.comments.length;
       post.comment_count = data.comments.length;
       const count = card.querySelector('.recipe-comment-count');
@@ -39,7 +39,7 @@ export function appendRecipeComments(card, detail, post, api) {
           editForm.addEventListener('submit', async event => {
             event.preventDefault(); if (save.disabled || !editForm.reportValidity()) return;
             save.disabled = true;
-            try { await api('/api/recipe-comments?id=' + comment.id, options('PATCH', { body: text.value })); await load(); }
+            try { await api(endpoint + '?id=' + comment.id, options('PATCH', { body: text.value })); await load(); }
             catch (error) { status.textContent = error.message; }
             finally { save.disabled = false; }
           });
@@ -49,7 +49,7 @@ export function appendRecipeComments(card, detail, post, api) {
           remove.addEventListener('click', async () => {
             if (remove.disabled || !confirm('이 댓글을 삭제할까요?')) return;
             remove.disabled = true;
-            try { await api('/api/recipe-comments?id=' + comment.id, options('DELETE')); await load(); }
+            try { await api(endpoint + '?id=' + comment.id, options('DELETE')); await load(); }
             catch (error) { status.textContent = error.message; }
             finally { remove.disabled = false; }
           });
@@ -66,7 +66,7 @@ export function appendRecipeComments(card, detail, post, api) {
   form.addEventListener('submit', async event => {
     event.preventDefault(); if (submit.disabled || !form.reportValidity()) return;
     submit.disabled = true; status.textContent = '댓글을 저장하고 있습니다.';
-    try { await api('/api/recipe-comments', options('POST', { postId: post.id, body: input.value })); input.value = ''; await load(); }
+    try { await api(endpoint, options('POST', { postId: post.id, body: input.value })); input.value = ''; await load(); }
     catch (error) { status.textContent = error.message; }
     finally { submit.disabled = false; }
   });

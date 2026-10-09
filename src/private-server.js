@@ -1,3 +1,4 @@
+import { validatePost as validateRecipePost } from './recipe-server.js';
 import { canManagePost } from './board-permissions.js';
 export function reply(status, data, cookies = []) {
   const headers = new Headers({ 'Content-Type': 'application/json; charset=utf-8',
@@ -70,8 +71,9 @@ export const POST_SCHEMA = `CREATE TABLE IF NOT EXISTS private_posts (
 export async function ensurePosts(db) {
   await db.prepare(POST_SCHEMA).run();
   const columns = (await db.prepare('PRAGMA table_info(private_posts)').all()).results;
-  if (!columns.some(column => column.name === 'author_id')) {
-    try { await db.prepare('ALTER TABLE private_posts ADD COLUMN author_id TEXT').run(); }
+  for (const [name, definition] of [['author_id', 'TEXT'], ['downloads', 'INTEGER NOT NULL DEFAULT 0'], ['attachment_base64', 'TEXT'], ['attachment_name', 'TEXT'], ['attachment_type', 'TEXT']]) {
+    if (columns.some(column => column.name === name)) continue;
+    try { await db.prepare(`ALTER TABLE private_posts ADD COLUMN ${name} ${definition}`).run(); }
     catch (error) { if (!/duplicate column/i.test(String(error?.message))) throw error; }
   }
 }
@@ -85,31 +87,26 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   await db.prepare('DELETE FROM private_limits WHERE expires_at < ?').bind(now).run();
   return row.attempts <= maximum;
 }
-export async function listPosts(db, before = null, { identity = null } = {}) {
+export async function ensureComments(db) {
   await ensurePosts(db);
-  const fields = 'id, author_id, title, body, created_at, (image_type IS NOT NULL) AS has_image';
-  const query = before ? db.prepare(`SELECT ${fields} FROM private_posts WHERE id < ? ORDER BY id DESC LIMIT 21`).bind(before)
-    : db.prepare(`SELECT ${fields} FROM private_posts ORDER BY id DESC LIMIT 21`);
-  const { results } = await query.all();
-  const posts = results.slice(0, 20).map(({ author_id, ...post }) => ({ ...post, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id), image_url: post.has_image ? `/api/private-image?id=${post.id}` : null }));
-  return { posts, next: results.length > 20 ? posts[posts.length - 1].id : null };
+  await db.prepare('CREATE TABLE IF NOT EXISTS private_comments (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL REFERENCES private_posts(id) ON DELETE CASCADE, author_id TEXT NOT NULL, author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL)').run();
+  await db.prepare('CREATE INDEX IF NOT EXISTS private_comments_post ON private_comments(post_id,id)').run();
+  await db.prepare('CREATE TABLE IF NOT EXISTS community_limits (key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, expires_at INTEGER NOT NULL)').run();
+}
+export async function listPosts(db, before = null, { identity = null, page = 1, q = '', sort = 'latest' } = {}) {
+  await ensureComments(db);
+  const fields = 'id, author_id, title, body, created_at, downloads, (SELECT COUNT(*) FROM private_comments WHERE post_id = private_posts.id) AS comment_count, (image_type IS NOT NULL) AS has_image, attachment_name';
+  const filters = [], values = [];
+  if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
+  if (before) { filters.push('id < ?'); values.push(before); }
+  const where = filters.length ? ' WHERE ' + filters.join(' AND ') : '';
+  const { total } = await db.prepare('SELECT COUNT(*) AS total FROM private_posts' + where).bind(...values).first();
+  const totalPages = Math.max(1, Math.ceil(total / 10)); page = Math.min(page, totalPages);
+  const order = sort === 'title' ? 'title COLLATE NOCASE ASC, id DESC' : sort === 'downloads' ? 'downloads DESC, id DESC' : 'id DESC';
+  const { results } = await db.prepare(`SELECT ${fields} FROM private_posts${where} ORDER BY ${order} LIMIT 10 OFFSET ?`).bind(...values, (page - 1) * 10).all();
+  const posts = results.map(({ author_id, ...post }) => ({ ...post, canEdit: canManagePost(identity, author_id), canDelete: canManagePost(identity, author_id), image_url: post.has_image ? `/api/private-image?id=${post.id}` : null, attachment_url: post.attachment_name ? `/api/private-file?id=${post.id}` : null }));
+  return { posts, page, total, totalPages, next: page < totalPages && posts.length ? posts.at(-1).id : null };
 }
 export function validatePost(data) {
-  if (!data || typeof data.title !== 'string' || typeof data.body !== 'string') throw new Error('제목과 내용을 입력해 주세요.');
-  const title = data.title.trim(), body = data.body.trim();
-  if (!title || title.length > 120 || !body || body.length > 20000) throw new Error('제목은 120자, 내용은 20,000자 이내로 입력해 주세요.');
-  let imageBase64 = null, imageType = null;
-  if (data.image) {
-    if (typeof data.image.base64 !== 'string' || data.image.base64.length > 1398104 || !/^[A-Za-z0-9+/]*={0,2}$/.test(data.image.base64)) throw new Error('이미지는 1MB 이하로 올려 주세요.');
-    let bytes;
-    try { bytes = Uint8Array.from(atob(data.image.base64), c => c.charCodeAt(0)); } catch { throw new Error('이미지 형식을 확인해 주세요.'); }
-    if (bytes.length > 1048576 || bytes.length < 12) throw new Error('이미지는 1MB 이하로 올려 주세요.');
-    if (bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255) imageType = 'image/jpeg';
-    else if (bytes.slice(0, 8).every((b, i) => b === [137, 80, 78, 71, 13, 10, 26, 10][i])) imageType = 'image/png';
-    else if (String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' && String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP') imageType = 'image/webp';
-    else throw new Error('JPG, PNG, WebP 이미지만 올릴 수 있습니다.');
-    if (data.image.type !== imageType) throw new Error('이미지 형식을 확인해 주세요.');
-    imageBase64 = data.image.base64;
-  }
-  return { title, body, imageBase64, imageType };
+  return validateRecipePost({ ...data, category: '미분류' });
 }

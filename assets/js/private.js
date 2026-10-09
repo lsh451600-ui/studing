@@ -1,139 +1,84 @@
+import { appendRecipeComments } from './recipe-comments.js?v=20261009-industry';
 import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
-const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');
-const status = byId('recipe-status'), gate = byId('recipe-gate'), content = byId('recipe-content');
-const board = byId('recipe-board'), adminPanel = byId('recipe-admin-panel'), editor = byId('recipe-editor');
-const adminForm = byId('recipe-admin-form'), postForm = byId('recipe-post-form');
-let pending = false, posting = false, next = null, previewURL = null, generation = 0, owner = false, storage = false, configured = false, accountWriter = false;
-function clearPreview() {
-  if (previewURL) URL.revokeObjectURL(previewURL);
-  previewURL = null; byId('recipe-image-preview').removeAttribute('src'); byId('recipe-image-preview').hidden = true;
-}
-function resetView() {
-  generation++; owner = false; storage = false; configured = false; form.reset(); input.type = 'password'; content.replaceChildren();
-  content.hidden = true; board.hidden = true; adminPanel.hidden = true; editor.hidden = true;
-  adminForm.reset(); postForm.reset(); clearPreview(); gate.hidden = false; status.textContent = '';
-  byId('recipe-admin-status').textContent = ''; byId('recipe-post-status').textContent = '';
-  byId('recipe-board-status').textContent = ''; next = null;
-  byId('recipe-admin-open').hidden = false; byId('recipe-admin-exit').hidden = true;
-}
+const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
+const json = body => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+let page = 1, totalPages = 1, sort = 'latest', query = '', generation = 0, authGeneration = 0, posting = false;
 async function api(path, options = {}) {
-  const response = await fetch(path, { cache: 'no-store', credentials: 'same-origin', ...options });
-  let data;
-  try { data = await response.json(); } catch { throw new Error('서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.'); }
-  if (!response.ok) { const error = new Error(data.message || '요청을 완료하지 못했습니다.'); error.status = response.status; throw error; }
-  return data;
+  const response = await fetch(path, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000), ...options });
+  const data = await response.json(); if (!response.ok) throw new Error(data.message || '자료를 불러오지 못했습니다.'); return data;
 }
-const jsonOptions = body => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-function renderPosts(posts, append = false) {
-  if (!append) content.replaceChildren();
-  if (!posts.length && !append) {
-    const empty = document.createElement('p'); empty.textContent = '아직 등록된 비밀자료가 없습니다.'; content.append(empty);
-  }
+function render(posts) {
+  const content = byId('recipe-content'); content.replaceChildren();
+  if (!posts.length) content.append(make('p', query ? '검색 결과가 없습니다.' : '아직 등록된 자료가 없습니다.'));
   for (const post of posts) {
-    const card = document.createElement('details'); card.className = 'recipe-post';
-    const summary = document.createElement('summary'); summary.className = 'recipe-row';
-    const title = document.createElement('span'); title.className = 'recipe-row-title'; title.textContent = post.title;
-    const time = document.createElement('time'); time.dateTime = post.created_at;
-    time.textContent = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at));
-    const arrow = document.createElement('span'); arrow.className = 'recipe-row-arrow'; arrow.textContent = '+'; arrow.setAttribute('aria-hidden', 'true');
-    summary.append(title, time, arrow); card.append(summary);
-    const detail = document.createElement('div'); detail.className = 'recipe-detail'; card.append(detail);
-    if (post.image_url) {
-      const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 비밀자료 사진'; image.loading = 'lazy'; detail.append(image);
+    const card = make('details', '', 'recipe-post'), row = make('summary', '', 'recipe-row');
+    const title = make('span', post.title, 'recipe-row-title'), downloads = make('span', String(post.downloads || 0), 'recipe-downloads'), time = make('time');
+    time.dateTime = post.created_at; time.textContent = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at));
+    const comments = make('span', String(post.comment_count || 0), 'recipe-comment-count');
+    row.append(title, comments, downloads, time); const detail = make('div', '', 'recipe-detail'); card.append(row, detail);
+    if (post.image_url) { const image = make('img'); image.src = post.image_url; image.alt = post.title + ' 자료 사진'; image.loading = 'lazy'; detail.append(image); }
+    detail.append(make('p', post.body, 'recipe-post-body'));
+    if (post.attachment_url) {
+      const link = make('a', post.attachment_name + ' 다운로드', 'recipe-attachment'); link.href = post.attachment_url; link.download = post.attachment_name;
+      link.addEventListener('click', async event => {
+        event.preventDefault(); if (link.dataset.busy) return; link.dataset.busy = 'true';
+        try {
+          const response = await fetch(post.attachment_url, { credentials: 'same-origin', cache: 'no-store' });
+          if (!response.ok) throw new Error('파일을 내려받지 못했습니다.');
+          const blob = await response.blob(), url = URL.createObjectURL(blob), anchor = make('a'); anchor.href = url; anchor.download = post.attachment_name; document.body.append(anchor); anchor.click(); anchor.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+          downloads.textContent = response.headers.get('X-Recipe-Downloads') || String(Number(downloads.textContent) + 1);
+        } catch (error) { byId('industry-status').textContent = error.message; }
+        finally { delete link.dataset.busy; }
+      }); detail.append(link);
     }
-    const body = document.createElement('p'); body.className = 'recipe-post-body'; body.textContent = post.body; detail.append(body); content.append(card);
-    appendPostActions(detail, post, { endpoint: '/api/private-posts', api, refresh: refreshPosts });
+    appendRecipeComments(card, detail, post, api, { endpoint: '/api/private-comments', subject: '자료' });
+    appendPostActions(detail, post, { endpoint: '/api/private-posts', api, refresh: load }); content.append(card);
   }
-  content.hidden = false;
 }
-async function refreshPosts(append = false) {
-  const current = generation;
-  const data = await api('/api/private-posts' + (append && next ? '?before=' + next : ''));
-  if (current !== generation) return;
-  renderPosts(data.posts, append); next = data.next; byId('recipe-more').hidden = !next;
+function paginate() {
+  const nav = byId('recipe-pagination'); nav.replaceChildren();
+  if (totalPages <= 1) return;
+  const start = Math.max(1, Math.min(page - 2, totalPages - 4)), end = Math.min(totalPages, start + 4);
+  const add = (label, value, disabled = false) => { const button = make('button', label); button.type = 'button'; button.disabled = disabled; if (value === page && /^\d+$/.test(label)) button.setAttribute('aria-current', 'page'); button.addEventListener('click', () => { page = value; load(); }); nav.append(button); };
+  add('이전', page - 1, page === 1); if (start > 1) add('1', 1); if (start > 2) nav.append(make('span', '…'));
+  for (let n = start; n <= end; n++) add(String(n), n);
+  if (end < totalPages - 1) nav.append(make('span', '…')); if (end < totalPages) add(String(totalPages), totalPages); add('다음', page + 1, page === totalPages);
 }
-byId('recipe-show-password').addEventListener('change', event => { input.type = event.target.checked ? 'text' : 'password'; });
-window.addEventListener('pagehide', resetView);
-form.addEventListener('submit', async event => {
-  event.preventDefault(); if (pending || !form.reportValidity()) return;
-  pending = true; submit.disabled = true; form.setAttribute('aria-busy', 'true'); status.textContent = '비밀번호를 확인하고 있습니다.';
-  const current = generation;
+async function load() {
+  const version = ++generation; byId('industry-status').textContent = '자료를 불러오고 있습니다.';
   try {
-    const data = await api('/api/private', jsonOptions({ password: input.value }));
-    if (current !== generation) return;
-    renderPosts(data.posts || []); next = data.next; byId('recipe-more').hidden = !next;
-    board.hidden = false; gate.hidden = true;
-    owner = Boolean(data.canWrite); storage = Boolean(data.storageAvailable); configured = Boolean(data.adminConfigured); accountWriter = Boolean(data.accountWriter);
-    editor.hidden = false;
-    byId('recipe-admin-open').disabled = false;
-    byId('recipe-admin-open').hidden = owner; byId('recipe-admin-exit').hidden = !owner || accountWriter;
-    byId('recipe-board-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : owner ? '' : '운영자 계정으로 로그인하면 게시물을 등록할 수 있습니다.';
-    byId('recipe-board-heading').focus();
+    const params = new URLSearchParams({ page, sort }); if (query) params.set('q', query);
+    const data = await api('/api/private-posts?' + params);
+    if (version !== generation) return; page = data.page; totalPages = data.totalPages; render(data.posts); paginate(); byId('industry-status').textContent = '';
+  } catch (error) { if (version === generation) byId('industry-status').textContent = error.message; }
+}
+async function syncWriter() {
+  const version = ++authGeneration;
+  try {
+    const data = await api('/api/session'); if (version !== authGeneration) return;
+    const admin = data.authenticated && data.user?.isAdmin === true;
+    byId('industry-write').hidden = !admin; if (!admin) byId('recipe-editor').hidden = true;
+  } catch { if (version === authGeneration) { byId('industry-write').hidden = true; byId('recipe-editor').hidden = true; } }
+}
+byId('industry-heading').addEventListener('click', event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); query = ''; page = 1; byId('industry-query').value = ''; byId('recipe-editor').hidden = true; load(); });
+byId('industry-search').addEventListener('submit', event => { event.preventDefault(); query = byId('industry-query').value.trim(); page = 1; load(); });
+for (const button of document.querySelectorAll('[data-industry-sort]')) button.addEventListener('click', () => { sort = button.dataset.industrySort; page = 1; for (const el of document.querySelectorAll('[data-industry-sort]')) el.setAttribute('aria-pressed', String(el === button)); load(); });
+byId('industry-write').addEventListener('click', () => { byId('recipe-editor').hidden = false; byId('industry-title').focus(); });
+byId('industry-cancel').addEventListener('click', () => { byId('recipe-editor').hidden = true; });
+const encode = file => new Promise((resolve, reject) => { const reader = new FileReader(); reader.onerror = () => reject(new Error('첨부 파일을 읽지 못했습니다.')); reader.onload = () => resolve({ base64: String(reader.result).split(',')[1], type: file.type, name: file.name }); reader.readAsDataURL(file); });
+byId('industry-post-form').addEventListener('submit', async event => {
+  event.preventDefault(); if (posting || !event.target.reportValidity()) return;
+  posting = true; byId('industry-submit').disabled = true; const status = byId('industry-post-status'); status.textContent = '저장하고 있습니다.';
+  try {
+    const image = byId('industry-image').files[0], attachment = byId('industry-file').files[0];
+    if (image && attachment) throw new Error('사진 또는 파일 하나만 첨부해 주세요.');
+    if (image?.size > 1048576 || attachment?.size > 524288) throw new Error('사진은 1MB, 파일은 512KB 이하로 첨부해 주세요.');
+    await api('/api/private-posts', json({ title: byId('industry-title').value, body: byId('industry-body').value, image: image ? await encode(image) : null, attachment: attachment ? await encode(attachment) : null }));
+    event.target.reset(); status.textContent = ''; byId('recipe-editor').hidden = true; page = 1; query = ''; byId('industry-query').value = ''; await load();
   } catch (error) { status.textContent = error.message; }
-  finally {
-    input.value = ''; input.type = 'password'; byId('recipe-show-password').checked = false;
-    pending = false; submit.disabled = false; form.removeAttribute('aria-busy');
-  }
+  finally { posting = false; byId('industry-submit').disabled = false; }
 });
-function openWriter() {
-  editor.hidden = false;
-  if (owner || !configured || !storage) { byId('recipe-post-title').focus(); return; }
-  adminPanel.hidden = false; byId('recipe-admin-password').focus();
-}
-byId('recipe-admin-open').addEventListener('click', openWriter);
-adminForm.addEventListener('submit', async event => {
-  event.preventDefault(); if (!adminForm.reportValidity()) return;
-  const button = byId('recipe-admin-submit'); button.disabled = true;
-  const current = generation;
-  try {
-    await api('/api/private-admin', jsonOptions({ password: byId('recipe-admin-password').value }));
-    if (current !== generation) return;
-    owner = true; adminPanel.hidden = true; editor.hidden = false; byId('recipe-admin-open').hidden = true;
-    byId('recipe-admin-exit').hidden = false; byId('recipe-post-title').focus();
-  } catch (error) { byId('recipe-admin-status').textContent = error.message; }
-  finally { byId('recipe-admin-password').value = ''; button.disabled = false; }
-});
-byId('recipe-admin-exit').addEventListener('click', async () => {
-  if (posting) return;
-  try {
-    await api('/api/private-admin', { method: 'DELETE' }); owner = false; editor.hidden = false; postForm.reset(); clearPreview();
-    byId('recipe-admin-open').hidden = false; byId('recipe-admin-exit').hidden = true;
-  } catch (error) { byId('recipe-board-status').textContent = error.message; }
-});
-byId('recipe-post-image').addEventListener('change', event => {
-  clearPreview(); const file = event.target.files[0]; if (!file) return;
-  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 1048576) {
-    event.target.value = ''; byId('recipe-post-status').textContent = 'JPG, PNG, WebP 이미지 1MB 이하만 올릴 수 있습니다.'; return;
-  }
-  byId('recipe-post-status').textContent = ''; previewURL = URL.createObjectURL(file);
-  byId('recipe-image-preview').src = previewURL; byId('recipe-image-preview').hidden = false;
-});
-function encodeFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader(); reader.onerror = () => reject(new Error('이미지를 읽지 못했습니다.'));
-    reader.onload = () => resolve({ base64: String(reader.result).split(',')[1], type: file.type }); reader.readAsDataURL(file);
-  });
-}
-postForm.addEventListener('submit', async event => {
-  event.preventDefault(); if (posting || !postForm.reportValidity()) return;
-  if (!storage || !configured) { byId('recipe-post-status').textContent = !storage ? '게시판에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.' : '운영자 계정으로 로그인한 뒤 등록해 주세요.'; return; }
-  if (!owner) { byId('recipe-post-status').textContent = '운영자 인증 후 등록하기를 다시 눌러 주세요.'; openWriter(); return; }
-  posting = true; byId('recipe-post-submit').disabled = true; postForm.setAttribute('aria-busy', 'true');
-  const postStatus = byId('recipe-post-status'); postStatus.textContent = '게시물을 저장하고 있습니다.';
-  try {
-    const file = byId('recipe-post-image').files[0];
-    if (file && file.size > 1048576) throw new Error('이미지는 1MB 이하로 올려 주세요.');
-    const payload = { title: byId('recipe-post-title').value, body: byId('recipe-post-body').value, image: file ? await encodeFile(file) : null };
-    await api('/api/private-posts', jsonOptions(payload)); postForm.reset(); clearPreview();
-    postStatus.textContent = '게시물을 올렸습니다.';
-    try { await refreshPosts(); } catch { byId('recipe-board-status').textContent = '게시물은 저장됐습니다. 목록을 새로고침해 주세요.'; }
-  } catch (error) { postStatus.textContent = error.message; }
-  finally { posting = false; byId('recipe-post-submit').disabled = false; postForm.removeAttribute('aria-busy'); }
-});
-byId('recipe-more').addEventListener('click', async () => {
-  const button = byId('recipe-more'); button.disabled = true;
-  try { await refreshPosts(true); } catch (error) { byId('recipe-board-status').textContent = error.message; }
-  finally { button.disabled = false; }
-});
-
+window.addEventListener('member-session-change', () => { syncWriter(); load(); });
+window.addEventListener('pageshow', event => { if (event.persisted) { syncWriter(); load(); } });
+syncWriter(); load();

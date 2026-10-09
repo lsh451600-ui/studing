@@ -22,7 +22,6 @@ const protectedPages = new Set([
   '/recipes', '/recipes.html',
   '/board', '/board.html',
   '/startup', '/startup.html',
-  '/private', '/private.html',
   '/mypage', '/mypage.html',
 ]);
 

@@ -62,6 +62,10 @@ export async function onRequest({ request, env }) {
       try { await db.prepare('UPDATE recipe_comments SET author = ? WHERE author_id = ?').bind(nickname, session.user.id).run(); }
       catch { /* Recipes may not have comments yet. */ }
     }
+    if (db) {
+      try { await db.prepare('UPDATE private_comments SET author = ? WHERE author_id = ?').bind(nickname, session.user.id).run(); }
+      catch { /* Industry comments may not exist yet. */ }
+    }
     return reply(200, '닉네임을 저장했습니다.', { nickname }, session.cookies);
   } catch {
     return reply(503, '회원 정보에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.', {}, session?.cookies || []);

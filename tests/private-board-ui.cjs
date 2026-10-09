@@ -21,96 +21,42 @@ const { chromium } = require('playwright');
     browser = await chromium.launch();
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
-      let admin = false, submissions = 0, accountWriterMode = false;
-      const posts = [{ canEdit: true, canDelete: true, id: 'first', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
+      let admin = false, submissions = 0;
+      const posts = Array.from({length:23}, (_,i) => ({ id: i+1, title: '자료 ' + String(i).padStart(2,'0'), body: '외식산업 내용 ' + i, downloads:i, created_at:'2026-10-07T01:00:00Z' }));
       await context.route('**/*', async route => {
-        const req = route.request(), url = new URL(req.url());
-        if (url.origin !== origin) return route.abort();
-        if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated: false } });
-        if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: {} } });
-        if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
-        if (url.pathname === '/api/private') {
-          if (req.method() === 'DELETE') { admin = false; return route.fulfill({ json: {} }); }
-          assert.equal(req.postDataJSON().password, 'reader-password');
-          return route.fulfill({ json: { posts, adminConfigured: true, canWrite: accountWriterMode, accountWriter: accountWriterMode, storageAvailable: true, next: null } });
-        }
-        if (url.pathname === '/api/private-admin') {
-          if (req.method() === 'DELETE') { admin = false; return route.fulfill({ json: {} }); }
-          if (req.postDataJSON().password !== 'owner-password') return route.fulfill({ status: 401, json: { message: '관리자 비밀번호를 확인해 주세요.' } });
-          admin = true; return route.fulfill({ json: { authenticated: true } });
-        }
+        const req = route.request(), url = new URL(req.url()); if (url.origin !== origin) return route.abort();
+        if (url.pathname === '/api/session') return route.fulfill({json:{available:true,authenticated:admin,user:admin?{id:'admin',username:'운영팀',isAdmin:true}:null}});
+        if (url.pathname === '/api/private-comments') return route.fulfill({json:{comments:[]}});
         if (url.pathname === '/api/private-posts') {
-          if (req.method() === 'PATCH') {
-            Object.assign(posts.find(p => p.id === url.searchParams.get('id')), req.postDataJSON());
-            return route.fulfill({ json: {} });
-          }
-          if (req.method() === 'DELETE') {
-            const index = posts.findIndex(p => p.id === url.searchParams.get('id')); assert.ok(index >= 0); posts.splice(index, 1);
-            return route.fulfill({ json: {} });
-          }
-          if (req.method() === 'POST') {
-            assert.ok(admin || accountWriterMode, 'only authenticated owner submits a post');
-            const payload = req.postDataJSON(); assert.equal(payload.title, '새 비밀자료'); assert.equal(payload.body, '새 비밀자료 조리 순서');
-            if (!accountWriterMode) { assert.equal(payload.image.type, 'image/png'); assert.ok(payload.image.base64.length > 0); }
-            posts.unshift({ ...payload, id: 'new', created_at: '2026-10-07T02:00:00Z' }); submissions++;
-            return route.fulfill({ json: { success: true } });
-          }
-          return route.fulfill({ json: { posts, next: null } });
+          if(req.method()==='POST'){assert.ok(admin); const body=req.postDataJSON();posts.push({...body,id:99,downloads:0,created_at:'2026-10-09T00:00:00Z'});submissions++;return route.fulfill({json:{id:99}});}
+          const query=url.searchParams.get('q')||'',sort=url.searchParams.get('sort');
+          let rows=posts.filter(p=>(p.title+' '+p.body).includes(query));
+          rows.sort(sort==='title'?(a,b)=>a.title.localeCompare(b.title):sort==='downloads'?(a,b)=>b.downloads-a.downloads:(a,b)=>b.id-a.id);
+          const totalPages=Math.max(1,Math.ceil(rows.length/10)),page=Math.min(Number(url.searchParams.get('page')||1),totalPages);
+          return route.fulfill({json:{posts:rows.slice((page-1)*10,page*10),page,totalPages,total:rows.length}});
         }
-        return route.continue();
+        if(url.pathname.startsWith('/api/'))return route.fulfill({json:{available:true,authenticated:false,providers:{}}});return route.continue();
       });
-      const page = await context.newPage();
-      await page.goto(origin + '/private');
-      assert.ok(await page.locator('#recipe-gate').isVisible());
-      const gateBox = await page.locator('#recipe-gate').boundingBox();
-      assert.ok(Math.abs(gateBox.x + gateBox.width / 2 - width / 2) <= 2, 'password gate is centered');
-      assert.ok(!(await page.locator('#recipe-board').isVisible()));
-      await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
-      await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
-      assert.equal(await page.locator('.recipe-post').count(), 1);
-      assert.ok(await page.locator('#recipe-editor').isVisible());
-      assert.equal(submissions, 0);
-      await page.locator('.recipe-row').click(); assert.ok(await page.locator('.recipe-post-body').isVisible());
-      await page.locator('.recipe-post-actions').getByRole('button', { name: '수정', exact: true }).click();
-      await page.locator('.recipe-inline-edit input').fill('수정한 자료');
-      await page.locator('.recipe-inline-edit textarea').fill('수정한 자료 내용');
-      await page.locator('.recipe-inline-edit').getByRole('button', { name: '저장', exact: true }).click();
-      await page.waitForFunction(() => document.querySelector('.recipe-row-title').textContent === '수정한 자료');
-      assert.equal(posts[0].body, '수정한 자료 내용');
-      await page.locator('#recipe-admin-open').click();
-      await page.locator('#recipe-admin-password').fill('wrong-password'); await page.locator('#recipe-admin-submit').click();
-      await page.waitForFunction(() => document.querySelector('#recipe-admin-status').textContent.includes('확인'));
-      assert.ok(await page.locator('#recipe-editor').isVisible()); assert.equal(submissions, 0);
-      await page.locator('#recipe-admin-password').fill('owner-password'); await page.locator('#recipe-admin-submit').click();
-      await page.waitForFunction(() => document.querySelector('#recipe-admin-panel').hidden && !document.querySelector('#recipe-admin-exit').hidden);
-      await page.locator('#recipe-post-title').fill('새 비밀자료'); await page.locator('#recipe-post-body').fill('새 비밀자료 조리 순서');
-      await page.locator('#recipe-post-image').setInputFiles({ name: 'recipe.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j6xkAAAAASUVORK5CYII=', 'base64') });
-      await page.locator('#recipe-image-preview').waitFor({ state: 'visible' });
-      await page.waitForFunction(() => { const image = document.querySelector('#recipe-image-preview'); return image.complete && image.naturalWidth > 0; });
-      assert.ok(await page.locator('#recipe-image-preview').isVisible());
-      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'composer fits viewport');
-      await page.locator('#recipe-post-submit').click();
-      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 2);
-      assert.equal(submissions, 1); assert.equal(await page.locator('.recipe-row-title').first().textContent(), '새 비밀자료');
-      await page.locator('.recipe-row').nth(1).click();
-      page.once('dialog', dialog => dialog.accept());
-      await page.locator('.recipe-post').nth(1).getByRole('button', { name: '삭제', exact: true }).click();
-      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
-      assert.equal(posts.length, 1);
-      await page.locator('#recipe-admin-exit').click(); await page.waitForFunction(() => !document.querySelector('#recipe-editor').hidden);
-      assert.equal(admin, false);
-      accountWriterMode = true;
-      await page.goto(origin + '/private');
-      await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
-      await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
-      assert.ok(await page.locator('#recipe-admin-open').isHidden()); assert.ok(await page.locator('#recipe-admin-exit').isHidden());
-      assert.ok(!(await page.locator('#recipe-board-status').textContent()).includes('RECIPE_ADMIN_PASSWORD'));
-      await page.locator('#recipe-post-title').fill('새 비밀자료'); await page.locator('#recipe-post-body').fill('새 비밀자료 조리 순서');
-      await page.locator('#recipe-post-submit').click();
-      await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 2);
-      assert.equal(submissions, 2);
-      console.log('PASS board gate, owner authentication, photo submission, account operator publishing', width);
-      await context.close();
+      const page=await context.newPage();await page.goto(origin+'/private');await page.locator('.recipe-row').first().waitFor();
+      assert.equal(await page.title(),'외모Check-외식산업 자료');
+      assert.equal(await page.locator('input[type=password]#recipe-password').count(),0);
+      assert.equal(await page.locator('main select').count(),0);
+      assert.equal(await page.locator('.recipe-row').count(),10);
+      assert.ok(await page.locator('#industry-write').isHidden());
+      assert.equal(await page.locator('.recipe-row-arrow').count(),0);
+      await page.locator('.recipe-row').first().click();assert.ok(await page.locator('.recipe-post-body').first().isVisible());
+      assert.equal(await page.locator('.recipe-detail').first().evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)');
+      await page.locator('#recipe-pagination').getByRole('button',{name:'3',exact:true}).click();await page.waitForFunction(()=>document.querySelectorAll('.recipe-row').length===3);
+      await page.locator('#industry-query').fill('자료 00');await page.locator('#industry-search button').click();await page.waitForFunction(()=>document.querySelectorAll('.recipe-row').length===1);
+      assert.equal(await page.locator('.recipe-row-title').textContent(),'자료 00');
+      await page.locator('#industry-heading').click();await page.waitForFunction(()=>document.querySelectorAll('.recipe-row').length===10);
+      await page.locator('[data-industry-sort=title]').click();await page.waitForFunction(()=>document.querySelector('.recipe-row-title').textContent==='자료 00');
+      await page.locator('[data-industry-sort=downloads]').click();await page.waitForFunction(()=>document.querySelector('.recipe-downloads').textContent==='22');
+      admin=true;await page.evaluate(()=>dispatchEvent(new CustomEvent('member-session-change',{detail:true})));await page.locator('#industry-write').waitFor();
+      await page.locator('#industry-write').click();await page.locator('#industry-title').fill('운영 자료');await page.locator('#industry-body').fill('자료 내용');await page.locator('#industry-submit').click();
+      await page.waitForFunction(()=>document.querySelector('#recipe-editor').hidden);assert.equal(submissions,1);
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await context.close();console.log('PASS public industry library, search, pagination, sorting and operator publishing',width);
     }
-  } finally { if (browser) await browser.close(); await new Promise(done => server.close(done)); }
-})().catch(error => { console.error(error); process.exitCode = 1; });
+  } finally { if(browser)await browser.close(); await new Promise(done=>server.close(done)); }
+})().catch(error=>{console.error(error);process.exitCode=1});
