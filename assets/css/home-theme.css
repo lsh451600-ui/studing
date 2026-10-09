@@ -55,6 +55,7 @@ header{background:var(--paper)}
 header .signup-open{background:var(--accent);border-color:var(--accent);color:var(--paper);font-family:inherit;font-weight:700}
 header .signup-open:hover{background:var(--hover);border-color:var(--hover)}
 header .login-open,header .logout-button,header .member-status{font-family:inherit;border-color:var(--line);color:var(--muted)}
-/* Keep the complete brand lockup readable on the dark header. */
-:root[data-theme="dark"] header .site-logo{padding:4px 8px;background:#faf8f5;border-radius:8px}
+/* Only the Korean tagline is lightened; the logo stays transparent. */
+:root[data-theme="dark"] header .site-logo{padding:0;background:transparent;border-radius:0}
 :root[data-theme="dark"] header .site-logo .logo-lighten{display:none}
+:root[data-theme="dark"] header .site-logo::after{content:"";position:absolute;inset:0;pointer-events:none;background:#fff;mask:url('/assets/logo-small.webp?v=20261009') left center/contain no-repeat;clip-path:inset(54% 5% 27% 45%)}
