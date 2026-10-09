@@ -81,7 +81,7 @@ const { chromium } = require('playwright');
       }));
       assert.equal(await page.locator('#board-back').count(), 0);
       assert.equal(await page.title(), '외모Check-자유게시판');
-      assert.equal(await page.locator('#board-body').evaluate(element => getComputedStyle(element).backgroundColor), 'rgb(255, 255, 255)');
+      assert.equal(await page.locator('#board-body').evaluate(element => getComputedStyle(element).backgroundColor), 'rgb(252, 251, 248)');
       assert.ok(await page.locator('#board-detail').evaluate(element => Math.abs(element.getBoundingClientRect().width - document.querySelector('.board-page').getBoundingClientRect().width) < 1));
       assert.equal(await page.locator('#board-body').textContent(), posts[0].body);
       assert.equal(await page.evaluate(() => window.injected), undefined);

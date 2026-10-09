@@ -24,7 +24,7 @@ const { chromium } = require('playwright');
       let submissions = 0, accountWriterMode = false, failComment = false;
       const commentStore = new Map([['first', [{ id: 1, author: '다른 회원', body: '다른 회원 댓글', created_at: '2026-10-08T01:00:00Z', canEdit: false, canDelete: false }]]]);
       let commentId = 1;
-      const posts = [{ canEdit: true, canDelete: true, id: 'first', category: '베이커리', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
+      const posts = [{ canEdit: true, canDelete: true, id: 'first', comment_count: 1, category: '베이커리', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       const listing = (params = new URLSearchParams()) => {
         let filtered = posts.filter(p => (!params.get('category') || p.category === params.get('category')) && (!params.get('q') || (p.title + ' ' + p.body).includes(params.get('q'))));
         if (params.get('sort') === 'title') filtered.sort((a,b) => a.title.localeCompare(b.title, 'ko'));
@@ -95,6 +95,8 @@ const { chromium } = require('playwright');
       assert.equal(submissions, 0);
       await page.locator('.recipe-row').click(); assert.ok(await page.locator('.recipe-post-body').isVisible());
       assert.equal(await page.locator('.recipe-row-arrow').count(), 0);
+      await page.waitForFunction(() => document.querySelector('.recipe-comment-count').textContent === '1');
+      assert.equal(await page.locator('.recipe-comment-count-heading').textContent(), '댓글');
       for (let theme = 0; theme < 2; theme++) {
         assert.equal(await page.locator('.recipe-detail').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 255, 255)');
         assert.equal(await page.locator('.recipe-row').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(255, 255, 255)');
@@ -136,7 +138,7 @@ const { chromium } = require('playwright');
       }
 
       const alignment = await page.evaluate(() => {
-        const heading = document.querySelector('.recipe-list-heading').children[2].getBoundingClientRect();
+        const heading = document.querySelector('[data-recipe-sort=downloads]').getBoundingClientRect();
         const count = document.querySelector('.recipe-downloads').getBoundingClientRect();
         return Math.abs((heading.left + heading.right) / 2 - (count.left + count.right) / 2);
       });

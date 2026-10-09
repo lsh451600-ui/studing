@@ -1,4 +1,4 @@
-import { appendRecipeComments } from './recipe-comments.js?v=20261009';
+import { appendRecipeComments } from './recipe-comments.js?v=20261009-count';
 import { appendPostActions } from './post-actions.js?v=20261009-permissions';
 const byId = id => document.getElementById(id);
 const form = byId('recipe-access-form'), input = byId('recipe-password'), submit = byId('recipe-submit');
@@ -41,7 +41,8 @@ function renderPosts(posts) {
     time.textContent = new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeZone: 'Asia/Seoul' }).format(new Date(post.created_at));
     const downloads = document.createElement('span'); downloads.className = 'recipe-downloads';
     downloads.textContent = String(post.downloads || 0);
-    summary.append(category, title, downloads, time); card.append(summary);
+    const comments = document.createElement('span'); comments.className = 'recipe-comment-count'; comments.textContent = String(post.comment_count || 0); comments.setAttribute('aria-label', '댓글 ' + comments.textContent + '개');
+    summary.append(category, title, comments, downloads, time); card.append(summary);
     const detail = document.createElement('div'); detail.className = 'recipe-detail'; card.append(detail);
     if (post.image_url) {
       const image = document.createElement('img'); image.src = post.image_url; image.alt = post.title + ' · 레시피 사진'; image.loading = 'lazy'; detail.append(image);

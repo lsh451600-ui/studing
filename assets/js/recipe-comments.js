@@ -21,6 +21,9 @@ export function appendRecipeComments(card, detail, post, api) {
     try {
       const data = await api('/api/recipe-comments?postId=' + post.id);
       list.replaceChildren(); heading.textContent = '댓글 ' + data.comments.length;
+      post.comment_count = data.comments.length;
+      const count = card.querySelector('.recipe-comment-count');
+      if (count) { count.textContent = String(post.comment_count); count.setAttribute('aria-label', '댓글 ' + post.comment_count + '개'); }
       for (const comment of data.comments) {
         const item = make('article', '', 'recipe-comment'), meta = make('div', '', 'recipe-comment-meta');
         const author = make('strong', comment.author), time = make('time', date(comment.created_at)); time.dateTime = comment.created_at; meta.append(author, time);

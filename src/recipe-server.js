@@ -1,3 +1,4 @@
+import { ensureRecipeComments } from './recipe-comments.js';
 import { canManagePost } from './board-permissions.js';
 export function reply(status, data, cookies = []) {
   const headers = new Headers({ 'Content-Type': 'application/json; charset=utf-8',
@@ -88,8 +89,8 @@ export async function rateLimit(request, db, scope, maximum = 10) {
   return row.attempts <= maximum;
 }
 export async function listPosts(db, before = null, { q = '', category = '', identity = null, page = 1, sort = 'latest' } = {}) {
-  await ensurePosts(db);
-  const fields = 'id, author_id, title, body, category, created_at, downloads, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
+  await ensureRecipeComments(db);
+  const fields = 'id, author_id, title, body, category, created_at, downloads, (SELECT COUNT(*) FROM recipe_comments WHERE post_id = recipe_posts.id) AS comment_count, (image_type IS NOT NULL) AS has_image, (attachment_name IS NOT NULL) AS has_attachment, attachment_name';
   const filters = [], values = [];
   if (q) { filters.push('(instr(lower(title), lower(?)) > 0 OR instr(lower(body), lower(?)) > 0)'); values.push(q, q); }
   if (category) { filters.push('category = ?'); values.push(category); }

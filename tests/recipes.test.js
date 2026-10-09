@@ -157,6 +157,11 @@ test('existing recipes gain a persistent download counter without losing content
   await db.prepare("INSERT INTO recipe_posts (id,title,body,created_at) VALUES (1,'기존 레시피','재료와 조리법','2026-10-08T00:00:00Z')").run();
   await ensurePosts(db);
   assert.equal((await listPosts(db)).posts[0].downloads, 0);
+  assert.equal((await listPosts(db)).posts[0].comment_count, 0);
+  await db.prepare("INSERT INTO recipe_comments (post_id,author_id,author,body,created_at) VALUES (1,'member','회원','댓글','2026-10-09T00:00:00Z')").run();
+  assert.equal((await listPosts(db)).posts[0].comment_count, 1);
+  await db.prepare('DELETE FROM recipe_comments WHERE post_id = 1').run();
+  assert.equal((await listPosts(db)).posts[0].comment_count, 0);
   await db.prepare('UPDATE recipe_posts SET downloads = downloads + 1 WHERE id = 1').run();
   await ensurePosts(db);
   const post = (await listPosts(db)).posts[0];

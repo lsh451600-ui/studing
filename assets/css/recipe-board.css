@@ -47,3 +47,8 @@
 .recipe-comment{padding:18px 0;border-bottom:1px solid var(--line)}.recipe-comment-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px}.recipe-comment-meta strong{font-size:15px;font-weight:700}.recipe-comment-meta time{font-size:11px;color:var(--muted)}
 .recipe-comment-body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.8}
 .recipe-comment-controls{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}.recipe-comments button{min-height:38px;padding:8px 12px;font-size:12px}.recipe-comment-form button[type=submit]{background:var(--accent);border-color:var(--accent);color:#fff}.recipe-comments-empty{font-size:13px;color:var(--muted);line-height:1.8}
+
+/* Comment totals share the list row, immediately before downloads. */
+.recipe-collection-page .recipe-row,.recipe-collection-page .recipe-list-heading{grid-template-columns:80px minmax(0,1fr) 48px 64px 100px}
+.recipe-comment-count,.recipe-comment-count-heading{text-align:center;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+@media(max-width:540px){.recipe-collection-page .recipe-row,.recipe-collection-page .recipe-list-heading{grid-template-columns:50px minmax(0,1fr) 26px 44px 60px;gap:5px}.recipe-collection-page .recipe-row time{grid-column:5}.recipe-comment-count,.recipe-comment-count-heading{font-size:10px}}
