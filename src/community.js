@@ -20,7 +20,7 @@ export async function member(request, env) {
   if (!session.user) return { response: reply(401, '로그인 후 작성할 수 있습니다.', {}, session.cookies) };
   const profile = await memberProfile(env, session);
   if (!profile) return { response: reply(403, '회원 정보를 입력한 뒤 작성해 주세요.', {}, session.cookies) };
-  return { session, author: profile.nickname || '회원', isAdmin: isOperator(profile) };
+  return { session, author: profile.nickname?.trim() || profile.username, isAdmin: isOperator(profile) };
 }
 export async function postPermissions(request, env, authorId, comments = []) {
   const denied = { canEdit: false, canDelete: false, permissionsUnavailable: false, deletableCommentIds: [] };

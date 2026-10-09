@@ -268,3 +268,15 @@ test('recipe deletion removes its comments and comment flooding is limited', asy
   assert.equal((await recipePosts({ env: settings, request: req('recipe-posts?id=1', null, true, undefined, 'DELETE') })).status, 200);
   assert.equal((await settings.MEMBERS_DB.prepare('SELECT id FROM recipe_comments WHERE post_id = 1').all()).results.length, 0);
 });
+
+for (const nickname of [null, '', '   ']) {
+  test('authors without a nickname use their verified login ID: ' + JSON.stringify(nickname), async t => {
+    auth(t, { username: 'verified-author', nickname }); const settings = env(t);
+    const created = await posts({ env: settings, request: request('board-posts', { title: '아이디 표시', body: '닉네임 없는 글', author: 'forged' }, true) });
+    assert.equal(created.status, 201); const id = (await created.json()).id;
+    assert.equal((await comments({ env: settings, request: request('board-comments', { postId: id, body: '닉네임 없는 댓글' }, true) })).status, 201);
+    const detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+    assert.equal(detail.post.author, 'verified-author');
+    assert.equal(detail.comments[0].author, 'verified-author');
+  });
+}
