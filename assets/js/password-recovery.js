@@ -35,7 +35,7 @@ if (reset) {
     try {
       const data = await send('/api/reset-password', { password, tokenHash: recovery.tokenHash, accessToken: recovery.accessToken });
       recovery = {}; reset.reset();
-      try { sessionStorage.removeItem('member-session-v1'); } catch {}
+      try { sessionStorage.removeItem('member-session-v1'); sessionStorage.removeItem('member-session-v2'); } catch {}
       window.dispatchEvent(new CustomEvent('member-authenticated', { detail: null }));
       message(data.message); reset.querySelectorAll('input').forEach(input => { input.disabled = true; });
       document.getElementById('recovery-next').href = '/?login_required=1'; document.getElementById('recovery-next').textContent = '새 비밀번호로 로그인';
