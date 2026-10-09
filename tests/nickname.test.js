@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
+import { onRequest as session } from '../functions/api/session.js';
 import { onRequest as account } from '../functions/api/account.js';
 import { onRequest as posts } from '../functions/api/board-posts.js';
 import { initialize } from '../src/community.js';
@@ -79,6 +80,9 @@ test('D1 nicknames persist across account reads without the Supabase nickname mi
   assert.equal((await onRequest({ env: settings, request: request(nickname) })).status, 200);
   const read = () => new Request('https://example.test/api/account', { headers: { Cookie: '__Host-member-access=session-token' } });
   assert.equal((await (await account({ env: settings, request: read() })).json()).account.nickname, nickname);
+  const identity = await (await session({ env: settings, request: new Request('https://example.test/api/session', { headers: { Cookie: '__Host-member-access=session-token' } }) })).json();
+  assert.equal(identity.user.username, 'login-id');
+  assert.equal(identity.user.nickname, nickname);
   const body = await (await posts({ env: settings, request: new Request('https://example.test/api/board-posts?id=1') })).json();
   assert.equal(body.post.author, nickname); assert.equal(body.comments[0].author, nickname);
   const create = request('unused');

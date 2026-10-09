@@ -17,7 +17,7 @@ if (!location.pathname.startsWith('/reset-password') && recoveryFragment.get('ty
 const byId = id => document.getElementById(id);
 const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('login-status');
 const params = new URLSearchParams(location.search);
-const SESSION_CACHE_KEY = 'member-session-v2';
+const SESSION_CACHE_KEY = 'member-session-v3';
 const SESSION_CACHE_MS = 120000;
 const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/startup', '/startup.html', '/private', '/private.html', '/mypage', '/mypage.html']);
 const protectedNext = (() => {
@@ -73,18 +73,19 @@ async function api(path, options = {}) {
   return data;
 }
 function showUser(user) {
+  const displayName = user?.nickname?.trim() || user?.username;
   currentUser = user || null;
   byId('menu-account-status').textContent = user ? '' : '로그인하지 않았습니다.';
   if (user) {
     const profile = document.createElement('a');
     profile.id = 'menu-profile-link'; profile.href = '/mypage';
-    profile.textContent = user.username + '님'; decorateMember(profile, user.level);
-    profile.setAttribute('aria-label', user.username + '님 마이페이지');
+    profile.textContent = displayName + '님'; decorateMember(profile, user.level);
+    profile.setAttribute('aria-label', displayName + '님 마이페이지');
     byId('menu-account-status').append(profile);
   }
   byId('menu-account-status').dataset.state = user ? 'authenticated' : 'anonymous';
-  byId('menu-account-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '로그인하지 않았습니다.');
-  byId('menu-account-status').title = user ? user.username + '님' : '';
+  byId('menu-account-status').setAttribute('aria-label', user ? '로그인 중 · ' + displayName + '님' : '로그인하지 않았습니다.');
+  byId('menu-account-status').title = user ? displayName + '님' : '';
   byId('menu-account-action').hidden = false;
   byId('menu-account-action').textContent = user ? '로그아웃' : '로그인';
   linkButton.hidden = !user || Boolean(user.kakaoLinked || user.googleLinked);
@@ -97,11 +98,11 @@ function showUser(user) {
   byId('member-status').textContent = '';
   if (user) {
     const profile = document.createElement('a'); profile.href = '/mypage'; profile.className = 'member-profile-link';
-    profile.textContent = user.username + '님'; decorateMember(profile, user.level); profile.setAttribute('aria-label', user.username + '님 마이페이지');
+    profile.textContent = displayName + '님'; decorateMember(profile, user.level); profile.setAttribute('aria-label', displayName + '님 마이페이지');
     byId('member-status').append(profile);
   }
-  byId('member-status').title = user ? '로그인 중 · ' + user.username + '님' : '';
-  byId('member-status').setAttribute('aria-label', user ? '로그인 중 · ' + user.username + '님' : '회원 상태');
+  byId('member-status').title = user ? '로그인 중 · ' + displayName + '님' : '';
+  byId('member-status').setAttribute('aria-label', user ? '로그인 중 · ' + displayName + '님' : '회원 상태');
   byId('member-status').closest('.member-controls').dataset.state = user ? 'authenticated' : 'anonymous';
   window.dispatchEvent(new CustomEvent('member-session-change', { detail: Boolean(user) }));
   byId('logout-button').textContent = '로그아웃';
@@ -174,6 +175,7 @@ form.addEventListener('submit', async event => {
     writeSessionCache({ available: true, authenticated: true, user: data.user });
     try { sessionStorage.removeItem('member-login-next'); } catch {}
     showUser(data.user); form.reset(); dialog.close(); byId('member-feedback').textContent = '';
+    await checkSession({ force: true }).catch(() => {});
     if (protectedNext) { location.assign(protectedNext); return; }
   } catch (error) { status.textContent = ''; showAuthError(error.message); }
   finally {

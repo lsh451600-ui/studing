@@ -16,7 +16,7 @@ export async function onRequest({ request, env }) {
     const fallback = provider === 'kakao' ? '카카오 회원' : provider === 'google' ? '구글 회원' : publicUser(session.user || {}).username;
     return reply(200, '', { available: true, authenticated: Boolean(session.user),
       needsProfile: Boolean(session.user && !profile && !profileUnavailable), profileUnavailable,
-      user: session.user ? { id: session.user.id, username: profile?.nickname || profile?.username || fallback,
-        nickname: profile?.nickname || '', level: await levelOf(env.MEMBERS_DB, session.user.id), isAdmin: isOperator(profile), kakaoLinked: publicUser(session.user).kakaoLinked, googleLinked: publicUser(session.user).googleLinked } : null }, session.cookies);
+      user: session.user ? { id: session.user.id, username: profile?.username || fallback,
+        nickname: profile?.nickname?.trim() || '', level: await levelOf(env.MEMBERS_DB, session.user.id), isAdmin: isOperator(profile), kakaoLinked: publicUser(session.user).kakaoLinked, googleLinked: publicUser(session.user).googleLinked } : null }, session.cookies);
   } catch { return reply(503, '로그인 상태를 확인하지 못했습니다.'); }
 }
