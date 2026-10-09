@@ -358,3 +358,14 @@ test('secret posts protect bodies and comments from other members and allow owne
   assert.equal((await posts({ env: settings, request: request('board-posts?id=' + postId) })).status, 200);
   assert.equal((await posts({ env: settings, request: request('board-posts', { title: 'x', body: 'y', is_secret: 'false' }, true) })).status, 400);
 });
+
+test('members can create and edit level-up request posts', async t => {
+  auth(t); const settings = env(t);
+  const created = await posts({ env: settings, request: request('board-posts', { title: '등업 부탁드립니다', body: '신청합니다', category: '등업신청' }, true) });
+  assert.equal(created.status, 201); const id = (await created.json()).id;
+  let detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+  assert.equal(detail.post.category, '등업신청');
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: '등업 신청 수정', body: '수정합니다', category: '등업신청' }, true, 'https://example.test', 'PATCH') })).status, 200);
+  detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+  assert.equal(detail.post.category, '등업신청');
+});
