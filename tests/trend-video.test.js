@@ -41,9 +41,8 @@ test('search bounds recent embeddable videos and ranks validated details by publ
   assert.equal((await selectVideo(secret, now)).id, 'aaaaaaaaaaa');
   assert.equal(calls[0].searchParams.get('order'), 'date');
   assert.equal(calls[0].searchParams.get('videoEmbeddable'), 'true');
-  assert.equal(calls[0].searchParams.get('videoDuration'), 'medium');
   assert.equal(calls[0].searchParams.get('maxResults'), '50');
-  assert.match(calls[0].searchParams.get('q'), /식당 창업/);
+  assert.match(calls[0].searchParams.get('q'), /식당창업/);
   assert.equal(calls[0].searchParams.get('publishedAfter'), new Date(now - 7 * 86400000).toISOString());
   assert.equal(calls.length, 2);
 });

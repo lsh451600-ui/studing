@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: '17 */2 * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/refresh-trend-video.yml
 permissions:
   contents: read
 concurrency:
@@ -16,6 +20,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Allow the Pages deployment to finish
+        if: github.event_name == 'push'
+        run: sleep 90
       - name: Refresh the shared homepage video cache
         run: |
           node --input-type=module <<'JS'
