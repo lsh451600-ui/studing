@@ -4,6 +4,7 @@
     "/api/*",
     "/recipes*",
     "/board*",
+    "/trends*",
     "/startup*",
     "/private*",
     "/mypage*",

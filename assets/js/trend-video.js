@@ -3,7 +3,7 @@ const title = document.getElementById('video-title');
 const meta = document.getElementById('video-meta');
 const status = document.getElementById('video-status');
 const watch = document.getElementById('video-watch');
-let currentId = null;
+let currentId = null, sort = 'latest', generation = 0;
 const errors = {
   setup_required: 'Cloudflare에 YOUTUBE_API_KEY가 등록되어 있지 않습니다. (YT-01)',
   api_key_invalid: '유튜브 API 키가 올바르지 않습니다. Cloudflare에 등록한 값을 확인해 주세요. (YT-02)',
@@ -13,7 +13,7 @@ const errors = {
   youtube_forbidden: '구글에서 영상 조회 요청을 거부했습니다. API 사용 설정과 키 제한을 확인해 주세요. (YT-06)',
   youtube_timeout: '유튜브 연결 시간이 초과됐습니다. 잠시 후 다시 시도해 주세요. (YT-07)',
   youtube_connection_failed: '유튜브 서버에 연결하지 못했습니다. (YT-08)',
-  no_video: '최근 7일의 조건에 맞는 공개 영상을 찾지 못했습니다. (YT-09)',
+  no_video: '최근 30일의 조건에 맞는 공개 영상을 찾지 못했습니다. (YT-09)',
   storage_unavailable: '영상 캐시에 연결하지 못했습니다. 서버 설정 확인이 필요합니다. (YT-10)',
   refresh_pending: '영상을 갱신하고 있습니다. 잠시 후 새로고침해 주세요.',
   youtube_response_invalid: '유튜브 응답을 처리하지 못했습니다. 서버 응답 확인이 필요합니다. (YT-12)',
@@ -23,9 +23,11 @@ const errors = {
 };
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', second: '2-digit', hour12: false, month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 async function update() {
+  const version = ++generation;
   try {
-    const response = await fetch('/api/trend-video', { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(30000) });
+    const response = await fetch('/api/trend-video?sort=' + sort, { credentials: 'omit', cache: 'no-store', signal: AbortSignal.timeout(30000) });
     const data = await response.json();
+    if (version !== generation) return;
     if (!response.ok && !data.reason) throw new Error('unavailable');
     if (!data.available || !/^[A-Za-z0-9_-]{11}$/.test(data.video?.id || '')) {
       if (!currentId) document.getElementById('video-loading').textContent = data.reason === 'setup_required' ? '최신 영상 연결을 준비하고 있습니다.' : '영상 연결을 확인해 주세요.';
@@ -53,9 +55,10 @@ async function update() {
     }
     title.textContent = video.title;
     meta.textContent = video.channel + ' · 조회수 ' + new Intl.NumberFormat('ko-KR').format(video.views) + '회 · 게시일 ' + date(video.publishedAt);
-    status.textContent = '최근 7일 · 최신 발행순 · 2시간마다 자동 갱신\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
+    status.textContent = '최근 30일 · ' + (sort === 'popular' ? '조회수 높은 순' : '최신 발행순') + ' · 2시간마다 자동 갱신\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
     watch.href = 'https://www.youtube.com/watch?v=' + video.id;
   } catch {
+    if (version !== generation) return;
     if (!currentId) document.getElementById('video-loading').textContent = '영상을 불러오지 못했습니다.';
     status.textContent = currentId ? '갱신이 지연되어 이전 영상을 표시합니다.' : '잠시 후 다시 방문하거나 유튜브에서 살펴보세요.';
   }
@@ -65,3 +68,12 @@ globalThis.window?.addEventListener('pageshow', event => { if (event.persisted) 
 
 // Refresh already-open homepages as scheduled content becomes available.
 setInterval(() => { if (!document.hidden) update(); }, 5 * 60 * 1000);
+
+for (const button of document.querySelectorAll('[data-video-sort]')) {
+  button.addEventListener('click', () => {
+    sort = button.dataset.videoSort;
+    for (const option of document.querySelectorAll('[data-video-sort]')) option.setAttribute('aria-pressed', String(option === button));
+    status.textContent = '선택한 순서의 영상을 불러오고 있습니다.';
+    update();
+  });
+}

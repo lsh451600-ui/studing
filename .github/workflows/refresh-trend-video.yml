@@ -26,9 +26,10 @@ jobs:
       - name: Refresh the shared homepage video cache
         run: |
           node --input-type=module <<'JS'
+          for (const sort of ['latest', 'popular']) {
           for (let attempt = 0; attempt < 3; attempt++) {
             try {
-              const response = await fetch('https://studing.pages.dev/api/trend-video?scheduled=1', {
+              const response = await fetch('https://studing.pages.dev/api/trend-video?scheduled=1&sort=' + sort, {
                 headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
                 signal: AbortSignal.timeout(45000), cache: 'no-store'
               });
@@ -41,5 +42,6 @@ jobs:
               if (attempt === 2) throw error;
               await new Promise(resolve => setTimeout(resolve, 10000));
             }
+          }
           }
           JS

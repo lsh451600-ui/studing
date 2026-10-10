@@ -2,11 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
-import { selectVideo, onRequest, refreshSlot } from '../functions/api/trend-video.js';
+import { selectVideo, onRequest, refreshSlot, isTrendVideo } from '../functions/api/trend-video.js';
 const now = Date.now();
 const secret = 'private-youtube-key';
 const request = new Request('https://example.test/api/trend-video');
-const video = (id, views, extra = {}) => ({ id, statistics: { viewCount: String(views) }, status: { embeddable: true, privacyStatus: 'public' }, snippet: { title: 'Dining trends', channelTitle: 'Journal', publishedAt: new Date(now - 86400000).toISOString(), liveBroadcastContent: 'none' }, ...extra });
+const video = (id, views, extra = {}) => ({ id, statistics: { viewCount: String(views) }, status: { embeddable: true, privacyStatus: 'public' }, snippet: { title: 'Dining trends', channelTitle: 'Journal', publishedAt: new Date(now - 86400000).toISOString(), liveBroadcastContent: 'none' }, ...extra, snippet: { title: 'Dining trends', description: '외식 트렌드 전망', channelTitle: 'Journal', publishedAt: new Date(now - 86400000).toISOString(), liveBroadcastContent: 'none', ...extra.snippet } });
 function mockYoutube(t, items) {
   const calls = [];
   t.mock.method(globalThis, 'fetch', async url => {
@@ -36,14 +36,14 @@ function database(saved = {}) {
   } };
 }
 test('search bounds recent embeddable videos and ranks validated details by publication date', async t => {
-  const items = [video('aaaaaaaaaaa', 10, { snippet: { title: 'Newest dining trend', publishedAt: new Date(now - 1000).toISOString() } }), video('bbbbbbbbbbb', 500), video('ccccccccccc', 9999, { status: { embeddable: false, privacyStatus: 'public' } }), video('ddddddddddd', 99999, { snippet: { title: 'Old', publishedAt: new Date(now - 8 * 86400000).toISOString() } }), video('eeeeeeeeeee', 999999, { snippet: { title: 'Live', publishedAt: new Date(now - 1000).toISOString(), liveBroadcastContent: 'live' } })];
+  const items = [video('aaaaaaaaaaa', 10, { snippet: { title: 'Newest dining trend', publishedAt: new Date(now - 1000).toISOString() } }), video('bbbbbbbbbbb', 500), video('ccccccccccc', 9999, { status: { embeddable: false, privacyStatus: 'public' } }), video('ddddddddddd', 99999, { snippet: { title: 'Old', publishedAt: new Date(now - 31 * 86400000).toISOString() } }), video('eeeeeeeeeee', 999999, { snippet: { title: 'Live', publishedAt: new Date(now - 1000).toISOString(), liveBroadcastContent: 'live' } })];
   const calls = mockYoutube(t, items);
   assert.equal((await selectVideo(secret, now)).id, 'aaaaaaaaaaa');
   assert.equal(calls[0].searchParams.get('order'), 'date');
   assert.equal(calls[0].searchParams.get('videoEmbeddable'), 'true');
   assert.equal(calls[0].searchParams.get('maxResults'), '50');
-  assert.match(calls[0].searchParams.get('q'), /식당창업/);
-  assert.equal(calls[0].searchParams.get('publishedAfter'), new Date(now - 7 * 86400000).toISOString());
+  assert.match(calls[0].searchParams.get('q'), /외식업 전망/);
+  assert.equal(calls[0].searchParams.get('publishedAfter'), new Date(now - 30 * 86400000).toISOString());
   assert.equal(calls.length, 2);
 });
 test('missing key and unsupported methods never call upstream or expose secrets', async t => {
@@ -264,7 +264,7 @@ test('browser error UI maps only known reasons and never echoes provider message
   for (const [reason, expected] of [['youtube_connection_failed', 'YT-08'], ['youtube_response_invalid', 'YT-12'], ['youtube_redirect_blocked', 'YT-13'], ['youtube_internal_error', 'YT-14'], ['https://example.test/?key=' + secret, '잠시 후']]) {
     const nodes = new Map(), calls = [];
     const context = {
-      document: { hidden: false, getElementById(id) { if (!nodes.has(id)) nodes.set(id, { textContent: '' }); return nodes.get(id); } },
+      document: { hidden: false, querySelectorAll() { return []; }, getElementById(id) { if (!nodes.has(id)) nodes.set(id, { textContent: '' }); return nodes.get(id); } },
       fetch: async (url, options) => { calls.push({ url, options }); return Response.json({ available: false, reason, message: secret, error: 'https://example.test/?key=' + secret }); },
       AbortSignal, Intl, Date, setInterval() {}
     };
@@ -272,7 +272,7 @@ test('browser error UI maps only known reasons and never echoes provider message
     await new Promise(resolve => setImmediate(resolve));
     assert.ok(nodes.get('video-status').textContent.includes(expected));
     assert.ok(![...nodes.values()].some(node => node.textContent.includes(secret)));
-    assert.equal(calls[0].url, '/api/trend-video'); assert.equal(calls[0].options.cache, 'no-store');
+    assert.equal(calls[0].url, '/api/trend-video?sort=latest'); assert.equal(calls[0].options.cache, 'no-store');
   }
 });
 
@@ -301,4 +301,15 @@ test('two-hour boundaries expire the shared video result', async t => {
     assert.equal((await (await onRequest({ request, env })).json()).video.id, 'bbbbbbbbbbb');
   }
   assert.equal(calls.length, 6);
+});
+
+test('trend selection excludes unrelated dining stories and supports popularity ordering', async t => {
+  assert.equal(isTrendVideo({title:'외식 고부갈등 며느리 이야기',description:'외식 트렌드'}),false);
+  assert.equal(isTrendVideo({title:'오늘 외식 맛집 탐방'}),false);
+  assert.equal(isTrendVideo({title:'2026 외식산업 전망과 트렌드'}),true);
+  const items = [video('aaaaaaaaaaa',10,{snippet:{title:'새 외식 트렌드',publishedAt:new Date(now-1000).toISOString()}}),video('bbbbbbbbbbb',500),video('ccccccccccc',99999,{snippet:{title:'고부갈등 외식 사연',publishedAt:new Date(now-100).toISOString()}})];
+  const calls = mockYoutube(t,items);
+  assert.equal((await selectVideo(secret,now,'latest')).id,'aaaaaaaaaaa');
+  assert.equal((await selectVideo(secret,now,'popular')).id,'bbbbbbbbbbb');
+  assert.equal(calls[2].searchParams.get('order'),'viewCount');
 });

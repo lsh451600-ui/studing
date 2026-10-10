@@ -21,7 +21,7 @@ function canonicalPublicPath(path) {
 
 const protectedPages = new Set([
   '/recipes', '/recipes.html', '/private', '/private.html',
-  '/board', '/board.html',
+  '/board', '/board.html', '/trends', '/trends.html',
   '/startup', '/startup.html',
   '/mypage', '/mypage.html',
 ]);

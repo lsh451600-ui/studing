@@ -19,7 +19,7 @@ const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('l
 const params = new URLSearchParams(location.search);
 const SESSION_CACHE_KEY = 'member-session-v3';
 const SESSION_CACHE_MS = 120000;
-const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/startup', '/startup.html', '/private', '/private.html', '/mypage', '/mypage.html']);
+const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/trends', '/trends.html', '/startup', '/startup.html', '/private', '/private.html', '/mypage', '/mypage.html']);
 const protectedNext = (() => {
   let next = params.get('next');
   try { next ||= sessionStorage.getItem('member-login-next'); } catch {}

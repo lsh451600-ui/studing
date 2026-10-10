@@ -160,3 +160,5 @@ body header.is-compact{min-height:54px;padding:4px 0}
 
 .journal .home-about-copy h1{margin-top:0;font-size:clamp(25px,3vw,34px);line-height:1.45}
 .journal .home-about-brand .about-label{align-self:flex-start;font-size:11px;letter-spacing:.16em}
+
+.video-sort{display:flex;gap:8px;margin:12px 0}.video-sort button{padding:8px 14px;min-height:40px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;font-size:13px}.video-sort button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}

@@ -1,8 +1,10 @@
 import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 const byId = id => document.getElementById(id);
+const boardPath = document.body.dataset.board === 'trend' ? '/trends' : '/board';
 let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, sessionAdmin = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 async function api(url, { method = 'GET', body } = {}) {
+  if (boardPath === '/trends' && url.startsWith('/api/board-posts')) url += (url.includes('?') ? '&' : '?') + 'board=trend';
   const response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000),
     ...(method === 'GET' ? {} : { method, ...(body === undefined ? {} : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }) }) });
   const result = await response.json();
@@ -50,7 +52,7 @@ function rows(posts, append) {
   if (!append) byId('board-list').replaceChildren();
   if (!posts.length && !append) byId('board-list').append(node('p', '첫 이야기를 남겨 주세요.', 'board-empty'));
   for (const post of posts) {
-    const link = node('a', '', 'board-row'); link.href = '/board?post=' + post.id; link.dataset.postId = post.id;
+    const link = node('a', '', 'board-row'); link.href = boardPath + '?post=' + post.id; link.dataset.postId = post.id;
     link.classList.toggle('board-notice', post.category === '공지');
     const title = node('strong', ''); title.append(node('span', post.category || '잡담', 'board-category'), node('span', post.title));
     if (post.is_secret) title.prepend(node('span', '🔒 비밀글', 'board-secret-label'));
@@ -159,12 +161,12 @@ async function loadDetail(id, focus = true) {
 }
 for (const id of ['board-heading-link']) byId(id).addEventListener('click', event => {
   if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-  event.preventDefault(); history.pushState(null, '', '/board'); loadList();
+  event.preventDefault(); history.pushState(null, '', boardPath); loadList();
 });
 byId('board-login').addEventListener('click', () => byId('login-open').click());
 byId('board-write').addEventListener('click', () => {
   if (!byId('board-detail').hidden) {
-    history.pushState(null, '', '/board');
+    history.pushState(null, '', boardPath);
     byId('board-detail').hidden = true;
     byId('board-index').hidden = false;
   }
@@ -184,7 +186,7 @@ byId('board-post-form').addEventListener('submit', async event => {
       body: { is_secret: byId('board-post-secret').checked, category: byId('board-post-category').value, title: byId('board-post-title').value, body: byId('board-post-body').value }
     });
     event.target.reset(); applyUpgradeForm('board-post'); byId('board-post-status').textContent = '';
-    history.pushState(null, '', '/board?post=' + data.id);
+    history.pushState(null, '', boardPath + '?post=' + data.id);
     await loadDetail(data.id);
   } catch (error) { byId('board-post-status').textContent = error.message; }
   finally { writing = false; updateAuth(); }
@@ -231,7 +233,7 @@ deleteConfirm.addEventListener('click', async () => {
   try {
     await api('/api/board-posts?id=' + postId, { method: 'DELETE' });
     deleteDialog.close(); deleteTarget = null;
-    history.pushState(null, '', '/board');
+    history.pushState(null, '', boardPath);
     byId('board-comment-form').reset();
     await loadList();
   } catch (error) { deleteStatus.textContent = error.message; }

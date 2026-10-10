@@ -9,11 +9,12 @@ export async function onRequest({ request, env }) {
   if (!db) return reply(503, '게시판 저장소 연결이 필요합니다.', { reason: 'storage_not_configured' });
   try {
     await initialize(db);
+    const board = new URL(request.url).searchParams.get('board') === 'trend' ? 'trend' : 'free';
     if (request.method === 'GET') {
       const params = new URL(request.url).searchParams;
       if (params.has('id')) {
         const id = idOf(params.get('id')); if (!id) return reply(400, '게시물 번호를 확인해 주세요.');
-        const row = await db.prepare('SELECT id, author_id, author, title, body, category, is_secret, created_at, views FROM community_posts WHERE id = ?').bind(id).first();
+        const row = await db.prepare('SELECT id, author_id, author, title, body, category, is_secret, created_at, views FROM community_posts WHERE id = ? AND board = ?').bind(id, board).first();
         if (!row) return reply(404, '게시물이 없습니다.');
         if (row.is_secret && !(await postPermissions(request, env, row.author_id)).canEdit) return reply(403, '비밀글은 작성자와 운영자만 볼 수 있습니다.');
         const comments = await db.prepare('SELECT id, author_id, author, body, created_at FROM community_comments WHERE post_id = ? ORDER BY id DESC LIMIT 100').bind(id).all();
@@ -27,7 +28,7 @@ export async function onRequest({ request, env }) {
       const search = (params.get('q') || '').trim();
       if (search.length > 100) return reply(400, '검색어는 100자 이내로 입력해 주세요.');
       const fields = 'p.id, p.author_id, p.author, p.title, p.category, p.is_secret, p.created_at, p.views, (SELECT COUNT(*) FROM community_comments c WHERE c.post_id = p.id) AS comments';
-      const filters = [], values = [];
+      const filters = ['p.board = ?'], values = [board];
       if (search) { filters.push('(instr(lower(p.title), lower(?)) > 0 OR (p.is_secret = 0 AND instr(lower(p.body), lower(?)) > 0))'); values.push(search, search); }
       // Pinned notices are included once; the cursor only paginates ordinary posts.
       const notices = before ? [] : (await db.prepare('SELECT ' + fields + ' FROM community_posts p WHERE p.category = ?' + (filters.length ? ' AND ' + filters.join(' AND ') : '') + ' ORDER BY p.id DESC').bind('공지', ...values).all()).results;
@@ -47,7 +48,7 @@ export async function onRequest({ request, env }) {
     }
     if (data && data.is_secret !== undefined && typeof data.is_secret !== 'boolean') return reply(400, '비밀글 설정을 확인해 주세요.');
     if (request.method === 'PATCH' || request.method === 'DELETE') {
-      const post = await db.prepare('SELECT id, author_id, category, is_secret FROM community_posts WHERE id = ?').bind(id).first();
+      const post = await db.prepare('SELECT id, author_id, category, is_secret FROM community_posts WHERE id = ? AND board = ?').bind(id, board).first();
       if (!post) return reply(404, '게시물이 없습니다.', {}, auth.session.cookies);
       if (request.method === 'DELETE') {
         if (post.author_id !== auth.session.user.id && !auth.isAdmin) return reply(403, '작성자 또는 운영자만 삭제할 수 있습니다.', {}, auth.session.cookies);
@@ -72,7 +73,7 @@ export async function onRequest({ request, env }) {
     const title = typeof data.title === 'string' ? data.title.trim() : '', body = typeof data.body === 'string' ? data.body.trim() : '';
     if (!title || title.length > 100 || !body || body.length > 10000) return reply(400, '제목은 100자, 내용은 10,000자 이내로 입력해 주세요.', {}, auth.session.cookies);
     if (!await allowWrite(db, auth.session.user.id, 'post')) return reply(429, '글 작성이 많습니다. 잠시 후 다시 시도해 주세요.', {}, auth.session.cookies);
-    const result = await db.prepare('INSERT INTO community_posts (author_id, author, title, body, category, is_secret, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(auth.session.user.id, auth.author, title, body, category, Number(category === '등업신청' || data.is_secret === true), new Date().toISOString()).run();
+    const result = await db.prepare('INSERT INTO community_posts (author_id, author, title, body, category, is_secret, created_at, board) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').bind(auth.session.user.id, auth.author, title, body, category, Number(category === '등업신청' || data.is_secret === true), new Date().toISOString(), board).run();
     return reply(201, '등록했습니다.', { id: result.meta.last_row_id }, auth.session.cookies);
   } catch { return reply(503, '게시판에 연결하지 못했습니다. 작성 내용은 유지됩니다.'); }
 }

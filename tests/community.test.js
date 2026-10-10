@@ -392,3 +392,21 @@ test('promotion updates badges on existing board posts and comments without rewr
   const list = await (await posts({ env: settings, request: request('board-posts') })).json();
   assert.equal(list.posts.find(post => post.id === id).authorLevel, 'special');
 });
+
+test('trend board posts remain separate through create, list, detail, edit and delete', async t => {
+  auth(t); const settings = env(t);
+  const free = await (await posts({env:settings,request:request('board-posts',{title:'자유게시판 글',body:'일반 이야기'},true)})).json();
+  const created = await posts({env:settings,request:request('board-posts?board=trend',{title:'외식 트렌드 전망',body:'시장 전망을 공유합니다'},true)});
+  assert.equal(created.status,201); const trend = await created.json();
+  const freeList = await (await posts({env:settings,request:request('board-posts')})).json();
+  const trendList = await (await posts({env:settings,request:request('board-posts?board=trend')})).json();
+  assert.deepEqual(freeList.posts.map(post=>post.id),[free.id]);
+  assert.deepEqual(trendList.posts.map(post=>post.id),[trend.id]);
+  assert.equal((await posts({env:settings,request:request('board-posts?id='+trend.id)})).status,404);
+  assert.equal((await posts({env:settings,request:request('board-posts?board=trend&id='+free.id)})).status,404);
+  const edit = {title:'전망 수정',body:'새로운 시장 전망'};
+  assert.equal((await posts({env:settings,request:request('board-posts?board=trend&id='+trend.id,edit,true,undefined,'PATCH')})).status,200);
+  assert.equal((await posts({env:settings,request:request('board-posts?id='+trend.id,edit,true,undefined,'PATCH')})).status,404);
+  assert.equal((await posts({env:settings,request:request('board-posts?board=trend&id='+trend.id,undefined,true,undefined,'DELETE')})).status,200);
+  assert.equal((await (await posts({env:settings,request:request('board-posts')})).json()).posts.length,1);
+});
