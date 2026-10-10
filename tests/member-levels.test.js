@@ -21,7 +21,7 @@ function setup(t) {
   const sqlite=new DatabaseSync(':memory:');t.after(()=>sqlite.close());
   const db={prepare(sql){const st=sqlite.prepare(sql);let v=[];return{bind(...a){v=a;return this},async run(){return st.run(...v)},async first(){return st.get(...v)||null},async all(){return{results:st.all(...v)}}}},async batch(qs){sqlite.exec('BEGIN');try{const out=[];for(const q of qs)out.push(await q.run());sqlite.exec('COMMIT');return out}catch(e){sqlite.exec('ROLLBACK');throw e}}};
   let admin=true;
-  t.mock.method(globalThis,'fetch',async input=>{const url=new URL(input);if(url.pathname==='/auth/v1/user')return Response.json({id:admin?adminId:targetId});if(['id,username','id,username,phone'].includes(url.searchParams.get('select')))return Response.json([{id:targetId,username:'ordinary',phone:'01012345678'}]);return Response.json([{username:admin?'lsh451600':'ordinary',nickname:admin?'운영팀':'lsh451600'}])});
+  t.mock.method(globalThis,'fetch',async input=>{const url=new URL(input);if(url.pathname==='/auth/v1/user')return Response.json({id:admin?adminId:targetId});if(['id,username','id,username,phone','id,username,nickname,phone'].includes(url.searchParams.get('select')))return Response.json([{id:targetId,username:'ordinary',nickname:'홍길동',phone:'01012345678'}]);return Response.json([{username:admin?'lsh451600':'ordinary',nickname:admin?'운영팀':'lsh451600'}])});
   const env={MEMBERS_DB:db,SUPABASE_URL:'https://project.supabase.co',SUPABASE_PUBLISHABLE_KEY:'public',SUPABASE_SECRET_KEY:'secret',RECIPE_PASSWORD:'reader-pass'};
   const req=(path,{method='GET',body,signed=true,origin='https://dining.win',cookie=''}={})=>new Request('https://dining.win'+path,{method,headers:{Origin:origin,Cookie:(signed?'__Host-member-access=verified; ':'')+cookie,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});
   return{env,req,db,setAdmin:value=>{admin=value}};
@@ -91,9 +91,17 @@ test('verified admin can unlock and read both boards without any shared password
   await db.prepare('INSERT INTO member_levels(member_id,level,updated_by,updated_at) VALUES (?,?,?,?)').bind(targetId,'special',adminId,new Date().toISOString()).run();
   for(const [path,handler] of [['/api/recipe-posts',recipePosts],['/api/private-posts',industryPosts]])assert.equal((await handler({env,request:req(path)})).status,403);
 });
-test('admin member directory includes phone numbers but ordinary members cannot fetch it',async t=>{
+test('admin member directory includes names and phone numbers but ordinary members cannot fetch it',async t=>{
   const {env,req,setAdmin}=setup(t);
   const response=await levels({env,request:req('/api/member-levels')});assert.equal(response.status,200);
-  assert.deepEqual((await response.json()).members[0],{id:targetId,username:'ordinary',phone:'01012345678',level:'regular',isAdmin:false});
+  assert.deepEqual((await response.json()).members[0],{id:targetId,username:'ordinary',nickname:'홍길동',phone:'01012345678',level:'regular',isAdmin:false});
   setAdmin(false);const denied=await levels({env,request:req('/api/member-levels')});assert.equal(denied.status,403);assert.ok(!(await denied.text()).includes('01012345678'));
+});
+
+test('admin directory uses the current saved nickname',async t=>{
+  const {env,req,db}=setup(t);
+  const {storeNickname}=await import('../src/member-nicknames.js');
+  await storeNickname(db,targetId,'새 이름');
+  const response=await levels({env,request:req('/api/member-levels')});
+  assert.equal(response.status,200);assert.equal((await response.json()).members[0].nickname,'새 이름');
 });
