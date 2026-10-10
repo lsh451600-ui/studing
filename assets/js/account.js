@@ -98,7 +98,13 @@ async function loadMembers() {
       const phone = document.createElement('span'); phone.className = 'member-level-phone'; phone.textContent = member.phone || '등록된 전화번호 없음';
       const nickname = document.createElement('span'); nickname.className = 'member-level-nickname';
       nickname.textContent = '이름(닉네임): ' + (member.nickname || '등록된 이름 없음');
-      phone.setAttribute('aria-label', member.username + ' 전화번호'); identity.append(name, nickname, phone);
+      phone.setAttribute('aria-label', member.username + ' 전화번호'); const joined = document.createElement('time'); joined.className = 'member-level-created';
+      const joinedDate = member.createdAt ? new Date(member.createdAt) : null;
+      if (joinedDate && Number.isFinite(joinedDate.getTime())) {
+        joined.dateTime = joinedDate.toISOString();
+        joined.textContent = '가입일: ' + new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'long' }).format(joinedDate);
+      } else joined.textContent = '가입일: 확인할 수 없음';
+      identity.append(name, nickname, phone, joined);
       if (member.isAdmin) { const label = document.createElement('span'); label.textContent = '운영자'; row.append(identity, label); }
       else {
         const select = document.createElement('select'); select.setAttribute('aria-label', member.username + ' 회원 등급');
