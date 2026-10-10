@@ -63,7 +63,7 @@ export async function onRequest({ request, env }) {
       if ((category === '공지' || post.category === '공지') && !auth.isAdmin) return reply(403, '공지는 운영자만 작성·수정할 수 있습니다.', {}, auth.session.cookies);
       const title = typeof data.title === 'string' ? data.title.trim() : '', body = typeof data.body === 'string' ? data.body.trim() : '';
       if (!title || title.length > 100 || !body || body.length > 10000) return reply(400, '제목은 100자, 내용은 10,000자 이내로 입력해 주세요.', {}, auth.session.cookies);
-      await db.prepare('UPDATE community_posts SET title = ?, body = ?, category = ?, is_secret = ? WHERE id = ?').bind(title, body, category, data.is_secret === undefined ? post.is_secret : Number(data.is_secret), id).run();
+      await db.prepare('UPDATE community_posts SET title = ?, body = ?, category = ?, is_secret = ? WHERE id = ?').bind(title, body, category, category === '등업신청' ? 1 : (data.is_secret === undefined ? post.is_secret : Number(data.is_secret)), id).run();
       return reply(200, '게시물을 수정했습니다.', { id }, auth.session.cookies);
     }
     const category = data.category ?? '잡담';
@@ -72,7 +72,7 @@ export async function onRequest({ request, env }) {
     const title = typeof data.title === 'string' ? data.title.trim() : '', body = typeof data.body === 'string' ? data.body.trim() : '';
     if (!title || title.length > 100 || !body || body.length > 10000) return reply(400, '제목은 100자, 내용은 10,000자 이내로 입력해 주세요.', {}, auth.session.cookies);
     if (!await allowWrite(db, auth.session.user.id, 'post')) return reply(429, '글 작성이 많습니다. 잠시 후 다시 시도해 주세요.', {}, auth.session.cookies);
-    const result = await db.prepare('INSERT INTO community_posts (author_id, author, title, body, category, is_secret, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(auth.session.user.id, auth.author, title, body, category, Number(data.is_secret === true), new Date().toISOString()).run();
+    const result = await db.prepare('INSERT INTO community_posts (author_id, author, title, body, category, is_secret, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(auth.session.user.id, auth.author, title, body, category, Number(category === '등업신청' || data.is_secret === true), new Date().toISOString()).run();
     return reply(201, '등록했습니다.', { id: result.meta.last_row_id }, auth.session.cookies);
   } catch { return reply(503, '게시판에 연결하지 못했습니다. 작성 내용은 유지됩니다.'); }
 }

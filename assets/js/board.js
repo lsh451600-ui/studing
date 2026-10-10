@@ -11,6 +11,30 @@ async function api(url, { method = 'GET', body } = {}) {
 }
 function node(tag, text, className) { const element = document.createElement(tag); element.textContent = text; if (className) element.className = className; return element; }
 function authenticated() { return sessionAuthenticated; }
+const upgradeTemplate = `몇몇 페이지는 등업을 하지 않으면 이용하실 수 없습니다. 등업방법에 따라 등업을 진행해 주세요.
+
+1. 이름 :
+2. 소속 :
+3. 전화번호 :
+
+확인 후 개별적으로 등업시켜 드리겠습니다.
+글은 등업신청으로 남겨주시고 비밀글로 남겨주세요. (개인정보 보호)`;
+function applyUpgradeForm(prefix, addTemplate = false) {
+  const upgrade = byId(prefix + '-category').value === '등업신청';
+  const secret = byId(prefix + '-secret');
+  if (upgrade) secret.checked = true;
+  secret.disabled = upgrade;
+  if (upgrade && addTemplate) {
+    const body = byId(prefix + '-body');
+    if (!body.value.includes('1. 이름 :')) body.value += (body.value.trim() ? '\n\n' : '') + upgradeTemplate;
+    const title = byId(prefix + '-title');
+    if (!title.value.trim()) title.value = '등업신청';
+  }
+}
+for (const prefix of ['board-post', 'board-edit']) {
+  byId(prefix + '-category').addEventListener('change', () => applyUpgradeForm(prefix, true));
+}
+
 function updateAuth() {
   const ready = authenticated();
   for (const id of ['board-post-category', 'board-edit-category']) {
@@ -70,6 +94,7 @@ async function loadDetail(id, focus = true) {
     byId('board-edit-form').hidden = true;
     byId('board-edit-title').value = data.post.title;
     byId('board-edit-body').value = data.post.body;
+    applyUpgradeForm('board-edit');
     byId('board-comments').replaceChildren();
     for (const comment of data.comments) {
       const item = node('li', '', 'board-comment'); item.dataset.commentId = comment.id;
@@ -158,7 +183,7 @@ byId('board-post-form').addEventListener('submit', async event => {
       method: 'POST',
       body: { is_secret: byId('board-post-secret').checked, category: byId('board-post-category').value, title: byId('board-post-title').value, body: byId('board-post-body').value }
     });
-    event.target.reset(); byId('board-post-status').textContent = '';
+    event.target.reset(); applyUpgradeForm('board-post'); byId('board-post-status').textContent = '';
     history.pushState(null, '', '/board?post=' + data.id);
     await loadDetail(data.id);
   } catch (error) { byId('board-post-status').textContent = error.message; }

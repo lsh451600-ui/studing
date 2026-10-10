@@ -363,13 +363,17 @@ test('secret posts protect bodies and comments from other members and allow owne
 
 test('members can create and edit level-up request posts', async t => {
   auth(t); const settings = env(t);
-  const created = await posts({ env: settings, request: request('board-posts', { title: '등업 부탁드립니다', body: '신청합니다', category: '등업신청' }, true) });
+  const created = await posts({ env: settings, request: request('board-posts', { title: '등업 부탁드립니다', body: '신청합니다', category: '등업신청', is_secret: false }, true) });
   assert.equal(created.status, 201); const id = (await created.json()).id;
-  let detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+  let detail = await (await posts({ env: settings, request: request('board-posts?id=' + id, undefined, true) })).json();
   assert.equal(detail.post.category, '등업신청');
-  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: '등업 신청 수정', body: '수정합니다', category: '등업신청' }, true, 'https://example.test', 'PATCH') })).status, 200);
-  detail = await (await posts({ env: settings, request: request('board-posts?id=' + id) })).json();
+  assert.equal(detail.post.is_secret, 1);
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id) })).status, 403);
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id, { title: '등업 신청 수정', body: '수정합니다', category: '등업신청', is_secret: false }, true, 'https://example.test', 'PATCH') })).status, 200);
+  detail = await (await posts({ env: settings, request: request('board-posts?id=' + id, undefined, true) })).json();
   assert.equal(detail.post.category, '등업신청');
+  assert.equal(detail.post.is_secret, 1);
+  assert.equal((await posts({ env: settings, request: request('board-posts?id=' + id) })).status, 403);
 });
 
 test('promotion updates badges on existing board posts and comments without rewriting them', async t => {

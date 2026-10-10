@@ -142,3 +142,18 @@ header.is-compact .brand .site-logo .logo-base{max-width:calc(48px * 600 / 255)}
 .recipe-page input[type="file"]{box-sizing:border-box;width:100%;max-width:100%;min-width:0;height:auto;min-height:52px;padding:4px 2px;border:0;border-radius:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;line-height:1.5}
 .recipe-page input[type="file"]::file-selector-button{box-sizing:border-box;min-height:44px;margin:0 10px 0 0;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);font:inherit;line-height:1.5;cursor:pointer}
 .recipe-page input[type="file"]::file-selector-button:hover{border-color:var(--accent);background:var(--surface)}
+
+/* Shared masthead sizing on every page and in every account state. */
+body header .brand .site-logo.site-logo.site-logo{width:min(180px,32vw);max-width:100%;transition:width .2s ease}
+body header .brand .site-logo.site-logo.site-logo img{width:100%;max-width:100%;max-height:none;height:auto}
+body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(136px,25vw)}
+body header.is-compact{min-height:54px;padding:4px 0}
+@media(max-width:800px){
+  body header .brand .site-logo.site-logo.site-logo{width:min(155px,32vw)}
+  body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(118px,25vw)}
+}
+@media(max-width:540px){
+  body header .brand .site-logo.site-logo.site-logo{width:min(132px,35vw)}
+  body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(104px,28vw)}
+}
+@media(prefers-reduced-motion:reduce){body header .brand .site-logo.site-logo.site-logo,body header .brand img{transition:none}}
