@@ -31,6 +31,16 @@ const { chromium } = require('playwright');
       for (const path of ['/', '/guides', '/guides/menu-margin', '/guides/break-even', '/guides/solo-dining', '/guides/menu-complexity', '/about', '/editorial', '/privacy', '/terms', '/404']) {
         await page.goto(origin + path);
         assert.equal(await page.locator('main h1').count(), 1, path);
+        assert.equal(await page.locator('main .home-introduction').count(), path === '/about' ? 1 : 0);
+        if (await page.evaluate(() => document.documentElement.scrollHeight - innerHeight > 180)) {
+          const logoWidth = await page.locator('header .site-logo').evaluate(el => el.getBoundingClientRect().width);
+          await page.evaluate(() => window.scrollTo({top:180,behavior:'instant'}));
+          await page.waitForTimeout(350);
+          assert.ok(await page.locator('header .site-logo').evaluate(el => el.getBoundingClientRect().width) < logoWidth, path + ' logo shrinks at ' + width);
+          await page.evaluate(() => window.scrollTo({top:0,behavior:'instant'}));
+          await page.waitForTimeout(350);
+        }
+
         assert.equal(await page.locator('.journal-nav').count(), 0);
         if (width <= 900) {
           assert.ok(await page.locator('footer').evaluate(el => {
@@ -56,10 +66,10 @@ const { chromium } = require('playwright');
         await page.waitForFunction(() => scrollY === 0);
         assert.ok(await page.locator('#back-to-top').isHidden());
         }
-        if (path === '/') {
-          const widths = await page.evaluate(() => ({ intro: document.querySelector('.home-introduction').getBoundingClientRect().width, main: document.querySelector('main').getBoundingClientRect().width, footer: document.querySelector('footer').getBoundingClientRect().width }));
-          assert.ok(Math.abs(widths.intro - widths.main) < 1 && Math.abs(widths.footer - widths.main) < 1, 'introduction and divider use the full page width');
-          if (width === 1280 && theme === 'light') await page.screenshot({ path: '/tmp/studing-home-unified.png', fullPage: true });
+        if (path === '/about') {
+          const widths = await page.evaluate(() => ({ intro: document.querySelector('.home-introduction').getBoundingClientRect().width, main: document.querySelector('main').getBoundingClientRect().width }));
+          assert.ok(Math.abs(widths.intro - widths.main) < 1, 'introduction uses the full about content width');
+          if (width === 1280 && theme === 'light') await page.screenshot({ path: '/tmp/studing-about-moved.png', fullPage: true });
         }
         if (path.endsWith('menu-margin')) {
           await page.locator('[data-guide-tool] button').click();

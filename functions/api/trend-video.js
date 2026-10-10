@@ -1,9 +1,9 @@
-const PERIOD = 12 * 60 * 60 * 1000;
-// UTC midnight/noon are 09:00/21:00 in Korea.
+const PERIOD = 2 * 60 * 60 * 1000;
+// Refresh in shared two-hour slots; the scheduler also warms the cache.
 export const refreshSlot = now => Math.floor(now / PERIOD) * PERIOD;
 const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
-const QUERY = '외식 트렌드|외식 산업|푸드 트렌드';
-const CACHE_KEY = 'dining-latest-v6';
+const QUERY = '외식 트렌드|외식업 트렌드|외식 산업|푸드 트렌드|외식 창업|식당 창업|프랜차이즈 동향|외식업 경기';
+const CACHE_KEY = 'dining-latest-v7';
 const inFlight = new Map();
 const reasons = new Set(['api_key_invalid', 'api_not_enabled', 'api_key_restricted', 'quota_exceeded', 'youtube_forbidden', 'youtube_unavailable', 'youtube_connection_failed', 'youtube_timeout', 'youtube_response_invalid', 'youtube_redirect_blocked', 'youtube_internal_error', 'no_video']);
 export function classifyYouTubeError(data = {}, status = 0) {
@@ -58,7 +58,7 @@ async function youtube(key, resource, parameters) {
 export async function selectVideo(key, now = Date.now()) {
   const found = await youtube(key, 'search', { part: 'snippet', type: 'video', q: QUERY,
     order: 'date', publishedAfter: new Date(now - 7 * 86400000).toISOString(), publishedBefore: new Date(now).toISOString(),
-    regionCode: 'KR', relevanceLanguage: 'ko', safeSearch: 'moderate', videoEmbeddable: 'true', maxResults: '25' });
+    regionCode: 'KR', relevanceLanguage: 'ko', safeSearch: 'moderate', videoEmbeddable: 'true', videoDuration: 'medium', maxResults: '50' });
   const ids = [...new Set((found.items || []).map(item => item?.id?.videoId).filter(id => /^[A-Za-z0-9_-]{11}$/.test(id)))];
   if (!ids.length) return null;
   const details = await youtube(key, 'videos', { part: 'snippet,statistics,status', id: ids.join(',') });
@@ -79,7 +79,7 @@ async function edgeResponse(request, env) {
   if (!cache) return reply({ available: false, reason: 'storage_unavailable' }, 503);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(env.YOUTUBE_API_KEY)));
   const fingerprint = Array.from(digest.slice(0, 12), byte => byte.toString(16).padStart(2, '0')).join('');
-  const key = new Request(new URL('/__video-cache/v6/' + fingerprint + '/' + refreshSlot(Date.now()), request.url));
+  const key = new Request(new URL('/__video-cache/v7/' + fingerprint + '/' + refreshSlot(Date.now()), request.url));
   let cached;
   try { cached = await cache.match(key); } catch { /* Cache outages must not block video lookup. */ }
   if (cached) return cached;

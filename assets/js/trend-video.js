@@ -52,8 +52,8 @@ async function update() {
       player.replaceChildren(start); currentId = video.id;
     }
     title.textContent = video.title;
-    meta.textContent = video.channel + ' · 조회수 ' + new Intl.NumberFormat('ko-KR').format(video.views) + '회';
-    status.textContent = '최근 7일 · 최신 발행순 · 매일 오전 9시·오후 9시 자동 갱신\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
+    meta.textContent = video.channel + ' · 조회수 ' + new Intl.NumberFormat('ko-KR').format(video.views) + '회 · 게시일 ' + date(video.publishedAt);
+    status.textContent = '최근 7일 · 최신 발행순 · 2시간마다 자동 갱신\n접속 기준: ' + date(data.requestedAt || data.checkedAt) + ' (한국 시간)\n실제 수집: ' + date(data.checkedAt) + ' (한국 시간)' + (data.stale ? ' · 갱신 지연으로 이전 결과를 표시합니다.' : '');
     watch.href = 'https://www.youtube.com/watch?v=' + video.id;
   } catch {
     if (!currentId) document.getElementById('video-loading').textContent = '영상을 불러오지 못했습니다.';

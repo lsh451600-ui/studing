@@ -41,6 +41,9 @@ test('search bounds recent embeddable videos and ranks validated details by publ
   assert.equal((await selectVideo(secret, now)).id, 'aaaaaaaaaaa');
   assert.equal(calls[0].searchParams.get('order'), 'date');
   assert.equal(calls[0].searchParams.get('videoEmbeddable'), 'true');
+  assert.equal(calls[0].searchParams.get('videoDuration'), 'medium');
+  assert.equal(calls[0].searchParams.get('maxResults'), '50');
+  assert.match(calls[0].searchParams.get('q'), /식당 창업/);
   assert.equal(calls[0].searchParams.get('publishedAfter'), new Date(now - 7 * 86400000).toISOString());
   assert.equal(calls.length, 2);
 });
@@ -285,11 +288,11 @@ test('legacy visit query shares the scheduled cache instead of spending quota on
   }
   assert.equal(calls.length, 2);
 });
-test('Korean 09:00 and 21:00 boundaries expire the shared video result', async t => {
+test('two-hour boundaries expire the shared video result', async t => {
   const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500, { snippet: { title: 'Scheduled latest', publishedAt: '2026-10-07T00:00:00Z' } })]);
   let mockedNow = Date.now();
   t.mock.method(Date, 'now', () => mockedNow);
-  for (const boundary of ['2026-10-08T00:00:00Z', '2026-10-08T12:00:00Z']) {
+  for (const boundary of ['2026-10-08T00:00:00Z', '2026-10-08T02:00:00Z', '2026-10-08T12:00:00Z']) {
     const clock = Date.parse(boundary);
     mockedNow = clock - 1;
     const db = database({ payload: JSON.stringify({ id: 'aaaaaaaaaaa', publishedAt: new Date(clock - 86400000).toISOString() }), fetched_at: clock - 1000 });
@@ -298,5 +301,5 @@ test('Korean 09:00 and 21:00 boundaries expire the shared video result', async t
     mockedNow = clock;
     assert.equal((await (await onRequest({ request, env })).json()).video.id, 'bbbbbbbbbbb');
   }
-  assert.equal(calls.length, 4);
+  assert.equal(calls.length, 6);
 });

@@ -1,4 +1,4 @@
-name: Refresh dining news and video
+name: Refresh dining news
 on:
   schedule:
     # 00:00 / 12:00 UTC = 09:00 / 21:00 Asia/Seoul
@@ -28,26 +28,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Refresh the shared homepage video cache
-        run: |
-          node --input-type=module <<'JS'
-          for (let attempt = 0; attempt < 3; attempt++) {
-            try {
-              const response = await fetch('https://studing.pages.dev/api/trend-video?scheduled=1', {
-                headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
-                signal: AbortSignal.timeout(45000), cache: 'no-store'
-              });
-              if (!response.ok) throw new Error('Video endpoint HTTP ' + response.status);
-              const data = await response.json();
-              if (!data.available || data.stale) throw new Error('Video refresh failed: ' + (data.reason || 'stale'));
-              console.log('Video refreshed:', data.video.title, data.checkedAt);
-              break;
-            } catch (error) {
-              if (attempt === 2) throw error;
-              await new Promise(resolve => setTimeout(resolve, 10000));
-            }
-          }
-          JS
       - name: Load previously published articles to prevent repeats
         env:
           GH_TOKEN: ${{ github.token }}

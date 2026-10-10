@@ -157,3 +157,6 @@ body header.is-compact{min-height:54px;padding:4px 0}
   body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(104px,28vw)}
 }
 @media(prefers-reduced-motion:reduce){body header .brand .site-logo.site-logo.site-logo,body header .brand img{transition:none}}
+
+.journal .home-about-copy h1{margin-top:0;font-size:clamp(25px,3vw,34px);line-height:1.45}
+.journal .home-about-brand .about-label{align-self:flex-start;font-size:11px;letter-spacing:.16em}
