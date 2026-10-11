@@ -288,7 +288,7 @@ test('legacy visit query shares the scheduled cache instead of spending quota on
   assert.equal(calls.length, 2);
 });
 test('two-hour boundaries expire the shared video result', async t => {
-  const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500, { snippet: { title: 'Scheduled latest', publishedAt: '2026-10-07T00:00:00Z' } })]);
+  const calls = mockYoutube(t, [video('bbbbbbbbbbb', 500, { snippet: { title: '외식 트렌드 최신 전망', publishedAt: '2026-10-07T00:00:00Z' } })]);
   let mockedNow = Date.now();
   t.mock.method(Date, 'now', () => mockedNow);
   for (const boundary of ['2026-10-08T00:00:00Z', '2026-10-08T02:00:00Z', '2026-10-08T12:00:00Z']) {
@@ -306,6 +306,7 @@ test('two-hour boundaries expire the shared video result', async t => {
 test('trend selection excludes unrelated dining stories and supports popularity ordering', async t => {
   assert.equal(isTrendVideo({title:'외식 고부갈등 며느리 이야기',description:'외식 트렌드'}),false);
   assert.equal(isTrendVideo({title:'오늘 외식 맛집 탐방'}),false);
+  assert.equal(isTrendVideo({title:'메뉴북 음료 #외식트렌드',description:'외식 트렌드'}),false);
   assert.equal(isTrendVideo({title:'외식조리 면접 대비 외식트렌드 질문'}),false);
   assert.equal(isTrendVideo({title:'2026 외식산업 전망과 트렌드'}),true);
   const items = [video('aaaaaaaaaaa',10,{snippet:{title:'새 외식 트렌드',publishedAt:new Date(now-1000).toISOString()}}),video('bbbbbbbbbbb',500),video('ccccccccccc',99999,{snippet:{title:'고부갈등 외식 사연',publishedAt:new Date(now-100).toISOString()}})];
