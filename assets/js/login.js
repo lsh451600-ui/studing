@@ -93,6 +93,11 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   const displayName = user?.nickname?.trim() || user?.username;
+  // Focus returns after a file picker too. Rechecking the same session must
+  // preserve drafts; notify editors only when identity or access changes.
+  const sessionChanged = (currentUser?.id || null) !== (user?.id || null) ||
+    Boolean(currentUser?.isAdmin) !== Boolean(user?.isAdmin) ||
+    (currentUser?.level || null) !== (user?.level || null);
   if (currentUser && currentUser.id !== user?.id) window.dispatchEvent(new CustomEvent('member-session-change', { detail: false }));
   currentUser = user || null;
   byId('menu-account-status').textContent = user ? '' : '로그인하지 않았습니다.';
@@ -124,7 +129,7 @@ function showUser(user) {
   byId('member-status').title = user ? '로그인 중 · ' + displayName + '님' : '';
   byId('member-status').setAttribute('aria-label', user ? '로그인 중 · ' + displayName + '님' : '회원 상태');
   byId('member-status').closest('.member-controls').dataset.state = user ? 'authenticated' : 'anonymous';
-  window.dispatchEvent(new CustomEvent('member-session-change', { detail: Boolean(user) }));
+  if (sessionChanged) window.dispatchEvent(new CustomEvent('member-session-change', { detail: Boolean(user) }));
   byId('logout-button').textContent = '로그아웃';
 }
 function readSessionCache() {
