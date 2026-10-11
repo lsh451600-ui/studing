@@ -1,7 +1,28 @@
 export const snapshot = {
-  "updated_at": "2026-10-11T00:19:27.438526+00:00",
+  "updated_at": "2026-10-11T02:52:45.259443+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "中 국경절 연휴 서비스업 매출 전년比 19.5% 증가...관광·외식·여가 소비 활기-Xinhua",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12blZwRFQ1UVIwNWJrZWJIQTR5dkhwUUh3RW11ZzhUSnJ3Snd4MTZtaVVNc3JLVW5nZjNJQ0JrZFU4eTN2bnVwSjllTGprVEh0djlIWDVUWExhWFNIOHZKYUwycHRFb0o3d3g0U1A3dVIxOS1H?oc=5",
+      "source": "신화망",
+      "published_at": "2026-10-11T01:24:11+00:00",
+      "original_url": "https://kr.news.cn/20261011/bcbc2b38b1304963b172ae10bffcff45/c.html"
+    },
+    {
+      "title": "\"요즘 뜨는 디저트로 입맛 저격\" 외식·카페업계, 트렌드 메뉴 우수수[이거 먹어볼까]",
+      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBnUTh0X1NCa1h4aDF5M1RMdzNreDRpYVdMOFVYb2hYY1M4NXcwcDdFdHlPRDJ6WTF5QUg3WTFTaW1UWXJ0SkNKOXc1ZnVWcHE0aGZEZWZJdmNELWtJOWNFNEhUSnkxOWNIY3RQWVVDXzBTYW5nd2hlUNIBeEFVX3lxTFBnUTh0X1NCa1h4aDF5M1RMdzNreDRpYVdMOFVYb2hYY1M4NXcwcDdFdHlPRDJ6WTF5QUg3WTFTaW1UWXJ0SkNKOXc1ZnVWcHE0aGZEZWZJdmNELWtJOWNFNEhUSnkxOWNIY3RQWVVDXzBTYW5nd2hlUA?oc=5",
+      "source": "뉴시스",
+      "published_at": "2026-10-11T01:00:00+00:00",
+      "original_url": "https://mobile.newsis.com/view_amp.html?ar_id=NISX20261008_0003819171"
+    },
+    {
+      "title": "산업체 구내식당 210곳 단속…불량 식재료·원산지 속임 잡는다",
+      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTFBpQXdpd3pCOUxlUnN0cjI4LUFnQjJULVpYT2dSSXMwWWItdmkzSDhjUmtNQklSU1A3MFFnMHIwSWdxRTRmRjJzaw?oc=5",
+      "source": "소비자를 위한 신문",
+      "published_at": "2026-10-10T11:19:00+00:00",
+      "original_url": "https://www.consumertimes.kr/54711"
+    },
     {
       "title": "\"여행·외식은 끊었는데…” 고물가에 한국인들이 대거 몰린 뜻밖의 '소비'",
       "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBJejRiM0Z0Z1l4aFJXWVdyQ0kzX0hScnFGVEp2Y3lleUQzb0g4MkU0RVRnZXA3Skt6cUE0WW1FcDh0N2E2aW1SbEdMbGp4WmgyYWRVVXFR?oc=5",
@@ -10,39 +31,18 @@ export const snapshot = {
       "original_url": "https://www.wikitree.co.kr/articles/1164324"
     },
     {
+      "title": "\"피자·햄버거 가격 또 오른다고?\"…전쟁에 이상기후까지, 외식물가 어쩌나 [수민이가 궁금해요]",
+      "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1TVGFVckc3U05DSUhTUE9ncVFGa3lSaWRlb3FPQjB6RnZkclVaYTVWaFBBSUNvMmJPcHk5X29xUmcxQURISHRvd3hvd2pNZ3Z0eEx6dtIBVEFVX3lxTE1TVGFVckc3U05DSUhTUE9ncVFGa3lSaWRlb3FPQjB6RnZkclVaYTVWaFBBSUNvMmJPcHk5X29xUmcxQURISHRvd3hvd2pNZ3Z0eEx6dg?oc=5",
+      "source": "세계일보",
+      "published_at": "2026-10-09T04:02:50+00:00",
+      "original_url": "https://m.segye.com/ampView/20261009503929"
+    },
+    {
       "title": "외식 프랜차이즈 줄줄이 가격인상… 소비자 부담 커진다",
       "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5MbTZ1dndjam5fX2xRQXBnMER4VmQ1TkhoMlQxdnBRS0NYdlZTdnBoQlBBSDhHQ0hJMGxvY2IzTGJEN1pFLXdEbjNSSlVIQ3lxQUxLMzBidWdTQnNfT2p1a1dkSmQ3cDJ6ZDlscEx3TlNJcWM1Mm5ONzE5cw?oc=5",
       "source": "부산일보",
       "published_at": "2026-10-08T08:41:40+00:00",
       "original_url": "https://mobile.busan.com/view/bstoday/view.php?code=2026100817394251223"
-    },
-    {
-      "title": "소비 트렌드 다변화 속 외식·유통가, '고품질·체험·절약' 고객 공략",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5yRlcwdVNhQnNFbElrUzNZSlgtRUIwR3pQdW9KLWdpM19NSS1Mb2NNbFZYV3NXRzFsX1FYOFk1U1dDMW90ZGNoREZHWjhleXFMeGhfcEIwWFpQdmxoRjdxalBqd0ItVnlmYXc?oc=5",
-      "source": "데일리팝",
-      "published_at": "2026-10-08T07:25:00+00:00",
-      "original_url": "https://www.dailypop.kr/news/articleView.html?idxno=103193"
-    },
-    {
-      "title": "[경제+] 스크린 넘어 관광·외식까지...中 국경절 '영화+' 소비시장 들썩",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9hRTlRR1JiNWJLdlduYVpLaFB0VDF3UlZjUHE5cmNXUlp3VWR5YnFwdjV6REhPSjFUdVpmV3JXVDdPZi1SVVpqamtTS2FpQ21PS21NNnJ5Yy1pczIwVy1CRUxpSXhMZVlFdUJlNl9mNnnSAXBBVV95cUxPYUU5UUdSYjViS3ZXbmFaS2hQdFQxd1JWY1BxOXJjV1Jad1VkeWJxcHY1ekRIT0oxVHVaZldyV1Q3T2YtUlVaamprU0thaUNtT0ttTTZyeWMtaXMyMFctQkVMaUl4TGVZRXVCZTZfZjZ5?oc=5",
-      "source": "내외뉴스통신",
-      "published_at": "2026-10-08T01:59:28+00:00",
-      "original_url": "https://www.nbnnews.co.kr/news/articleView.html?idxno=1061097"
-    },
-    {
-      "title": "[인터뷰] 농식품부 전통주 담당, 유재형 식품외식산업과장",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBrVGFWamZZekdmMTJUWDMtVDk0b2JZUjMweUJwRElheEx2VUp0d1kyeWpGRXdqUURKclQwQnN0ZTJlY1FxMDlpODBiLThTNHhfNTV4R3pJNFc2ajZKZTBodDNDT1J2Uzlza3M4?oc=5",
-      "source": "더바이어",
-      "published_at": "2026-10-06T02:28:56+00:00",
-      "original_url": "https://www.withbuyer.com/news/articleView.html?idxno=33500"
-    },
-    {
-      "title": "가을 외식물가 상승에 배달 대신 집밥 택한다",
-      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5EOTlxeXN6elg4bUs4UDVGOUltS0RONmR4NHkxal83TW04dEtNYjVFbzJPWWh6b2RjNUdmTGxUNmdtZkllRVhQVlZ1Qzk1LS02Y2lFcFFTWDJDOEJvVmtwb2loMXNFZUE2?oc=5",
-      "source": "공감신문",
-      "published_at": "2026-10-05T03:35:03+00:00",
-      "original_url": "https://www.gokorea.kr/news/articleView.html?idxno=880442"
     }
   ],
   "history": [
@@ -95,7 +95,27 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBJejRiM0Z0Z1l4aFJXWVdyQ0kzX0hScnFGVEp2Y3lleUQzb0g4MkU0RVRnZXA3Skt6cUE0WW1FcDh0N2E2aW1SbEdMbGp4WmgyYWRVVXFR?oc=5",
       "title": "\"여행·외식은 끊었는데…” 고물가에 한국인들이 대거 몰린 뜻밖의 '소비'",
       "published_at": "2026-10-10T05:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12blZwRFQ1UVIwNWJrZWJIQTR5dkhwUUh3RW11ZzhUSnJ3Snd4MTZtaVVNc3JLVW5nZjNJQ0JrZFU4eTN2bnVwSjllTGprVEh0djlIWDVUWExhWFNIOHZKYUwycHRFb0o3d3g0U1A3dVIxOS1H?oc=5",
+      "title": "中 국경절 연휴 서비스업 매출 전년比 19.5% 증가...관광·외식·여가 소비 활기-Xinhua",
+      "published_at": "2026-10-11T01:24:11+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBnUTh0X1NCa1h4aDF5M1RMdzNreDRpYVdMOFVYb2hYY1M4NXcwcDdFdHlPRDJ6WTF5QUg3WTFTaW1UWXJ0SkNKOXc1ZnVWcHE0aGZEZWZJdmNELWtJOWNFNEhUSnkxOWNIY3RQWVVDXzBTYW5nd2hlUNIBeEFVX3lxTFBnUTh0X1NCa1h4aDF5M1RMdzNreDRpYVdMOFVYb2hYY1M4NXcwcDdFdHlPRDJ6WTF5QUg3WTFTaW1UWXJ0SkNKOXc1ZnVWcHE0aGZEZWZJdmNELWtJOWNFNEhUSnkxOWNIY3RQWVVDXzBTYW5nd2hlUA?oc=5",
+      "title": "\"요즘 뜨는 디저트로 입맛 저격\" 외식·카페업계, 트렌드 메뉴 우수수[이거 먹어볼까]",
+      "published_at": "2026-10-11T01:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTFBpQXdpd3pCOUxlUnN0cjI4LUFnQjJULVpYT2dSSXMwWWItdmkzSDhjUmtNQklSU1A3MFFnMHIwSWdxRTRmRjJzaw?oc=5",
+      "title": "산업체 구내식당 210곳 단속…불량 식재료·원산지 속임 잡는다",
+      "published_at": "2026-10-10T11:19:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1TVGFVckc3U05DSUhTUE9ncVFGa3lSaWRlb3FPQjB6RnZkclVaYTVWaFBBSUNvMmJPcHk5X29xUmcxQURISHRvd3hvd2pNZ3Z0eEx6dtIBVEFVX3lxTE1TVGFVckc3U05DSUhTUE9ncVFGa3lSaWRlb3FPQjB6RnZkclVaYTVWaFBBSUNvMmJPcHk5X29xUmcxQURISHRvd3hvd2pNZ3Z0eEx6dg?oc=5",
+      "title": "\"피자·햄버거 가격 또 오른다고?\"…전쟁에 이상기후까지, 외식물가 어쩌나 [수민이가 궁금해요]",
+      "published_at": "2026-10-09T04:02:50+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 4
 };
