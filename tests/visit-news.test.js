@@ -86,7 +86,7 @@ test('scheduled collection is served first without querying Google again', async
   assert.equal(data.checkedAt, collected); assert.ok(Date.parse(data.requestedAt) > Date.parse(collected));
 });
 
-test('scheduled metadata keeps cached same-article photos and excludes articles without photos', async t => {
+test('scheduled news returns source links without copying publisher photos', async t => {
   const collected = new Date(Date.now() - 1000).toISOString();
   t.mock.method(globalThis, 'fetch', async () => Response.json({ updated_at: collected, articles: [
     { ...snapshot.articles[2], image: undefined, published_at: collected },
@@ -94,8 +94,8 @@ test('scheduled metadata keeps cached same-article photos and excludes articles 
   ] }));
   const data = await (await onRequest({ request: new Request('https://example.test/api/trend-news') })).json();
   assert.equal(data.sourceMode, 'scheduled'); assert.ok(data.articles.length >= 1);
-  assert.equal(data.articles.find(a => a.url === snapshot.articles[2].url).image, snapshot.articles[2].image);
-  assert.ok(!data.articles.some(a => a.url.endsWith('/no-photo')));
-  assert.match(data.articles[0].image, /^\/assets\/news\//);
-  assert.ok(data.articles[0].image_fallback.startsWith('https://'));
+  assert.equal(data.articles.find(a => a.url === snapshot.articles[2].url).image, undefined);
+  assert.ok(data.articles.some(a => a.url.endsWith('/no-photo')));
+  assert.equal(data.articles[0].image, undefined);
+  assert.equal(data.articles[0].image_fallback, undefined);
 });

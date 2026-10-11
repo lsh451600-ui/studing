@@ -23,7 +23,6 @@ const { chromium } = require('playwright');
       await context.route('**/*', async route => {
         const url = new URL(route.request().url());
         if (url.origin !== origin) {
-          if (url.href === snapshot.articles[0].image_original) return route.fulfill({ contentType: 'image/jpeg', body: await readFile(resolve(root, '.' + snapshot.articles[0].image)) });
           return route.abort();
         }
         if (url.pathname === '/api/trend-news') {
@@ -40,22 +39,17 @@ const { chromium } = require('playwright');
       await page.goto(origin);
       const verify = async () => {
         assert.equal(await page.locator('#trends .card').count(), 6);
-        assert.equal(await page.locator('#trends .news-photo img').count(), 6);
-        for (let n = 0; n < 6; n++) {
-          const image = page.locator('#trends .news-photo img').nth(n); await image.scrollIntoViewIfNeeded();
-          await page.waitForFunction(index => { const el = document.querySelectorAll('#trends .news-photo img')[index]; return el?.complete && el.naturalWidth > 0; }, n, { timeout: 15000 });
-          assert.ok(await image.evaluate(el => el.naturalWidth > 0));
-        }
+        assert.equal(await page.locator('#trends img').count(), 0);
+        assert.ok(await page.locator('#trends .card').first().getAttribute('href'));
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       };
       await verify();
       live = true;
       await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
-      await page.waitForFunction(() => document.querySelector('#trends .news-photo img').src.endsWith('/assets/news/missing.jpg') || document.querySelector('#trends .news-photo img').src.startsWith('https:'));
+      await page.waitForFunction(() => !document.querySelector('#news-status').textContent.includes('최신 기사 조회에 실패'));
       await verify();
-      assert.equal(await page.locator('#trends .news-photo img').first().getAttribute('src'), snapshot.articles[0].image_original);
       assert.deepEqual(errors, []);
-      await context.close(); console.log('PASS six cached same-article photos and original-photo fallback', width);
+      await context.close(); console.log('PASS static and live source links without publisher photo reuse', width);
     }
   } finally { if (browser) await browser.close(); server.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

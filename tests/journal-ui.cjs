@@ -28,7 +28,7 @@ const { chromium } = require('playwright');
       });
       const page = await context.newPage();
       const errors = []; page.on('pageerror', error => errors.push(error.message));
-      for (const path of ['/', '/guides', '/guides/menu-margin', '/guides/break-even', '/guides/solo-dining', '/guides/menu-complexity', '/about', '/editorial', '/privacy', '/terms', '/404']) {
+      for (const path of ['/', '/guides', '/guides/menu-margin', '/guides/break-even', '/guides/solo-dining', '/guides/menu-complexity', '/guides/prep-waste', '/about', '/editorial', '/privacy', '/terms', '/404']) {
         await page.goto(origin + path);
         assert.equal(await page.locator('main h1').count(), 1, path);
         assert.equal(await page.locator('main .home-introduction').count(), path === '/about' ? 1 : 0);
@@ -71,6 +71,14 @@ const { chromium } = require('playwright');
           assert.ok(Math.abs(widths.intro - widths.main) < 1, 'introduction uses the full about content width');
           if (width === 1280 && theme === 'light') await page.screenshot({ path: '/tmp/studing-about-moved.png', fullPage: true });
         }
+        if (path.endsWith('prep-waste')) {
+          await page.locator('#waste-tool button').click();
+          assert.match(await page.locator('#waste-tool output').textContent(), /20,000원/);
+          assert.match(await page.locator('#waste-tool output').textContent(), /500,000원/);
+          await page.locator('[name=discarded]').fill('51');
+          await page.locator('#waste-tool button').click();
+          assert.match(await page.locator('#waste-tool output').textContent(), /폐기량은 준비량 이하/);
+        }
         if (path.endsWith('menu-margin')) {
           await page.locator('[data-guide-tool] button').click();
           assert.match(await page.locator('output').textContent(), /5,800원/);
@@ -90,6 +98,6 @@ const { chromium } = require('playwright');
       if (width === 320 && theme === 'light') await page.screenshot({ path: '/tmp/studing-journal-mobile.png', fullPage: true });
       await context.close();
     }
-    console.log('66 public page/viewport/theme checks, full-width introduction and calculator interactions passed.');
+    console.log('72 public page/viewport/theme checks, full-width introduction and calculator interactions passed.');
   } finally { await browser?.close(); await new Promise(done => server.close(done)); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -21,6 +21,8 @@ on:
       - 'src/startup-simulation.js'
       - 'assets/js/startup-*.js'
       - 'tests/startup-*'
+      - 'tests/waste-tool.test.js'
+      - 'assets/js/waste-tool.js'
       - 'assets/js/board.js'
       - 'assets/css/board.css'
       - 'src/social-auth.js'
@@ -99,7 +101,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m unittest discover -s tests -p 'test_weekly_guide.py'
-      - run: node --test tests/ingredient-search.test.js tests/recipes.test.js tests/seo.test.js tests/journal.test.js tests/account.test.js tests/member-levels.test.js tests/nickname.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js tests/startup-simulation.test.js
+      - run: node --test tests/ingredient-search.test.js tests/recipes.test.js tests/seo.test.js tests/journal.test.js tests/account.test.js tests/member-levels.test.js tests/nickname.test.js tests/private.test.js tests/community.test.js tests/visit-news.test.js tests/recipe-access.test.js tests/signup.test.js tests/social-auth.test.js tests/kakao-auth.test.js tests/trend-video.test.js tests/visitors.test.js tests/startup-simulation.test.js tests/waste-tool.test.js
       - run: python tests/test_update_news.py
 
   browser:

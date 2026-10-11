@@ -54,14 +54,6 @@ jobs:
           else:
               known = {a['name'] for a in json.loads(view.stdout)['assets']}
           data = json.loads(Path('news.json').read_text())
-          for article in data['articles']:
-              image = article.get('image', '')
-              if image.startswith('/assets/news/'):
-                  photo = Path(image.lstrip('/'))
-                  if photo.name not in known:
-                      subprocess.run(['gh', 'release', 'upload', 'live-news-feed', str(photo), '--repo', repo], check=True)
-                      known.add(photo.name)
-                  article['image'] = 'https://github.com/' + repo + '/releases/download/live-news-feed/' + photo.name
           print('News refreshed:', data['updated_at'], 'articles:', len(data['articles']), 'newest:', data['articles'][0]['title'], flush=True)
           Path('/tmp/live-feed').mkdir(exist_ok=True)
           Path('/tmp/live-feed/news.json').write_text(json.dumps(data, ensure_ascii=False))
