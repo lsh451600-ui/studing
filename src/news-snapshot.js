@@ -1,5 +1,5 @@
 export const snapshot = {
-  "updated_at": "2026-10-11T02:52:45.259443+00:00",
+  "updated_at": "2026-10-11T12:15:45.624123+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -115,7 +115,12 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1TVGFVckc3U05DSUhTUE9ncVFGa3lSaWRlb3FPQjB6RnZkclVaYTVWaFBBSUNvMmJPcHk5X29xUmcxQURISHRvd3hvd2pNZ3Z0eEx6dtIBVEFVX3lxTE1TVGFVckc3U05DSUhTUE9ncVFGa3lSaWRlb3FPQjB6RnZkclVaYTVWaFBBSUNvMmJPcHk5X29xUmcxQURISHRvd3hvd2pNZ3Z0eEx6dg?oc=5",
       "title": "\"피자·햄버거 가격 또 오른다고?\"…전쟁에 이상기후까지, 외식물가 어쩌나 [수민이가 궁금해요]",
       "published_at": "2026-10-09T04:02:50+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBDQ2FhZm5wOGpvQkR4UXdXTnVvVU4zMlEyRi15cWUyVXQzTEd0OFNJanZ5R2E4NDkyQkt2Wnh6b0hSQU1WeG56WkhVNXByY3dISjhHNy02TVdNaGNWZEoyU9IBeEFVX3lxTFBnUTh0X1NCa1h4aDF5M1RMdzNreDRpYVdMOFVYb2hYY1M4NXcwcDdFdHlPRDJ6WTF5QUg3WTFTaW1UWXJ0SkNKOXc1ZnVWcHE0aGZEZWZJdmNELWtJOWNFNEhUSnkxOWNIY3RQWVVDXzBTYW5nd2hlUA?oc=5",
+      "title": "\"요즘 뜨는 디저트로 입맛 저격\" 외식·카페업계, 트렌드 메뉴 우수수[이거 먹어볼까]",
+      "published_at": "2026-10-11T01:00:00+00:00"
     }
   ],
-  "new_articles": 4
+  "new_articles": 0
 };
