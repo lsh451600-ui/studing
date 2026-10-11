@@ -18,13 +18,14 @@ const { chromium } = require('playwright');
   const origin = 'http://127.0.0.1:' + server.address().port;
   let browser;
   try {
-    browser = await chromium.launch();
+    browser = await chromium.launch({ channel: 'chromium' });
     for (const width of [320, 390, 768, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       let submissions = 0, accountWriterMode = false, failComment = false;
+      const attachmentName = width === 320 ? 'recipe.txt' : width === 390 ? 'recipe.csv' : width === 768 ? 'recipe.docx' : 'recipe.pdf';
       const commentStore = new Map([['first', [{ id: 1, author: '다른 회원', body: '다른 회원 댓글', created_at: '2026-10-08T01:00:00Z', canEdit: false, canDelete: false }]]]);
       let commentId = 1;
-      const posts = [{ canEdit: true, canDelete: true, id: 'first', comment_count: 1, category: '베이커리', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: 'recipe.pdf', title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
+      const posts = [{ canEdit: true, canDelete: true, id: 'first', comment_count: 1, category: '베이커리', downloads: 0, attachment_url: '/api/recipe-file?id=first', attachment_name: attachmentName, title: '봄나물 비빔밥', body: '재료: 봄나물과 밥\n나물을 무쳐 밥과 함께 담습니다.', created_at: '2026-10-07T01:00:00Z' }];
       const listing = (params = new URLSearchParams()) => {
         let filtered = posts.filter(p => (!params.get('category') || p.category === params.get('category')) && (!params.get('q') || (p.title + ' ' + p.body).includes(params.get('q'))));
         if (params.get('sort') === 'title') filtered.sort((a,b) => a.title.localeCompare(b.title, 'ko'));
@@ -35,7 +36,7 @@ const { chromium } = require('playwright');
       await context.route('**/*', async route => {
         const req = route.request(), url = new URL(req.url());
         if (url.origin !== origin) return route.abort();
-        if (url.pathname === '/api/recipe-file') { posts[0].downloads++; return route.fulfill({ body: '%PDF-1.7 recipe', headers: { 'Content-Type': 'application/octet-stream', 'X-Recipe-Downloads': String(posts[0].downloads) } }); }
+        if (url.pathname === '/api/recipe-file') { if (url.searchParams.get('preview') !== '1') posts[0].downloads++; return route.fulfill({ body: attachmentName.endsWith('.pdf') ? '%PDF-1.7 recipe' : '<script>window.previewExecuted=true</script>,recipe', headers: { 'Content-Type': 'application/octet-stream', 'X-Recipe-Downloads': String(posts[0].downloads) } }); }
         if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated: true, user: {id:'member',username:'member',isAdmin:accountWriterMode} } });
         if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: {} } });
         if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
@@ -117,9 +118,32 @@ const { chromium } = require('playwright');
       await page.locator('.recipe-comment').last().getByRole('button', { name: '삭제', exact: true }).click();
       await page.waitForFunction(() => document.querySelectorAll('.recipe-comment').length === 1);
       assert.equal(await page.locator('.recipe-comment').first().locator('.recipe-comment-body').textContent(), '다른 회원 댓글');
-      const received = page.waitForEvent('download'); await page.locator('.recipe-attachment').click();
-      assert.equal((await received).suggestedFilename(), 'recipe.pdf');
+      let automaticDownloads = 0; page.on('download', () => automaticDownloads++);
+      const previewResponse = attachmentName.endsWith('.docx') ? null : page.waitForResponse(r => new URL(r.url()).searchParams.get('preview') === '1');
+      await page.locator('.recipe-attachment').click();
+      if (previewResponse) await (await previewResponse).finished();
+      if (attachmentName.endsWith('.pdf')) {
+        if (await page.evaluate(() => navigator.pdfViewerEnabled !== false)) {
+          await page.locator('.recipe-file-content iframe').waitFor();
+        } else {
+          await page.getByText('이 브라우저는 PDF 미리보기를 지원하지 않습니다. 파일 다운로드를 이용해 주세요.').waitFor();
+        }
+      } else if (attachmentName.endsWith('.docx')) {
+        await page.getByText('이 파일 형식은 브라우저 미리보기를 지원하지 않습니다. 파일을 다운로드해 열어 주세요.').waitFor();
+      } else {
+        await page.locator('.recipe-file-content pre').waitFor();
+        assert.equal(await page.locator('.recipe-file-content pre').textContent(), '<script>window.previewExecuted=true</script>,recipe');
+        assert.equal(await page.evaluate(() => window.previewExecuted), undefined);
+      }
+      assert.ok(await page.getByRole('dialog', { name: '첨부파일 미리보기' }).isVisible());
+      assert.equal(posts[0].downloads, 0, 'preview must not count as a download');
+      assert.equal(automaticDownloads, 0, 'preview must not start a download');
+      const received = page.waitForEvent('download'); await page.getByRole('button', { name: '파일 다운로드', exact: true }).click();
+      assert.equal((await received).suggestedFilename(), attachmentName);
       await page.waitForFunction(() => document.querySelector('.recipe-downloads').textContent === '1');
+      await page.getByRole('button', { name: '닫기', exact: true }).click();
+      await page.locator('.recipe-file-preview').waitFor({ state: 'detached' });
+      assert.equal(await page.locator('.recipe-file-preview').count(), 0);
       if (width <= 900) {
         const footer = await page.locator('footer').evaluate(el => {
           const brand = el.querySelector('.footer-brand').getBoundingClientRect(), links = [...el.querySelectorAll('.journal-footer a')].map(a => a.getBoundingClientRect());

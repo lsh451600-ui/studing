@@ -28,6 +28,52 @@ async function api(path, options = {}) {
   return data;
 }
 const jsonOptions = body => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+function previewAttachment(post, onDownload) {
+  const dialog = document.createElement('dialog'); dialog.className = 'recipe-file-preview';
+  dialog.setAttribute('aria-label', '첨부파일 미리보기');
+  dialog.setAttribute('data-clarity-mask', 'true');
+  const heading = document.createElement('h2'); heading.textContent = post.attachment_name;
+  const actions = document.createElement('div'); actions.className = 'recipe-post-actions';
+  const download = document.createElement('button'); download.type = 'button'; download.textContent = '파일 다운로드';
+  const close = document.createElement('button'); close.type = 'button'; close.textContent = '닫기';
+  const feedback = document.createElement('p'); feedback.setAttribute('role', 'status');
+  const preview = document.createElement('div'); preview.className = 'recipe-file-content';
+  actions.append(download, close); dialog.append(heading, actions, feedback, preview); document.body.append(dialog);
+  let objectURL = null;
+  const controller = new AbortController();
+  close.addEventListener('click', () => dialog.close());
+  window.addEventListener('recipe-access-locked', () => dialog.close(), { signal: controller.signal });
+  dialog.addEventListener('close', () => {
+    controller.abort(); if (objectURL) URL.revokeObjectURL(objectURL); dialog.remove();
+  }, { once: true });
+  download.addEventListener('click', () => onDownload(download, feedback));
+  dialog.showModal();
+  const extension = (post.attachment_name || '').split('.').pop().toLowerCase();
+  if (!['pdf', 'txt', 'csv'].includes(extension)) {
+    feedback.textContent = '이 파일 형식은 브라우저 미리보기를 지원하지 않습니다. 파일을 다운로드해 열어 주세요.';
+    return;
+  }
+  feedback.textContent = '첨부파일을 불러오고 있습니다.';
+  const url = new URL(post.attachment_url, location.origin); url.searchParams.set('preview', '1');
+  fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]) }).then(async response => {
+    if (!response.ok) throw new Error('첨부파일을 불러오지 못했습니다. 다시 시도해 주세요.');
+    const blob = await response.blob();
+    if (!dialog.open) return;
+    if (extension === 'pdf') {
+      if (navigator.pdfViewerEnabled === false) {
+        feedback.textContent = '이 브라우저는 PDF 미리보기를 지원하지 않습니다. 파일 다운로드를 이용해 주세요.';
+        return;
+      }
+      objectURL = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      const frame = document.createElement('iframe'); frame.title = post.attachment_name + ' 미리보기'; frame.src = objectURL;
+      preview.append(frame);
+      feedback.textContent = '미리보기가 표시되지 않으면 파일 다운로드를 이용해 주세요.';
+    } else {
+      const text = await blob.text(); if (!dialog.open) return;
+      const pre = document.createElement('pre'); pre.textContent = text; preview.append(pre); feedback.textContent = '';
+    }
+  }).catch(error => { if (dialog.open) feedback.textContent = error.name === 'TimeoutError' ? '첨부파일을 불러오는 데 시간이 걸립니다. 닫고 다시 시도해 주세요.' : error.message; });
+}
 function renderPosts(posts) {
   content.replaceChildren();
   if (!posts.length) {
@@ -51,23 +97,24 @@ function renderPosts(posts) {
     const body = document.createElement('p'); body.className = 'recipe-post-body'; body.textContent = post.body; detail.append(body); content.append(card);
     if (post.attachment_url) {
       const attachment = document.createElement('a'); attachment.className = 'recipe-attachment'; attachment.href = post.attachment_url;
-      attachment.download = post.attachment_name || ''; attachment.textContent = '첨부파일 받기 · ' + post.attachment_name; detail.append(attachment);
-      const feedback = document.createElement('span'); feedback.setAttribute('role', 'status'); detail.append(feedback);
+      attachment.setAttribute('aria-haspopup', 'dialog'); attachment.textContent = '첨부파일 받기 · ' + post.attachment_name; detail.append(attachment);
       let downloading = false;
-      attachment.addEventListener('click', async event => {
+      attachment.addEventListener('click', event => {
         event.preventDefault();
-        if (downloading) return;
-        downloading = true; attachment.setAttribute('aria-disabled', 'true'); feedback.textContent = '';
-        try {
-          const response = await fetch(post.attachment_url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000) });
-          if (!response.ok) throw new Error('첨부파일을 다운로드하지 못했습니다. 다시 시도해 주세요.');
-          const blob = await response.blob(), url = URL.createObjectURL(blob);
-          const link = document.createElement('a'); link.href = url; link.download = post.attachment_name || 'attachment';
-          document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
-          post.downloads = Number(response.headers.get('X-Recipe-Downloads')) || (post.downloads || 0) + 1;
-          downloads.textContent = String(post.downloads);
-        } catch (error) { feedback.textContent = error.message; }
-        finally { downloading = false; attachment.removeAttribute('aria-disabled'); }
+        previewAttachment(post, async (button, feedback) => {
+          if (downloading) return;
+          downloading = true; button.disabled = true; feedback.textContent = '';
+          try {
+            const response = await fetch(post.attachment_url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000) });
+            if (!response.ok) throw new Error('첨부파일을 다운로드하지 못했습니다. 다시 시도해 주세요.');
+            const blob = await response.blob(), url = URL.createObjectURL(blob);
+            const link = document.createElement('a'); link.href = url; link.download = post.attachment_name || 'attachment';
+            document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+            post.downloads = Number(response.headers.get('X-Recipe-Downloads')) || (post.downloads || 0) + 1;
+            downloads.textContent = String(post.downloads);
+          } catch (error) { feedback.textContent = error.message; }
+          finally { downloading = false; button.disabled = false; }
+        });
       });
     }
     appendPostActions(detail, post, { endpoint: '/api/recipe-posts', api, refresh: refreshPosts, categories: ['미분류', '한식', '중식', '일식', '양식', '베이커리'], ingredientField: true });

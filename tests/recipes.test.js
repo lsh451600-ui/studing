@@ -103,6 +103,14 @@ test('recipe categories, literal search, and safe non-image downloads persist', 
   assert.equal(result.posts[0].category, '베이커리'); assert.equal(result.posts[0].attachment_name, '식빵.pdf');
   assert.equal(result.posts[0].downloads, 0);
   assert.equal((await file({ env, request: request('/api/recipe-file?id=' + id) })).status, 403);
+  assert.equal((await file({ env, request: request('/api/recipe-file?id=' + id + '&preview=1') })).status, 403);
+  const preview = await file({ env, request: request('/api/recipe-file?id=' + id + '&preview=1', { cookie: viewer }) });
+  assert.equal(preview.status, 200);
+  assert.equal(preview.headers.get('Content-Type'), 'application/pdf');
+  assert.match(preview.headers.get('Content-Disposition'), /^inline;/);
+  assert.equal(preview.headers.get('X-Recipe-Downloads'), null);
+  assert.equal(await preview.text(), '%PDF-1.7\nrecipe attachment');
+  assert.equal((await (await posts({ env, request: request(searchPath, { cookie: viewer }) })).json()).posts[0].downloads, 0);
   const download = await file({ env, request: request('/api/recipe-file?id=' + id, { cookie: viewer }) });
   assert.equal(download.status, 200); assert.equal(download.headers.get('Content-Type'), 'application/octet-stream');
   assert.equal(download.headers.get('X-Recipe-Downloads'), '1');
@@ -112,6 +120,13 @@ test('recipe categories, literal search, and safe non-image downloads persist', 
   const counted = await posts({ env, request: request(searchPath, { cookie: viewer }) });
   assert.equal((await counted.json()).posts[0].downloads, 2);
   assert.match(download.headers.get('Content-Disposition'), /filename\*=UTF-8''/); assert.equal(new TextDecoder().decode(await download.arrayBuffer()), '%PDF-1.7\nrecipe attachment');
+  await env.MEMBERS_DB.prepare('UPDATE recipe_posts SET attachment_name = ?, attachment_base64 = ? WHERE id = ?')
+    .bind('recipe.csv', btoa('<script>alert(1)</script>,recipe'), id).run();
+  const textPreview = await file({ env, request: request('/api/recipe-file?id=' + id + '&preview=1', { cookie: viewer }) });
+  assert.equal(textPreview.headers.get('Content-Type'), 'text/plain; charset=utf-8');
+  assert.equal(await textPreview.text(), '<script>alert(1)</script>,recipe');
+  await env.MEMBERS_DB.prepare('UPDATE recipe_posts SET attachment_name = ? WHERE id = ?').bind('recipe.docx', id).run();
+  assert.equal((await file({ env, request: request('/api/recipe-file?id=' + id + '&preview=1', { cookie: viewer }) })).status, 415);
   assert.throws(() => validatePost({ category: '기타', title: 'x', body: 'y' }));
   assert.throws(() => validatePost({ category: '한식', title: 'x', body: 'y', attachment: { name: 'bad.pdf', type: 'application/pdf', base64: btoa('<html>') } }));
 });
