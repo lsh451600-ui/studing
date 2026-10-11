@@ -91,7 +91,7 @@ function lock() {
 }
 async function unlockIndustry() {
   const version = ++generation;
-  byId('industry-access-status').textContent = '확인하고 있습니다.';
+  byId('industry-access-status').textContent = '';
   try {
     const data = await api('/api/private');
     if (version !== generation) return;

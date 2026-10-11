@@ -1,4 +1,4 @@
-import { createTrendEditor, renderTrendBody } from './trend-editor.js?v=20261011';
+import { createTrendEditor, renderTrendBody } from './trend-editor.js?v=20261011-selection';
 import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 const byId = id => document.getElementById(id);
 const isTrend = document.body.dataset.board === 'trend';

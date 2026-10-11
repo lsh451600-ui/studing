@@ -127,7 +127,7 @@ async function refreshPosts(page = currentPage) {
 window.addEventListener('pagehide', resetView);
 async function unlockRecipes(focus = false) {
   if (pending) return;
-  pending = true; gate.setAttribute('aria-busy', 'true'); status.textContent = '회원 권한을 확인하고 있습니다.';
+  pending = true; gate.setAttribute('aria-busy', 'true'); status.textContent = '';
   const current = generation;
   try {
     const data = await api('/api/recipes');

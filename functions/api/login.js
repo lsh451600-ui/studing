@@ -1,4 +1,4 @@
-import { settings, reply, sameOrigin, readJSON, upstream, sessionCookies, publicUser, limitAttempts } from '../../src/member-auth.js';
+import { settings, reply, sameOrigin, readJSON, upstream, sessionCookies, publicUser, limitAttempts, readCookies } from '../../src/member-auth.js';
 export async function onRequest({ request, env }) {
   if (request.method !== 'POST') return reply(405, '지원하지 않는 요청입니다.');
   if (!sameOrigin(request)) return reply(403, '홈페이지에서 다시 시도해 주세요.');
@@ -23,6 +23,10 @@ export async function onRequest({ request, env }) {
       if (result.status >= 500) return reply(503, '로그인에 연결하지 못했습니다.');
       if (result.data.error_code === 'email_not_confirmed') return reply(401, '이메일 인증을 완료한 뒤 로그인해 주세요.');
       return reply(401, '아이디·이메일 또는 비밀번호가 맞지 않습니다.');
+    }
+    const previous = readCookies(request).access;
+    if (previous && previous !== result.data.access_token) {
+      try { await upstream(env, '/auth/v1/logout?scope=local', { method: 'POST', token: previous }); } catch {}
     }
     return reply(200, '로그인되었습니다.', { authenticated: true, user: publicUser(result.data.user) }, sessionCookies(result.data));
   } catch { return reply(503, '로그인에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.'); }

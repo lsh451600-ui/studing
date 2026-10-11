@@ -35,6 +35,8 @@ export function createTrendEditor(prefix) {
     if (range && editor.contains(range.commonAncestorContainer)) { const selection = getSelection(); selection.removeAllRanges(); selection.addRange(range); }
     document.execCommand(name,false,value);
     if (name === 'fontSize') for (const font of editor.querySelectorAll('font[size="7"]')) { font.removeAttribute('size'); font.style.fontSize = size.value + 'px'; }
+    const selection = getSelection();
+    if (selection.rangeCount && editor.contains(selection.anchorNode) && editor.contains(selection.focusNode)) range = selection.getRangeAt(0).cloneRange();
     sync();
   }
   color.addEventListener('input',()=>command('foreColor',color.value));

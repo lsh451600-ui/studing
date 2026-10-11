@@ -19,7 +19,18 @@ const dialog = byId('login-dialog'), form = byId('login-form'), status = byId('l
 const params = new URLSearchParams(location.search);
 const SESSION_CACHE_KEY = 'member-session-v3';
 const SESSION_CACHE_MS = 120000;
-const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/trends', '/trends.html', '/startup', '/startup.html', '/private', '/private.html', '/mypage', '/mypage.html']);
+const SESSION_SIGNAL_KEY = 'member-session-change-v1';
+let sessionGeneration = 0;
+function broadcastSession() {
+  sessionGeneration++;
+  try { localStorage.setItem(SESSION_SIGNAL_KEY, crypto.randomUUID()); } catch {}
+}
+window.addEventListener('storage', event => {
+  if (event.key !== SESSION_SIGNAL_KEY) return;
+  sessionGeneration++; clearSessionCache(); showUser(null);
+  checkSession({ force: true }).catch(() => {});
+});
+const protectedPaths = new Set(['/recipes', '/recipes.html', '/board', '/board.html', '/trends', '/trends.html', '/startup', '/startup.html', '/startup-ai', '/startup-ai.html', '/private', '/private.html', '/mypage', '/mypage.html']);
 const protectedNext = (() => {
   let next = params.get('next');
   try { next ||= sessionStorage.getItem('member-login-next'); } catch {}
@@ -82,6 +93,7 @@ async function api(path, options = {}) {
 }
 function showUser(user) {
   const displayName = user?.nickname?.trim() || user?.username;
+  if (currentUser && currentUser.id !== user?.id) window.dispatchEvent(new CustomEvent('member-session-change', { detail: false }));
   currentUser = user || null;
   byId('menu-account-status').textContent = user ? '' : '로그인하지 않았습니다.';
   if (user) {
@@ -118,20 +130,22 @@ function showUser(user) {
 function readSessionCache() {
   try {
     const entry = JSON.parse(sessionStorage.getItem(SESSION_CACHE_KEY) || 'null');
-    if (entry && Date.now() - entry.savedAt < SESSION_CACHE_MS && entry.data) return entry.data;
+    if (entry && entry.signal === localStorage.getItem(SESSION_SIGNAL_KEY) && Date.now() - entry.savedAt < SESSION_CACHE_MS && entry.data) return entry.data;
   } catch {}
   return null;
 }
 function writeSessionCache(data) {
-  try { sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data })); } catch {}
+  try { sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), signal: localStorage.getItem(SESSION_SIGNAL_KEY), data })); } catch {}
 }
 function clearSessionCache() {
   try { sessionStorage.removeItem(SESSION_CACHE_KEY); } catch {}
 }
 async function checkSession({ force = false } = {}) {
+  const generation = sessionGeneration;
   let data = force ? null : readSessionCache();
   if (!data) {
     data = await api('/api/session');
+    if (generation !== sessionGeneration) return null;
     writeSessionCache(data);
   }
   showUser(data.authenticated ? data.user : null);
@@ -180,6 +194,7 @@ form.addEventListener('submit', async event => {
     const data = await api('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier: byId('login-identifier').value, password: byId('login-password').value }) });
     if (!data.authenticated || !data.user) throw new Error('로그인 결과를 확인하지 못했습니다.');
+    broadcastSession();
     writeSessionCache({ available: true, authenticated: true, user: data.user });
     try { sessionStorage.removeItem('member-login-next'); } catch {}
     showUser(data.user); form.reset(); dialog.close(); byId('member-feedback').textContent = '';
@@ -194,11 +209,12 @@ form.addEventListener('submit', async event => {
 byId('logout-button').addEventListener('click', async () => {
   byId('logout-button').disabled = true;
   byId('logout-button').textContent = '로그아웃 중…';
-  try { await api('/api/logout', { method: 'POST' }); clearSessionCache(); writeSessionCache({ available: true, authenticated: false, user: null }); try { sessionStorage.removeItem('member-login-next'); } catch {} showUser(null); byId('member-feedback').textContent = ''; if (['/mypage', '/mypage.html'].includes(location.pathname)) location.replace('/'); }
+  try { await api('/api/logout', { method: 'POST' }); broadcastSession(); clearSessionCache(); writeSessionCache({ available: true, authenticated: false, user: null }); try { sessionStorage.removeItem('member-login-next'); } catch {} showUser(null); byId('member-feedback').textContent = ''; if (['/mypage', '/mypage.html'].includes(location.pathname)) location.replace('/'); }
   catch (error) { showAuthError(error.message); }
   finally { byId('logout-button').disabled = false; byId('logout-button').textContent = '로그아웃'; }
 });
 window.addEventListener('member-authenticated', event => {
+  broadcastSession();
   writeSessionCache({ available: true, authenticated: Boolean(event.detail), user: event.detail || null });
   showUser(event.detail); byId('member-feedback').textContent = '';
 });
@@ -365,3 +381,6 @@ if (params.get('membership_required') === '1') {
   const cleanURL = new URL(location.href); cleanURL.searchParams.delete('membership_required');
   history.replaceState(null, '', cleanURL.pathname + cleanURL.search + cleanURL.hash);
 }
+
+// Revalidate on returning to a tab, including after social login in another tab.
+window.addEventListener('focus', () => { if (!pending) checkSession({ force: true }).catch(() => {}); });

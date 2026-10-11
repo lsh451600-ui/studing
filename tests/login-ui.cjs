@@ -88,7 +88,7 @@ const { chromium } = require('playwright');
           assert.equal(await page.locator('.journal-nav').count(), 0);
           const menuBox = await page.locator('#site-menu').boundingBox();
           assert.ok(menuBox.x >= 0 && menuBox.x + menuBox.width <= width, 'menu must fit viewport');
-          assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/about', '/trends', '/recipes', '/startup', '/guides', '/private', '/board']);
+          assert.deepEqual(await page.locator('#site-menu nav a').evaluateAll(links => links.map(a => a.getAttribute('href'))), ['/about', '/trends', '/recipes', '/startup-ai', '/startup', '/guides', '/private', '/board']);
           await page.keyboard.press('Escape');
           await page.waitForFunction(() => !document.querySelector('#site-menu').open && document.querySelector('#menu-open').getAttribute('aria-expanded') === 'false' && document.activeElement === document.querySelector('#menu-open'));
           assert.equal(await page.locator('#menu-open').getAttribute('aria-expanded'), 'false');

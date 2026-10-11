@@ -68,12 +68,3 @@ globalThis.window?.addEventListener('pageshow', event => { if (event.persisted) 
 
 // Refresh already-open homepages as scheduled content becomes available.
 setInterval(() => { if (!document.hidden) update(); }, 5 * 60 * 1000);
-
-for (const button of document.querySelectorAll('[data-video-sort]')) {
-  button.addEventListener('click', () => {
-    sort = button.dataset.videoSort;
-    for (const option of document.querySelectorAll('[data-video-sort]')) option.setAttribute('aria-pressed', String(option === button));
-    status.textContent = '선택한 순서의 영상을 불러오고 있습니다.';
-    update();
-  });
-}
