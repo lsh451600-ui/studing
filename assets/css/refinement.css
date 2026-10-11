@@ -35,8 +35,8 @@ header nav a{font-weight:600}header nav a:hover{color:var(--accent)}
 footer{margin-top:48px;padding-top:24px}.journal-footer a:hover{text-decoration:underline;text-underline-offset:4px}
 .theme-toggle,.share-floating-button,.visitor-counter{box-shadow:0 4px 18px #1733470b;border-color:var(--line)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:4px}
-@media(max-width:800px){.wrap{width:calc(100% - 32px)}header{min-height:64px;padding:6px 0}header .brand img,.home-page header .brand img{width:min(155px,32vw);max-height:50px}.hero{grid-template-columns:1fr;gap:28px;padding:36px 0}.hero .hero-copy{text-align:left;max-width:620px}.hero h1{font-size:clamp(36px,7vw,52px)}.hero .intro{max-width:540px;font-size:14px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.section-head{margin-top:40px}.section-head h2{font-size:28px}.board-page,.recipe-page,.about-page{padding-top:28px}}
-@media(max-width:540px){header .brand img,.home-page header .brand img{width:min(132px,35vw);max-height:46px}.hero{padding:28px 0;gap:26px}.hero h1{font-size:38px;margin:20px 0;letter-spacing:-1.8px}.hero .intro{font-size:13px}.hero .eyebrow{font-size:8px}.cta{padding:12px 21px;font-size:12px}.cards{grid-template-columns:1fr;gap:20px}.card h3{font-size:20px}.section-head{align-items:flex-start}.section-head h2{font-size:26px}.ribbon{gap:12px;padding:16px 0}.home-page #trends + .guide-feature{margin-top:36px;padding-top:28px}.guide-tile{padding:20px}.trend-video h2{font-size:23px}.board-form,.board-comment{padding:18px}footer{margin-top:32px}.journal-footer{gap:clamp(5px,1.5vw,10px)}}
+@media(max-width:800px){.wrap{width:calc(100% - 32px)}header{min-height:64px;padding:6px 0}header .brand img,.home-page header .brand img{width:min(117px,32vw);max-height:50px}.hero{grid-template-columns:1fr;gap:28px;padding:36px 0}.hero .hero-copy{text-align:left;max-width:620px}.hero h1{font-size:clamp(36px,7vw,52px)}.hero .intro{max-width:540px;font-size:14px}.cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.section-head{margin-top:40px}.section-head h2{font-size:28px}.board-page,.recipe-page,.about-page{padding-top:28px}}
+@media(max-width:540px){header .brand img,.home-page header .brand img{width:min(108px,35vw);max-height:46px}.hero{padding:28px 0;gap:26px}.hero h1{font-size:38px;margin:20px 0;letter-spacing:-1.8px}.hero .intro{font-size:13px}.hero .eyebrow{font-size:8px}.cta{padding:12px 21px;font-size:12px}.cards{grid-template-columns:1fr;gap:20px}.card h3{font-size:20px}.section-head{align-items:flex-start}.section-head h2{font-size:26px}.ribbon{gap:12px;padding:16px 0}.home-page #trends + .guide-feature{margin-top:36px;padding-top:28px}.guide-tile{padding:20px}.trend-video h2{font-size:23px}.board-form,.board-comment{padding:18px}footer{margin-top:32px}.journal-footer{gap:clamp(5px,1.5vw,10px)}}
 @media(prefers-reduced-motion:reduce){.card,.card .news-photo img,.recipe-row{transition:none}.card:hover{transform:none}}
 #trends .card{padding:0 0 20px}#trends .card .cat{margin-top:16px}
 .home-introduction .about-cta,.journal-tool button,.print-guide{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:none}
@@ -144,21 +144,29 @@ header.is-compact .brand .site-logo .logo-base{max-width:calc(48px * 600 / 255)}
 .recipe-page input[type="file"]::file-selector-button:hover{border-color:var(--accent);background:var(--surface)}
 
 /* Shared masthead sizing on every page and in every account state. */
-body header .brand .site-logo.site-logo.site-logo{width:min(180px,32vw);max-width:100%;transition:width .2s ease}
+body header .brand .site-logo.site-logo.site-logo{width:min(150px,32vw);max-width:100%;transition:width .2s ease}
 body header .brand .site-logo.site-logo.site-logo img{width:100%;max-width:100%;max-height:none;height:auto}
-body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(136px,25vw)}
+body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(112px,25vw)}
 body header.is-compact{min-height:54px;padding:4px 0}
 @media(max-width:800px){
-  body header .brand .site-logo.site-logo.site-logo{width:min(155px,32vw)}
-  body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(118px,25vw)}
+  body header .brand .site-logo.site-logo.site-logo{width:min(117px,32vw)}
+  body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(98px,25vw)}
 }
 @media(max-width:540px){
-  body header .brand .site-logo.site-logo.site-logo{width:min(132px,35vw)}
-  body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(104px,28vw)}
+  body header .brand .site-logo.site-logo.site-logo{width:min(108px,35vw)}
+  body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(90px,28vw)}
 }
 @media(prefers-reduced-motion:reduce){body header .brand .site-logo.site-logo.site-logo,body header .brand img{transition:none}}
 
 .journal .home-about-copy h1{margin-top:0;font-size:clamp(25px,3vw,34px);line-height:1.45}
 .journal .home-about-brand .about-label{align-self:flex-start;font-size:11px;letter-spacing:.16em}
 
-.video-sort{display:flex;gap:8px;margin:12px 0}.video-sort button{padding:8px 14px;min-height:40px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;font-size:13px}.video-sort button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+.video-sort{display:flex;align-items:center;gap:22px;margin:12px 0 18px;border-bottom:1px solid var(--line)}.video-sort button{position:relative;padding:10px 0;min-height:44px;border:0;border-radius:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:color .2s ease}.video-sort button:hover,.video-sort button[aria-pressed="true"]{background:transparent;color:var(--accent)}.video-sort button[aria-pressed="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent)}.video-sort button:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+:root[data-theme="dark"] footer .site-logo::before{content:none}
+:root[data-theme="dark"] footer .site-logo::after{clip-path:inset(0 0 0 38%)}
+:root[data-theme="dark"] footer .site-logo .logo-base{filter:brightness(1.15);opacity:1}
+
+.trend-editor-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.trend-editor-toolbar label{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.trend-editor-toolbar input[type="color"]{width:36px;height:32px;padding:2px}.trend-editor-toolbar select{width:auto;padding:6px 8px}.trend-editor-toolbar button{min-height:36px;padding:6px 12px;font-weight:700}.trend-rich-editor{min-height:220px;padding:16px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:16px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}.trend-rich-editor:focus{outline:2px solid var(--accent);outline-offset:2px}
+
+@media(min-width:801px) and (max-width:1100px){body header{min-height:64px;padding:6px 0}body header .brand .site-logo.site-logo.site-logo{width:min(117px,32vw)}body header.is-compact{min-height:54px;padding:4px 0}body header.is-compact .brand .site-logo.site-logo.site-logo{width:min(98px,25vw)}}

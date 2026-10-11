@@ -2,7 +2,7 @@ import { authorized, ensurePosts, reply } from '../../src/recipe-server.js';
 
 export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return reply(405, { message: '지원하지 않는 요청입니다.' });
-  if (!await authorized(request, env)) return reply(403, { message: '레시피 비밀번호를 먼저 입력해 주세요.' });
+  if (!await authorized(request, env)) return reply(403, { message: '특별회원으로 로그인해 주세요.' });
   if (!env.MEMBERS_DB) return reply(503, { message: '첨부 파일을 불러오지 못했습니다.' });
   const id = new URL(request.url).searchParams.get('id');
   if (!id || !/^\d+$/.test(id) || !Number.isSafeInteger(Number(id))) return reply(400, { message: '첨부 파일 정보를 확인해 주세요.' });

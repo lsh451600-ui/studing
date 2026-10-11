@@ -36,7 +36,7 @@ async function loginViewer(env) {
 }
 async function loginAdmin(env, viewer) {
   const response = await admin({ env, request: request('/api/recipe-admin', { method: 'POST', cookie: viewer, data: { password: env.RECIPE_ADMIN_PASSWORD } }) });
-  assert.equal(response.status, 200); return viewer + '; ' + cookieOf(response);
+  assert.equal(response.status, 403); return viewer;
 }
 
 function operator(t, env) {
@@ -57,15 +57,15 @@ test('anonymous, reader-only and forged requests cannot create posts', async () 
   assert.equal((await call('recipe_admin=admin.9999999999.fake.fake')).status, 403);
   assert.equal((await call('role=admin')).status, 403);
 });
-test('separate owner authentication is required and cookies cannot be promoted', async () => {
+test('operator account is required and old password cookies cannot grant publishing', async () => {
   const env = makeEnv(), viewer = await loginViewer(env);
   const wrong = await admin({ env, request: request('/api/recipe-admin', { method: 'POST', cookie: viewer, data: { password: env.RECIPE_PASSWORD } }) });
-  assert.equal(wrong.status, 401);
+  assert.equal(wrong.status, 403);
   assert.equal(await authorized(request('/api/recipe-posts', { cookie: viewer }), env, 'admin'), false);
   const promoted = viewer.replaceAll('viewer', 'admin');
   assert.equal(await authorized(request('/api/recipe-posts', { cookie: promoted }), env, 'admin'), false);
   const same = { ...env, RECIPE_ADMIN_PASSWORD: env.RECIPE_PASSWORD };
-  assert.equal((await admin({ env: same, request: request('/api/recipe-admin', { method: 'POST', cookie: await loginViewer(same), data: { password: same.RECIPE_ADMIN_PASSWORD } }) })).status, 503);
+  assert.equal((await admin({ env: same, request: request('/api/recipe-admin', { method: 'POST', cookie: await loginViewer(same), data: { password: same.RECIPE_ADMIN_PASSWORD } }) })).status, 403);
 });
 test('owner writes persist in SQLite, readers can read posts and protected images', async t => {
   const env = makeEnv(), viewer = await loginViewer(env), owner = await loginAdmin(env, viewer);
@@ -115,10 +115,10 @@ test('recipe categories, literal search, and safe non-image downloads persist', 
   assert.throws(() => validatePost({ category: '기타', title: 'x', body: 'y' }));
   assert.throws(() => validatePost({ category: '한식', title: 'x', body: 'y', attachment: { name: 'bad.pdf', type: 'application/pdf', base64: btoa('<html>') } }));
 });
-test('session tampering, secret rotation and logout are enforced', async () => {
+test('membership grants viewing independently of legacy password cookies and secrets', async () => {
   const env = makeEnv(), viewer = await loginViewer(env);
-  assert.equal(await authorized(request('/api/recipe-posts', { cookie: viewer.replace(/recipe_viewer=([^;]+)/, 'recipe_viewer=$10') }), env), false);
-  assert.equal(await authorized(request('/api/recipe-posts', { cookie: viewer }), { ...env, RECIPE_PASSWORD: 'changed' }), false);
+  assert.equal(await authorized(request('/api/recipe-posts', { cookie: 'recipe_viewer=forged' }), env), false);
+  assert.equal(await authorized(request('/api/recipe-posts', { cookie: viewer }), { ...env, RECIPE_PASSWORD: undefined, RECIPE_ADMIN_PASSWORD: undefined }), true);
   const response = await enter({ env, request: request('/api/recipes', { method: 'DELETE', cookie: viewer }) });
   assert.equal(response.status, 200); assert.equal(response.headers.getSetCookie().length, 2);
   for (const cookie of response.headers.getSetCookie()) assert.ok(cookie.includes('Max-Age=0'));

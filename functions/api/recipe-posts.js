@@ -9,7 +9,7 @@ export async function onRequest({ request, env }) {
     const identity = await boardIdentity(request, env);
     const canRead = await authorized(request, env, 'viewer');
     const canWrite = Boolean(identity?.isAdmin);
-    if (!canRead || (request.method === 'POST' && !canWrite)) return reply(403, { message: request.method === 'POST' ? '운영자 인증이 필요합니다.' : '열람 비밀번호를 다시 입력해 주세요.' });
+    if (!canRead || (request.method === 'POST' && !canWrite)) return reply(403, { message: request.method === 'POST' ? '운영자 인증이 필요합니다.' : '특별회원으로 로그인해 주세요.' });
     const db = env.MEMBERS_DB;
     if (!db) return reply(503, { message: '게시판을 준비 중입니다.' });
     if (request.method === 'PATCH' || request.method === 'DELETE') {

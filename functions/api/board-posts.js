@@ -1,8 +1,11 @@
+import { onRequest as trendPosts } from './trend-posts.js';
 import { authorLevels } from '../../src/member-levels.js';
 import { reply, sameOrigin } from '../../src/member-auth.js';
 import { readJSON } from '../../src/recipe-server.js';
 import { initialize, member, allowWrite, idOf, postPermissions } from '../../src/community.js';
-export async function onRequest({ request, env }) {
+export async function onRequest(context) {
+  const {request,env} = context;
+  if (new URL(request.url).searchParams.get('board') === 'trend') return trendPosts(context);
   if (!['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) return reply(405, '지원하지 않는 요청입니다.');
   if (request.method !== 'GET' && !sameOrigin(request)) return reply(403, '홈페이지에서 다시 시도해 주세요.');
   const db = env.MEMBERS_DB;

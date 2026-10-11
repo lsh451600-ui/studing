@@ -1,10 +1,13 @@
+import { createTrendEditor, renderTrendBody } from './trend-editor.js?v=20261011';
 import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 const byId = id => document.getElementById(id);
-const boardPath = document.body.dataset.board === 'trend' ? '/trends' : '/board';
+const isTrend = document.body.dataset.board === 'trend';
+const boardPath = isTrend ? '/trends' : '/board';
+const trendEditors = isTrend ? { post: createTrendEditor('board-post'), edit: createTrendEditor('board-edit') } : null;
 let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, sessionAdmin = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 async function api(url, { method = 'GET', body } = {}) {
-  if (boardPath === '/trends' && url.startsWith('/api/board-posts')) url += (url.includes('?') ? '&' : '?') + 'board=trend';
+  if (isTrend) url = url.replace('/api/board-', '/api/trend-');
   const response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000),
     ...(method === 'GET' ? {} : { method, ...(body === undefined ? {} : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }) }) });
   const result = await response.json();
@@ -22,6 +25,7 @@ const upgradeTemplate = `몇몇 페이지는 등업을 하지 않으면 이용�
 확인 후 개별적으로 등업시켜 드리겠습니다.
 글은 등업신청으로 남겨주시고 비밀글로 남겨주세요. (개인정보 보호)`;
 function applyUpgradeForm(prefix, addTemplate = false) {
+  if (isTrend) return;
   const upgrade = byId(prefix + '-category').value === '등업신청';
   const secret = byId(prefix + '-secret');
   if (upgrade) secret.checked = true;
@@ -34,18 +38,20 @@ function applyUpgradeForm(prefix, addTemplate = false) {
   }
 }
 for (const prefix of ['board-post', 'board-edit']) {
-  byId(prefix + '-category').addEventListener('change', () => applyUpgradeForm(prefix, true));
+  byId(prefix + '-category')?.addEventListener('change', () => applyUpgradeForm(prefix, true));
 }
 
 function updateAuth() {
   const ready = authenticated();
   for (const id of ['board-post-category', 'board-edit-category']) {
-    const select = byId(id), notice = select.querySelector('option[value=공지]');
+    const select = byId(id); if (!select) continue;
+    const notice = select.querySelector('option[value=공지]');
     notice.hidden = !sessionAdmin; notice.disabled = !sessionAdmin;
     if (!sessionAdmin && select.value === '공지') select.value = '잡담';
   }
+  byId('board-write').hidden = isTrend && !sessionAdmin;
   byId('board-login-hint').hidden = !sessionKnown || ready;
-  byId('board-post-submit').disabled = !ready || writing;
+  byId('board-post-submit').disabled = !ready || writing || (isTrend && !sessionAdmin);
   byId('board-comment-submit').disabled = !ready || commenting;
 }
 function rows(posts, append) {
@@ -54,7 +60,7 @@ function rows(posts, append) {
   for (const post of posts) {
     const link = node('a', '', 'board-row'); link.href = boardPath + '?post=' + post.id; link.dataset.postId = post.id;
     link.classList.toggle('board-notice', post.category === '공지');
-    const title = node('strong', ''); title.append(node('span', post.category || '잡담', 'board-category'), node('span', post.title));
+    const title = node('strong', ''); if (!isTrend) title.append(node('span', post.category || '잡담', 'board-category')); title.append(node('span', post.title));
     if (post.is_secret) title.prepend(node('span', '🔒 비밀글', 'board-secret-label'));
     link.append(title, decorateMember(node('span', post.author + ' · ' + date(post.created_at) + ' · 조회수 ' + (post.views || 0) + ' · 댓글 ' + post.comments, 'board-meta'), post.authorLevel));
     link.addEventListener('click', event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return; event.preventDefault(); history.pushState(null, '', link.href); loadDetail(post.id); });
@@ -85,17 +91,19 @@ async function loadDetail(id, focus = true) {
     selected = data.post.id; byId('board-index').hidden = true; byId('board-editor').hidden = true; byId('board-detail').hidden = false;
     byId('board-title').textContent = data.post.title;
     byId('board-title').classList.toggle('board-notice-title', data.post.category === '공지');
-    byId('board-detail-category').textContent = (data.post.is_secret ? '🔒 비밀글 · ' : '') + (data.post.category || '잡담');
+    byId('board-detail-category').textContent = (data.post.is_secret ? '🔒 비밀글 · ' : '') + (isTrend ? '' : (data.post.category || '잡담'));
     byId('board-edit-secret').checked = Boolean(data.post.is_secret);
-    byId('board-edit-category').value = data.post.category || '잡담';
+    if (!isTrend) byId('board-edit-category').value = data.post.category || '잡담';
     byId('board-author').replaceChildren(decorateMember(node('strong', data.post.author, 'board-author-name'), data.post.authorLevel), node('span', ' · ' + date(data.post.created_at)));
-    byId('board-body').textContent = data.post.body;
+    if (isTrend) renderTrendBody(byId('board-body'), data.post.richBody, data.post.body);
+    else byId('board-body').textContent = data.post.body;
     byId('board-post-actions').hidden = !(data.permissions?.canEdit || data.permissions?.canDelete);
     byId('board-edit-open').hidden = !data.permissions?.canEdit;
     byId('board-delete').hidden = !data.permissions?.canDelete;
     byId('board-edit-form').hidden = true;
     byId('board-edit-title').value = data.post.title;
     byId('board-edit-body').value = data.post.body;
+    if (isTrend) trendEditors.edit.fill(data.post.richBody, data.post.body);
     applyUpgradeForm('board-edit');
     byId('board-comments').replaceChildren();
     for (const comment of data.comments) {
@@ -178,14 +186,15 @@ byId('board-write').addEventListener('click', () => {
 byId('board-more').addEventListener('click', async () => { byId('board-more').disabled = true; try { await loadList(true); } finally { byId('board-more').disabled = false; } });
 byId('board-post-form').addEventListener('submit', async event => {
   event.preventDefault();
+  if (isTrend) trendEditors.post.sync();
   if (writing || !authenticated() || !event.target.reportValidity()) return;
   writing = true; updateAuth(); byId('board-post-status').textContent = '등록하고 있습니다.';
   try {
     const data = await api('/api/board-posts', {
       method: 'POST',
-      body: { is_secret: byId('board-post-secret').checked, category: byId('board-post-category').value, title: byId('board-post-title').value, body: byId('board-post-body').value }
+      body: { ...(isTrend ? { richBody: trendEditors.post.sync() } : {}), is_secret: byId('board-post-secret').checked, category: byId('board-post-category')?.value, title: byId('board-post-title').value, body: byId('board-post-body').value }
     });
-    event.target.reset(); applyUpgradeForm('board-post'); byId('board-post-status').textContent = '';
+    event.target.reset(); if (isTrend) trendEditors.post.reset(); applyUpgradeForm('board-post'); byId('board-post-status').textContent = '';
     history.pushState(null, '', boardPath + '?post=' + data.id);
     await loadDetail(data.id);
   } catch (error) { byId('board-post-status').textContent = error.message; }
@@ -200,7 +209,7 @@ byId('board-edit-form').addEventListener('submit', async event => {
   event.preventDefault(); if (writing || !authenticated() || !event.target.reportValidity()) return;
   writing = true; byId('board-edit-submit').disabled = true; byId('board-edit-status').textContent = '수정 내용을 저장하고 있습니다.';
   try {
-    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { is_secret: byId('board-edit-secret').checked, category: byId('board-edit-category').value, title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
+    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { ...(isTrend ? { richBody: trendEditors.edit.sync() } : {}), is_secret: byId('board-edit-secret').checked, category: byId('board-edit-category')?.value, title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
     byId('board-edit-status').textContent = '수정했습니다.';
     await loadDetail(selected, false);
   } catch (error) { byId('board-edit-status').textContent = error.message; }
@@ -260,6 +269,7 @@ window.addEventListener('member-session-change', event => {
   generation++; byId('board-detail').hidden = true;
   byId('board-body').textContent = ''; byId('board-comments').replaceChildren();
   byId('board-edit-form').reset(); byId('board-comment-form').reset();
+  if (isTrend) { trendEditors.edit.reset(); trendEditors.post.reset(); }
   const postId = new URLSearchParams(location.search).get('post');
   if (/^[1-9][0-9]*$/.test(postId || '')) loadDetail(postId, false);
   else loadList();

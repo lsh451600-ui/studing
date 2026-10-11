@@ -64,11 +64,9 @@ async function validSession(request, env, role) {
 }
 export async function authorized(request, env, role = 'viewer') {
   const auth = await membership(request, env);
-  if (!auth.canAccessRecipes) return false;
-  if (auth.isAdmin) return true;
-  if (await validSession(request, env, 'admin')) return true;
-  return role === 'viewer' && await validSession(request, env, 'viewer');
+  return auth.canAccessRecipes && (role === 'viewer' || auth.isAdmin);
 }
+
 export const POST_SCHEMA = `CREATE TABLE IF NOT EXISTS recipe_posts (
   id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, body TEXT NOT NULL,
   category TEXT NOT NULL DEFAULT '미분류', image_base64 TEXT, image_type TEXT,

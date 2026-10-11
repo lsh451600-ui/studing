@@ -3,7 +3,7 @@ import { normalizeIngredients, rankRecipes } from '../../assets/js/ingredient-ma
 export async function onRequest({ request, env }) {
   if (request.method !== 'GET') return reply(405, { message: '지원하지 않는 요청입니다.' });
   try {
-    if (!await authorized(request, env)) return reply(403, { message: '특별회원 인증과 열람 비밀번호가 필요합니다.' });
+    if (!await authorized(request, env)) return reply(403, { message: '특별회원으로 로그인해 주세요.' });
     if (!env.MEMBERS_DB) return reply(503, { message: '레시피 저장소에 연결하지 못했습니다.' });
     const params = new URL(request.url).searchParams;
     const raw = params.get('ingredients') || '', category = params.get('category') || '';

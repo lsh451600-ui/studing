@@ -1,3 +1,5 @@
+import { initialize as initializeTrends } from '../src/trend-community.js';
+import { onRequest as trendPosts } from '../functions/api/trend-posts.js';
 import { ensureLevels } from '../src/member-levels.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -235,7 +237,7 @@ async function recipeCommentSetup(t) {
 }
 test('recipe comments require member and reader access, reject foreign origins and validate inputs', async t => {
   auth(t); const { settings, req } = await recipeCommentSetup(t);
-  assert.equal((await recipeComments({ env: settings, request: request('recipe-comments?postId=1', null, true) })).status, 403);
+  assert.equal((await recipeComments({ env: settings, request: request('recipe-comments?postId=1', null, true) })).status, 200);
   assert.equal((await recipeComments({ env: settings, request: req('recipe-comments?postId=1', null, false) })).status, 403);
   assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body: 'Hi' }, true, 'https://other.test') })).status, 403);
   for (const body of ['', '   ', 'x'.repeat(2001)]) assert.equal((await recipeComments({ env: settings, request: req('recipe-comments', { postId: 1, body }) })).status, 400);
@@ -393,20 +395,44 @@ test('promotion updates badges on existing board posts and comments without rewr
   assert.equal(list.posts.find(post => post.id === id).authorLevel, 'special');
 });
 
-test('trend board posts remain separate through create, list, detail, edit and delete', async t => {
+
+test('special members open both libraries without passwords and grade removal blocks direct APIs', async t => {
   auth(t); const settings = env(t);
-  const free = await (await posts({env:settings,request:request('board-posts',{title:'자유게시판 글',body:'일반 이야기'},true)})).json();
-  const created = await posts({env:settings,request:request('board-posts?board=trend',{title:'외식 트렌드 전망',body:'시장 전망을 공유합니다'},true)});
-  assert.equal(created.status,201); const trend = await created.json();
-  const freeList = await (await posts({env:settings,request:request('board-posts')})).json();
-  const trendList = await (await posts({env:settings,request:request('board-posts?board=trend')})).json();
-  assert.deepEqual(freeList.posts.map(post=>post.id),[free.id]);
-  assert.deepEqual(trendList.posts.map(post=>post.id),[trend.id]);
-  assert.equal((await posts({env:settings,request:request('board-posts?id='+trend.id)})).status,404);
-  assert.equal((await posts({env:settings,request:request('board-posts?board=trend&id='+free.id)})).status,404);
-  const edit = {title:'전망 수정',body:'새로운 시장 전망'};
-  assert.equal((await posts({env:settings,request:request('board-posts?board=trend&id='+trend.id,edit,true,undefined,'PATCH')})).status,200);
-  assert.equal((await posts({env:settings,request:request('board-posts?id='+trend.id,edit,true,undefined,'PATCH')})).status,404);
-  assert.equal((await posts({env:settings,request:request('board-posts?board=trend&id='+trend.id,undefined,true,undefined,'DELETE')})).status,200);
-  assert.equal((await (await posts({env:settings,request:request('board-posts')})).json()).posts.length,1);
+  await ensureLevels(settings.MEMBERS_DB);
+  await settings.MEMBERS_DB.prepare("INSERT INTO member_levels (member_id,level,updated_by,updated_at) VALUES ('member-id','special','operator','now')").run();
+  for (const [handler,path] of [[recipeEntry,'recipes'],[privateEntry,'private']]) {
+    const response = await handler({env:settings,request:request(path,undefined,true)});
+    assert.equal(response.status,200);
+    assert.equal((await response.json()).canWrite,false);
+  }
+  for (const [handler,path] of [[recipePosts,'recipe-posts'],[privatePosts,'private-posts']]) assert.equal((await handler({env:settings,request:request(path,undefined,true)})).status,200);
+  await settings.MEMBERS_DB.prepare("UPDATE member_levels SET level='regular' WHERE member_id='member-id'").run();
+  for (const [handler,path] of [[recipeEntry,'recipes'],[privateEntry,'private'],[recipePosts,'recipe-posts'],[privatePosts,'private-posts']]) assert.equal((await handler({env:settings,request:request(path,undefined,true)})).status,403);
+});
+
+test('trend tables enforce operator publishing and validate structured rich text', async t => {
+  auth(t); const settings = env(t);
+  const data = {title:'전망',richBody:[{text:'외식 트렌드 전망',color:'#bd5636',size:24,bold:true}]};
+  assert.equal((await trendPosts({env:settings,request:request('trend-posts',data,true)})).status,403);
+  auth(t,{username:'lsh451600'});
+  const response = await trendPosts({env:settings,request:request('trend-posts',data,true)});
+  assert.equal(response.status,201); const id=(await response.json()).id;
+  const detail=await (await trendPosts({env:settings,request:request('trend-posts?id='+id)})).json();
+  assert.equal(detail.post.body,'외식 트렌드 전망');assert.deepEqual(detail.post.richBody,data.richBody);
+  assert.equal((await settings.MEMBERS_DB.prepare('SELECT COUNT(*) AS total FROM community_posts').first()).total,0);
+  assert.equal((await settings.MEMBERS_DB.prepare('SELECT COUNT(*) AS total FROM trend_posts').first()).total,1);
+  assert.equal((await trendPosts({env:settings,request:request('trend-posts',{...data,richBody:[{...data.richBody[0],color:'url(javascript:alert(1))'}]},true)})).status,400);
+  auth(t);
+  for (const method of ['PATCH','DELETE']) assert.equal((await trendPosts({env:settings,request:request('trend-posts?id='+id,method==='PATCH'?data:undefined,true,undefined,method)})).status,403);
+});
+
+test('legacy trend content migrates once to independent tables without resurrecting deleted posts', async t => {
+  const settings=env(t),db=settings.MEMBERS_DB; await initialize(db);
+  await db.prepare("INSERT INTO community_posts (id,author_id,author,title,body,created_at,board) VALUES (42,'member','회원','기존 트렌드','전망','2026-10-10','trend')").run();
+  await db.prepare("INSERT INTO community_comments (id,post_id,author_id,author,body,created_at) VALUES (9,42,'member','회원','댓글','2026-10-10')").run();
+  await initializeTrends(db);
+  assert.equal((await db.prepare('SELECT title FROM trend_posts WHERE id=42').first()).title,'기존 트렌드');
+  assert.equal((await db.prepare('SELECT body FROM trend_comments WHERE id=9').first()).body,'댓글');
+  await db.prepare('DELETE FROM trend_comments WHERE post_id=42').run();await db.prepare('DELETE FROM trend_posts WHERE id=42').run();
+  await initializeTrends(db);assert.equal(await db.prepare('SELECT id FROM trend_posts WHERE id=42').first(),null);
 });

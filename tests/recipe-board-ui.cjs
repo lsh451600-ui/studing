@@ -36,12 +36,12 @@ const { chromium } = require('playwright');
         const req = route.request(), url = new URL(req.url());
         if (url.origin !== origin) return route.abort();
         if (url.pathname === '/api/recipe-file') { posts[0].downloads++; return route.fulfill({ body: '%PDF-1.7 recipe', headers: { 'Content-Type': 'application/octet-stream', 'X-Recipe-Downloads': String(posts[0].downloads) } }); }
-        if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated: false } });
+        if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated: true, user: {id:'member',username:'member',isAdmin:accountWriterMode} } });
         if (url.pathname === '/api/oauth') return route.fulfill({ json: { providers: {} } });
         if (url.pathname === '/api/register') return route.fulfill({ json: { available: true } });
         if (url.pathname === '/api/recipes') {
           if (req.method() === 'DELETE') return route.fulfill({ json: {} });
-          assert.equal(req.postDataJSON().password, 'reader-password');
+          assert.equal(req.method(), 'GET');
           return route.fulfill({ json: { ...listing(), adminConfigured: true, canWrite: accountWriterMode, accountWriter: accountWriterMode, storageAvailable: true, next: null } });
         }
         if (url.pathname === '/api/recipe-comments') {
@@ -81,13 +81,7 @@ const { chromium } = require('playwright');
       });
       const errors = []; const page = await context.newPage(); page.on('pageerror', error => errors.push(error.message));
       await page.goto(origin + '/recipes');
-      assert.ok(await page.locator('#recipe-gate').isVisible());
-      const gateBox = await page.locator('#recipe-gate').boundingBox();
-      const mainBox = await page.locator('main').boundingBox();
-      assert.ok(Math.abs(gateBox.x - mainBox.x) <= 1, 'password gate aligns with left edge');
-      assert.equal(await page.locator('main h1').evaluate(el => getComputedStyle(el).textAlign), 'left');
-      assert.ok(!(await page.locator('#recipe-board').isVisible()));
-      await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
+      assert.equal(await page.locator('#recipe-password').count(), 0);
       await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
       assert.equal(await page.locator('.recipe-post').count(), 1);
       assert.ok(await page.locator('#recipe-editor').isHidden());
@@ -220,7 +214,6 @@ const { chromium } = require('playwright');
       await page.waitForFunction(() => document.querySelectorAll('.recipe-post').length === 1);
       accountWriterMode = true;
       await page.goto(origin + '/recipes');
-      await page.locator('#recipe-password').fill('reader-password'); await page.locator('#recipe-submit').click();
       await page.waitForFunction(() => !document.querySelector('#recipe-board').hidden);
       assert.ok(await page.locator('#recipe-editor').isVisible());
       assert.ok(await page.locator('#recipe-admin-open').isVisible());

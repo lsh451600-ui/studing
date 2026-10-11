@@ -8,7 +8,7 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'GET' && !sameOrigin(request)) return reply(403, '홈페이지에서 다시 시도해 주세요.');
   if (!env.MEMBERS_DB) return reply(503, '댓글 저장소에 연결하지 못했습니다.');
   try {
-    if (!await authorized(request, env)) return reply(403, '레시피 열람 비밀번호를 먼저 입력해 주세요.');
+    if (!await authorized(request, env)) return reply(403, '특별회원으로 로그인해 주세요.');
     const auth = await member(request, env); if (auth.response) return auth.response;
     const db = env.MEMBERS_DB; await ensureRecipeComments(db);
     const params = new URL(request.url).searchParams;

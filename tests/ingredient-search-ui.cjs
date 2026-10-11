@@ -14,20 +14,20 @@ const { chromium } = require('playwright');
   await context.route('**/*',async route=>{
    const req=route.request(),url=new URL(req.url());if(url.origin!==origin)return route.abort();
    if(url.pathname.endsWith('ingredient-vision-worker.js'))return route.fulfill({contentType:'text/javascript',body:`self.onmessage=({data})=>{if(!(data.blob instanceof Blob))throw new Error('Expected local image');self.postMessage(${visionFails?"{type:'error',message:'다른 사진으로 다시 시도해 주세요.'}":emptyDetection?"{type:'result',ingredients:[]}":"{type:'result',ingredients:['달걀','두부','대파']}"});};`});
-   if(url.pathname==='/api/session')return route.fulfill({json:{available:true,authenticated:false}});
+   if(url.pathname==='/api/session')return route.fulfill({json:{available:true,authenticated:true,user:{id:'member',username:'member',isAdmin:false}}});
    if(['/api/register','/api/oauth'].includes(url.pathname))return route.fulfill({json:{available:true,providers:{}}});
    if(url.pathname==='/api/recipes')return route.fulfill({json:{posts:[],page:1,totalPages:1,storageAvailable:true}});
    if(url.pathname==='/api/recipe-posts')return route.fulfill({json:{posts:url.searchParams.has('id')?[{id:Number(url.searchParams.get('id')),title:'두부달걀전',body:'실제 레시피 본문',category:'한식',created_at:'2026-10-09',comment_count:0}]:[],page:1,totalPages:1}});
    if(url.pathname==='/api/recipe-recommendations'){
     assert.equal(req.method(),'GET');assert.equal(req.postData(),null);recommendations++;lastCategory=url.searchParams.get('category');
-    if(fail)return route.fulfill({status:403,json:{message:'특별회원 인증과 열람 비밀번호가 필요합니다.'}});
+    if(fail)return route.fulfill({status:403,json:{message:'특별회원으로 로그인해 주세요.'}});
     const ingredients=url.searchParams.get('ingredients');assert.ok(ingredients.includes('달걀'));
     return route.fulfill({json:{recommendations:emptyMatches?[]:[{id:1,title:'두부달걀전',body:'두부와 달걀을 섞어 굽습니다.',score:67,photoIngredientCount:3,matched:['달걀','두부'],estimated:false},{id:2,title:'달걀볶음밥',body:'밥을 볶습니다.',score:67,photoIngredientCount:3,matched:['달걀','대파'],estimated:true},{id:3,title:'두부찌개',body:'두부를 끓입니다.',score:33,photoIngredientCount:3,matched:['두부'],estimated:false}]}});
    }
    if(url.pathname.startsWith('/api/'))return route.fulfill({json:{}});return route.continue();
   });
-  const page=await context.newPage();await page.goto(origin+'/recipes');assert.ok(await page.locator('#ingredient-search').isHidden());
-  await page.locator('#recipe-password').fill('test');await page.locator('#recipe-submit').click();await page.locator('#ingredient-search').waitFor();
+  const page=await context.newPage();await page.goto(origin+'/recipes');
+  await page.locator('#ingredient-search').waitFor();
   await page.locator('#ingredient-photo').setInputFiles({name:'not-image.txt',mimeType:'text/plain',buffer:Buffer.from('x')});assert.ok(await page.locator('#ingredient-analyze').isDisabled());
   assert.equal(await page.locator('#ingredient-search textarea, #ingredient-match-form').count(),0);
   assert.equal(await page.locator('.recipe-search-panel #recipe-search-form').count(),1);
@@ -94,7 +94,7 @@ const { chromium } = require('playwright');
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   if(width===320&&theme==='light')await page.screenshot({path:'/tmp/dining-ingredient-search-mobile.png',fullPage:true});
   emptyMatches=true;await page.locator('#ingredient-analyze').click();await page.waitForFunction(()=>document.querySelector('#ingredient-match-status').textContent.includes('일치하는 레시피가 없습니다'));
-  emptyMatches=false;fail=true;await page.locator('#ingredient-analyze').click();await page.waitForFunction(()=>document.querySelector('#ingredient-match-status').textContent.includes('특별회원 인증'));
+  emptyMatches=false;fail=true;await page.locator('#ingredient-analyze').click();await page.waitForFunction(()=>document.querySelector('#ingredient-match-status').textContent.includes('특별회원으로 로그인'));
   fail=false;visionFails=true;const beforeFailure=recommendations;await page.locator('#ingredient-analyze').click();await page.waitForFunction(()=>document.querySelector('#ingredient-photo-status').textContent.includes('다시 시도'));assert.equal(recommendations,beforeFailure);
   visionFails=false;emptyDetection=true;await page.locator('#ingredient-analyze').click();await page.waitForFunction(()=>document.querySelector('#ingredient-photo-status').textContent.includes('재료를 찾지 못했습니다'));assert.equal(recommendations,beforeFailure);
   emptyDetection=false,lastCategory=null;await page.locator('#ingredient-analyze').click();await page.locator('.ingredient-result').first().waitFor();
@@ -105,7 +105,7 @@ const { chromium } = require('playwright');
   await page.evaluate(()=>dispatchEvent(new Event('recipe-access-locked')));
   await page.waitForTimeout(150);assert.equal(recommendations,beforeClear);assert.equal(await page.locator('.ingredient-result').count(),0);
   await page.goto(origin+'/recipes?recipe=1');
-  await page.locator('#recipe-password').fill('test');await page.locator('#recipe-submit').click();
+
   await page.locator('#recipe-post-1[open]').waitFor();
   console.log('PASS ingredient photo flow, automatic search, top 3, errors, empty detection and session clearing',width,theme);await context.close();
  }}finally{await browser.close();await new Promise(r=>server.close(r));}

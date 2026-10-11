@@ -5,7 +5,7 @@ export async function onRequest({ request, env }) {
   if (!['GET', 'POST', 'PATCH', 'DELETE'].includes(request.method)) return reply(405, { message: '지원하지 않는 요청입니다.' });
   if (request.method !== 'GET' && !sameOrigin(request)) return reply(403, { message: '홈페이지에서 다시 시도해 주세요.' });
   try {
-    if (!await authorized(request, env)) return reply(403, { message: '특별회원 로그인과 자료 비밀번호를 확인해 주세요.' });
+    if (!await authorized(request, env)) return reply(403, { message: '특별회원으로 로그인해 주세요.' });
     const identity = await boardIdentity(request, env);
     const canWrite = Boolean(identity?.isAdmin);
     if (request.method === 'POST' && !canWrite) return reply(403, { message: '운영자 계정으로 로그인해 주세요.' });

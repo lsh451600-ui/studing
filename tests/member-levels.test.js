@@ -52,7 +52,7 @@ test('general members cannot access any recipe endpoint; promotion and demotion 
   setAdmin(true);assert.equal((await recipes({env,request:req('/api/recipes')})).status,200);
 });
 
-test('industry materials require special membership and their password, including after demotion',async t=>{
+test('industry materials require special membership without passwords, including after demotion',async t=>{
   const {env,req,db,setAdmin}=setup(t); await ensureLevels(db); setAdmin(false);
   const cookie=(await industryCookie(env,'viewer')).split(';')[0];
   const endpoints=[['/api/private',industry],['/api/private-posts',industryPosts],['/api/private-image?id=1',industryImage],['/api/private-file?id=1',industryFile],['/api/private-comments?postId=1',industryComments]];
@@ -60,9 +60,9 @@ test('industry materials require special membership and their password, includin
   assert.equal((await industry({env,request:req('/api/private',{method:'POST',body:{password:env.RECIPE_PASSWORD}})})).status,403);
   const denied=await middleware({env,request:req('/private'),next:()=>new Response('CONTENT')}); assert.equal(denied.status,302); assert.equal(new URL(denied.headers.get('location')).pathname, '/');assert.ok(denied.headers.get('location').includes('membership_required=1'));
   await db.prepare('INSERT INTO member_levels(member_id,level,updated_by,updated_at) VALUES (?,?,?,?)').bind(targetId,'special',adminId,new Date().toISOString()).run();
-  assert.equal((await industryPosts({env,request:req('/api/private-posts')})).status,403);
-  assert.equal((await industry({env,request:req('/api/private',{method:'POST',body:{password:'wrong'}})})).status,401);
-  const unlocked=await industry({env,request:req('/api/private',{method:'POST',body:{password:env.RECIPE_PASSWORD}})}); assert.equal(unlocked.status,200); assert.ok(unlocked.headers.get('set-cookie').includes('private_viewer='));
+  assert.equal((await industryPosts({env,request:req('/api/private-posts')})).status,200);
+  assert.equal((await industry({env,request:req('/api/private',{method:'POST',body:{password:'wrong'}})})).status,200);
+  const unlocked=await industry({env,request:req('/api/private',{method:'POST',body:{password:env.RECIPE_PASSWORD}})}); assert.equal(unlocked.status,200); assert.ok(!unlocked.headers.getSetCookie().some(cookie=>cookie.startsWith('private_viewer=')));
   assert.equal((await industryPosts({env,request:req('/api/private-posts',{cookie})})).status,200);
   await db.prepare("UPDATE member_levels SET level='regular' WHERE member_id=?").bind(targetId).run();
   for(const[path,handler]of endpoints)assert.equal((await handler({env,request:req(path,{cookie})})).status,403,path);
@@ -89,7 +89,7 @@ test('verified admin can unlock and read both boards without any shared password
   }
   setAdmin(false);await ensureLevels(db);
   await db.prepare('INSERT INTO member_levels(member_id,level,updated_by,updated_at) VALUES (?,?,?,?)').bind(targetId,'special',adminId,new Date().toISOString()).run();
-  for(const [path,handler] of [['/api/recipe-posts',recipePosts],['/api/private-posts',industryPosts]])assert.equal((await handler({env,request:req(path)})).status,403);
+  for(const [path,handler] of [['/api/recipe-posts',recipePosts],['/api/private-posts',industryPosts]])assert.equal((await handler({env,request:req(path)})).status,200);
 });
 test('admin member directory includes names and phone numbers but ordinary members cannot fetch it',async t=>{
   const {env,req,setAdmin}=setup(t);

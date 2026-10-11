@@ -6,7 +6,7 @@ export async function onRequest({ request, env }) {
   const id = new URL(request.url).searchParams.get('id');
   if (!id || !/^\d+$/.test(id) || !Number.isSafeInteger(Number(id))) return reply(400, { message: '첨부 파일 정보를 확인해 주세요.' });
   try {
-    if (!await authorized(request, env)) return reply(403, { message: '특별회원 로그인과 자료 비밀번호를 확인해 주세요.' });
+    if (!await authorized(request, env)) return reply(403, { message: '특별회원으로 로그인해 주세요.' });
     await ensurePosts(env.MEMBERS_DB);
     const row = await env.MEMBERS_DB.prepare('SELECT attachment_base64, attachment_name FROM private_posts WHERE id = ?').bind(Number(id)).first();
     if (!row?.attachment_base64 || !row.attachment_name) return reply(404, { message: '첨부 파일이 없습니다.' });

@@ -1,6 +1,7 @@
 import { appendRecipeComments } from './recipe-comments.js?v=crown-20261009-industry';
 import { appendPostActions } from './post-actions.js?v=20261009-ingredients';
 const byId = id => document.getElementById(id);
+let accessRevoked = false;
 const make = (tag, text, className) => { const el = document.createElement(tag); if (text) el.textContent = text; if (className) el.className = className; return el; };
 const json = body => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 let unlocked = false;
@@ -81,46 +82,28 @@ byId('industry-post-form').addEventListener('submit', async event => {
   } catch (error) { status.textContent = error.message; }
   finally { posting = false; byId('industry-submit').disabled = false; }
 });
-byId('industry-show-password').addEventListener('change', event => {
-  byId('industry-password').type = event.target.checked ? 'text' : 'password';
-});
-function hidePassword() {
-  byId('industry-show-password').checked = false;
-  byId('industry-password').type = 'password';
-}
 function lock() {
-  hidePassword();
   unlocked = false; generation++; authGeneration++;
   byId('recipe-content').replaceChildren(); byId('recipe-pagination').replaceChildren();
   byId('recipe-board').hidden = true; byId('industry-gate').hidden = false;
   byId('industry-write').hidden = true; byId('recipe-editor').hidden = true;
-  byId('industry-password').value = ''; byId('industry-post-form').reset();
+  byId('industry-post-form').reset();
 }
-async function unlockIndustry(password) {
+async function unlockIndustry() {
   const version = ++generation;
-  byId('industry-access-submit').disabled = true;
   byId('industry-access-status').textContent = '확인하고 있습니다.';
   try {
-    const data = await api('/api/private', json(password === undefined ? {} : { password }));
+    const data = await api('/api/private');
     if (version !== generation) return;
     unlocked = true; page = data.page || 1; totalPages = data.totalPages || 1; query = ''; sort = 'latest';
     byId('industry-query').value = ''; render(data.posts); paginate();
     byId('recipe-board').hidden = false; byId('industry-gate').hidden = true;
     byId('industry-write').hidden = !data.canWrite; byId('industry-access-status').textContent = '';
   } catch (error) { if (version === generation) byId('industry-access-status').textContent = error.message; }
-  finally { hidePassword(); byId('industry-password').value = ''; byId('industry-access-submit').disabled = false; }
 }
-byId('industry-access-form').addEventListener('submit', event => {
-  event.preventDefault(); unlockIndustry(byId('industry-password').value);
-});
-async function syncAdminAccess() {
-  const version = generation;
-  try {
-    const data = await api('/api/private');
-    if (version === generation && data.isAdmin && !unlocked) await unlockIndustry();
-  } catch { /* Keep the password form when membership cannot be checked. */ }
-}
-window.addEventListener('member-session-change', () => { lock(); syncAdminAccess(); });
+async function syncAdminAccess() { if (!accessRevoked && !unlocked) await unlockIndustry(); }
+window.addEventListener('member-session-change', event => {
+  accessRevoked = event.detail === false; lock(); syncAdminAccess(); });
 window.addEventListener('pageshow', event => { if (event.persisted) { lock(); syncAdminAccess(); } });
 window.addEventListener('pagehide', lock);
 lock();

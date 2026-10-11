@@ -9,7 +9,7 @@ export async function onRequest({ request, env }) {
   if (request.method !== 'GET' && !sameOrigin(request)) return reply(403, '홈페이지에서 다시 시도해 주세요.');
   if (!env.MEMBERS_DB) return reply(503, '댓글 저장소에 연결하지 못했습니다.');
   try {
-    if (!await authorized(request, env)) return reply(403, '특별회원 로그인과 자료 비밀번호를 확인해 주세요.');
+    if (!await authorized(request, env)) return reply(403, '특별회원으로 로그인해 주세요.');
     const db = env.MEMBERS_DB; await ensureComments(db);
     const params = new URL(request.url).searchParams;
     if (request.method === 'GET') {
