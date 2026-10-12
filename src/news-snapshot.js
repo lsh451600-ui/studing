@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-10-12T00:21:01.154906+00:00",
+  "updated_at": "2026-10-12T12:25:40.420928+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "피자·아이스크림도 오른다…외식 물가 ‘들썩’",
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5NRWVNcEs5aG1JYWNBUHpVMFZXaHdCbVhlY3FCN2dIS0hRd0w4cGRocUlUWXB4WlFTNGtLNnNwQVlKanluR0xfWDJRaTY3VFFnQ1VPQ2lIU3U4N2lQVW9IZlBQUEFkd9IBZkFVX3lxTE5NRWVNcEs5aG1JYWNBUHpVMFZXaHdCbVhlY3FCN2dIS0hRd0w4cGRocUlUWXB4WlFTNGtLNnNwQVlKanluR0xfWDJRaTY3VFFnQ1VPQ2lIU3U4N2lQVW9IZlBQUEFkdw?oc=5",
+      "source": "동아일보",
+      "published_at": "2026-10-12T04:51:45+00:00",
+      "original_url": "https://www.donga.com/news/amp/all/20261012/134825472/1"
+    },
     {
       "title": "中 국경절 연휴 서비스업 매출 전년比 19.5% 증가...관광·외식·여가 소비 활기-Xinhua",
       "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE12blZwRFQ1UVIwNWJrZWJIQTR5dkhwUUh3RW11ZzhUSnJ3Snd4MTZtaVVNc3JLVW5nZjNJQ0JrZFU4eTN2bnVwSjllTGprVEh0djlIWDVUWExhWFNIOHZKYUwycHRFb0o3d3g0U1A3dVIxOS1H?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "세계일보",
       "published_at": "2026-10-09T04:02:50+00:00",
       "original_url": "https://m.segye.com/ampView/20261009503929"
-    },
-    {
-      "title": "외식 프랜차이즈 줄줄이 가격인상… 소비자 부담 커진다",
-      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5MbTZ1dndjam5fX2xRQXBnMER4VmQ1TkhoMlQxdnBRS0NYdlZTdnBoQlBBSDhHQ0hJMGxvY2IzTGJEN1pFLXdEbjNSSlVIQ3lxQUxLMzBidWdTQnNfT2p1a1dkSmQ3cDJ6ZDlscEx3TlNJcWM1Mm5ONzE5cw?oc=5",
-      "source": "부산일보",
-      "published_at": "2026-10-08T08:41:40+00:00",
-      "original_url": "https://mobile.busan.com/view/bstoday/view.php?code=2026100817394251223"
     }
   ],
   "history": [
@@ -120,6 +120,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBDQ2FhZm5wOGpvQkR4UXdXTnVvVU4zMlEyRi15cWUyVXQzTEd0OFNJanZ5R2E4NDkyQkt2Wnh6b0hSQU1WeG56WkhVNXByY3dISjhHNy02TVdNaGNWZEoyU9IBeEFVX3lxTFBnUTh0X1NCa1h4aDF5M1RMdzNreDRpYVdMOFVYb2hYY1M4NXcwcDdFdHlPRDJ6WTF5QUg3WTFTaW1UWXJ0SkNKOXc1ZnVWcHE0aGZEZWZJdmNELWtJOWNFNEhUSnkxOWNIY3RQWVVDXzBTYW5nd2hlUA?oc=5",
       "title": "\"요즘 뜨는 디저트로 입맛 저격\" 외식·카페업계, 트렌드 메뉴 우수수[이거 먹어볼까]",
       "published_at": "2026-10-11T01:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5NRWVNcEs5aG1JYWNBUHpVMFZXaHdCbVhlY3FCN2dIS0hRd0w4cGRocUlUWXB4WlFTNGtLNnNwQVlKanluR0xfWDJRaTY3VFFnQ1VPQ2lIU3U4N2lQVW9IZlBQUEFkd9IBZkFVX3lxTE5NRWVNcEs5aG1JYWNBUHpVMFZXaHdCbVhlY3FCN2dIS0hRd0w4cGRocUlUWXB4WlFTNGtLNnNwQVlKanluR0xfWDJRaTY3VFFnQ1VPQ2lIU3U4N2lQVW9IZlBQUEFkdw?oc=5",
+      "title": "피자·아이스크림도 오른다…외식 물가 ‘들썩’",
+      "published_at": "2026-10-12T04:51:45+00:00"
     }
   ],
   "new_articles": 0
