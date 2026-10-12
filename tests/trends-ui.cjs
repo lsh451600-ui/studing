@@ -77,7 +77,7 @@ const { chromium } = require('playwright');
       await page.waitForFunction(()=>document.querySelector('#board-edit-form').hidden);
       assert.deepEqual(post.attachments,[]);
       assert.equal(await page.locator('#trend-downloads a').count(),0);
-      await page.locator('#board-heading-link').click();
+      await page.getByRole('button',{name:'목록으로',exact:true}).click();
       await page.waitForSelector('.board-row');
       assert.equal(await page.locator('.board-row').getAttribute('href'), '/trends?post=12');
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));

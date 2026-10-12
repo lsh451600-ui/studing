@@ -169,7 +169,7 @@ async function loadDetail(id, focus = true) {
     }
   } catch (error) { if (version === generation) byId('board-status').textContent = error.message; }
 }
-for (const id of ['board-heading-link']) byId(id).addEventListener('click', event => {
+for (const id of ['board-heading-link', ...(isTrend ? ['board-back-list'] : [])]) byId(id).addEventListener('click', event => {
   if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
   event.preventDefault(); history.pushState(null, '', boardPath); loadList();
 });
