@@ -1,9 +1,11 @@
+import { createTrendFiles, renderTrendFiles } from './trend-files.js?v=20261012';
 import { createTrendEditor, renderTrendBody } from './trend-editor.js?v=20261011-selection';
 import { decorateMember } from './member-badge.js?v=20261009-admin-diamond';
 const byId = id => document.getElementById(id);
 const isTrend = document.body.dataset.board === 'trend';
 const boardPath = isTrend ? '/trends' : '/board';
 const trendEditors = isTrend ? { post: createTrendEditor('board-post'), edit: createTrendEditor('board-edit') } : null;
+const trendFiles = isTrend ? { post: createTrendFiles('board-post'), edit: createTrendFiles('board-edit') } : null;
 let selected = null, next = null, generation = 0, authVersion = 0, sessionAuthenticated = false, sessionKnown = false, sessionAdmin = false, writing = false, commenting = false;
 const date = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', dateStyle: 'short', timeStyle: 'short' }).format(new Date(value));
 async function api(url, { method = 'GET', body } = {}) {
@@ -103,7 +105,7 @@ async function loadDetail(id, focus = true) {
     byId('board-edit-form').hidden = true;
     byId('board-edit-title').value = data.post.title;
     byId('board-edit-body').value = data.post.body;
-    if (isTrend) trendEditors.edit.fill(data.post.richBody, data.post.body);
+    if (isTrend) { trendEditors.edit.fill(data.post.richBody, data.post.body); trendFiles.edit.fill(data.post.attachments || []); renderTrendFiles(data.post.attachments || []); }
     applyUpgradeForm('board-edit');
     byId('board-comments').replaceChildren();
     for (const comment of data.comments) {
@@ -192,9 +194,9 @@ byId('board-post-form').addEventListener('submit', async event => {
   try {
     const data = await api('/api/board-posts', {
       method: 'POST',
-      body: { ...(isTrend ? { richBody: trendEditors.post.sync() } : {}), is_secret: byId('board-post-secret').checked, category: byId('board-post-category')?.value, title: byId('board-post-title').value, body: byId('board-post-body').value }
+      body: { ...(isTrend ? { richBody: trendEditors.post.sync(), attachments: await trendFiles.post.payload() } : {}), is_secret: byId('board-post-secret').checked, category: byId('board-post-category')?.value, title: byId('board-post-title').value, body: byId('board-post-body').value }
     });
-    event.target.reset(); if (isTrend) trendEditors.post.reset(); applyUpgradeForm('board-post'); byId('board-post-status').textContent = '';
+    event.target.reset(); if (isTrend) { trendEditors.post.reset(); trendFiles.post.reset(); } applyUpgradeForm('board-post'); byId('board-post-status').textContent = '';
     history.pushState(null, '', boardPath + '?post=' + data.id);
     await loadDetail(data.id);
   } catch (error) { byId('board-post-status').textContent = error.message; }
@@ -209,7 +211,7 @@ byId('board-edit-form').addEventListener('submit', async event => {
   event.preventDefault(); if (writing || !authenticated() || !event.target.reportValidity()) return;
   writing = true; byId('board-edit-submit').disabled = true; byId('board-edit-status').textContent = '수정 내용을 저장하고 있습니다.';
   try {
-    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { ...(isTrend ? { richBody: trendEditors.edit.sync() } : {}), is_secret: byId('board-edit-secret').checked, category: byId('board-edit-category')?.value, title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
+    await api('/api/board-posts?id=' + selected, { method: 'PATCH', body: { ...(isTrend ? { richBody: trendEditors.edit.sync(), attachments: await trendFiles.edit.payload() } : {}), is_secret: byId('board-edit-secret').checked, category: byId('board-edit-category')?.value, title: byId('board-edit-title').value, body: byId('board-edit-body').value } });
     byId('board-edit-status').textContent = '수정했습니다.';
     await loadDetail(selected, false);
   } catch (error) { byId('board-edit-status').textContent = error.message; }
@@ -269,7 +271,7 @@ window.addEventListener('member-session-change', event => {
   generation++; byId('board-detail').hidden = true;
   byId('board-body').textContent = ''; byId('board-comments').replaceChildren();
   byId('board-edit-form').reset(); byId('board-comment-form').reset();
-  if (isTrend) { trendEditors.edit.reset(); trendEditors.post.reset(); }
+  if (isTrend) { trendEditors.edit.reset(); trendFiles.edit.reset(); renderTrendFiles([]); if (event.detail !== true) { trendEditors.post.reset(); trendFiles.post.reset(); } }
   const postId = new URLSearchParams(location.search).get('post');
   if (/^[1-9][0-9]*$/.test(postId || '')) loadDetail(postId, false);
   else loadList();

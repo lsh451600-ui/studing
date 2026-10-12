@@ -2,6 +2,7 @@ import { authorLevels } from '../../src/member-levels.js';
 import { reply, sameOrigin } from '../../src/member-auth.js';
 import { readJSON } from '../../src/recipe-server.js';
 import { member, allowWrite, idOf, postPermissions } from '../../src/community.js';
+import { validateFiles, fileStatements } from '../../src/trend-files.js';
 import { initialize, formattedBody } from '../../src/trend-community.js';
 export async function onRequest({ request, env }) {
   if (!['GET','POST','PATCH','DELETE'].includes(request.method)) return reply(405,'지원하지 않는 요청입니다.');
@@ -21,7 +22,8 @@ export async function onRequest({ request, env }) {
         const comments = (await db.prepare('SELECT * FROM trend_comments WHERE post_id = ? ORDER BY id DESC LIMIT 100').bind(id).all()).results;
         const permissions = await postPermissions(request,env,row.author_id,comments);
         const [post] = await authorLevels(db,[row]);
-        return reply(200,'',{post:{...post,richBody:row.rich_body ? JSON.parse(row.rich_body) : null},comments:(await authorLevels(db,comments)).reverse().map(comment=>({...comment,canEdit:permissions.deletableCommentIds.includes(comment.id),canDelete:permissions.deletableCommentIds.includes(comment.id)})),permissions:{canEdit:operator,canDelete:operator}});
+        const attachments = (await db.prepare('SELECT id,name,size FROM trend_files WHERE post_id=? ORDER BY rowid').bind(id).all()).results;
+        return reply(200,'',{post:{...post,attachments,richBody:row.rich_body ? JSON.parse(row.rich_body) : null},comments:(await authorLevels(db,comments)).reverse().map(comment=>({...comment,canEdit:permissions.deletableCommentIds.includes(comment.id),canDelete:permissions.deletableCommentIds.includes(comment.id)})),permissions:{canEdit:operator,canDelete:operator}});
       }
       const before = params.has('before') ? idOf(params.get('before')) : null;
       if (params.has('before') && !before) return reply(400,'페이지 정보를 확인해 주세요.');
@@ -36,21 +38,21 @@ export async function onRequest({ request, env }) {
       if (!await db.prepare('SELECT id FROM trend_posts WHERE id = ?').bind(id).first()) return reply(404,'게시물이 없습니다.');
     }
     if (request.method === 'DELETE') {
-      await db.batch([db.prepare('DELETE FROM trend_comments WHERE post_id = ?').bind(id),db.prepare('DELETE FROM trend_posts WHERE id = ?').bind(id)]);
+      await db.batch([db.prepare('DELETE FROM trend_files WHERE post_id = ?').bind(id),db.prepare('DELETE FROM trend_comments WHERE post_id = ?').bind(id),db.prepare('DELETE FROM trend_posts WHERE id = ?').bind(id)]);
       return reply(200,'게시물을 삭제했습니다.',{id});
     }
-    let data, formatted;
-    try { data = await readJSON(request,150000); formatted = formattedBody(data); }
-    catch { return reply(400,'입력 내용과 글 서식을 확인해 주세요.'); }
+    let data, formatted, files;
+    try { data = await readJSON(request,1600000); formatted = formattedBody(data); files = await validateFiles(db, request.method === 'PATCH' ? id : null, data.attachments); }
+    catch { return reply(400,'입력 내용과 첨부 파일을 확인해 주세요. 파일은 최대 5개, 개당 500KB·전체 1MB까지 가능합니다.'); }
     const title = typeof data.title === 'string' ? data.title.trim() : '';
     if (!title || title.length>100 || !formatted.body.trim() || formatted.body.length>10000) return reply(400,'제목은 100자, 내용은 10,000자 이내로 입력해 주세요.');
     if (data.is_secret !== undefined && typeof data.is_secret !== 'boolean') return reply(400,'비밀글 설정을 확인해 주세요.');
     if (request.method === 'PATCH') {
-      await db.prepare('UPDATE trend_posts SET title=?,body=?,rich_body=?,is_secret=? WHERE id=?').bind(title,formatted.body,formatted.rich,Number(data.is_secret===true),id).run();
+      await db.batch([db.prepare('UPDATE trend_posts SET title=?,body=?,rich_body=?,is_secret=? WHERE id=?').bind(title,formatted.body,formatted.rich,Number(data.is_secret===true),id), ...fileStatements(db,id,files)]);
       return reply(200,'게시물을 수정했습니다.',{id});
     }
     if (!await allowWrite(db,auth.session.user.id,'post')) return reply(429,'글 작성이 많습니다. 잠시 후 다시 시도해 주세요.');
-    const result = await db.prepare('INSERT INTO trend_posts (author_id,author,title,body,rich_body,is_secret,created_at) VALUES (?,?,?,?,?,?,?)').bind(auth.session.user.id,auth.author,title,formatted.body,formatted.rich,Number(data.is_secret===true),new Date().toISOString()).run();
-    return reply(201,'등록했습니다.',{id:result.meta.last_row_id});
+    const results = await db.batch([db.prepare('INSERT INTO trend_posts (author_id,author,title,body,rich_body,is_secret,created_at) VALUES (?,?,?,?,?,?,?)').bind(auth.session.user.id,auth.author,title,formatted.body,formatted.rich,Number(data.is_secret===true),new Date().toISOString()), ...fileStatements(db,null,files)]);
+    return reply(201,'등록했습니다.',{id:results[0].meta.last_row_id});
   } catch { return reply(503,'트렌드 게시판에 연결하지 못했습니다. 작성 내용은 유지됩니다.'); }
 }

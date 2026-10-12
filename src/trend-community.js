@@ -4,6 +4,7 @@ export async function initialize(db) {
   await db.batch([
     db.prepare('CREATE TABLE IF NOT EXISTS trend_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, author_id TEXT NOT NULL, author TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, rich_body TEXT, is_secret INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, views INTEGER NOT NULL DEFAULT 0)'),
     db.prepare('CREATE TABLE IF NOT EXISTS trend_comments (id INTEGER PRIMARY KEY AUTOINCREMENT, post_id INTEGER NOT NULL REFERENCES trend_posts(id) ON DELETE CASCADE, author_id TEXT NOT NULL, author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS trend_files (id TEXT PRIMARY KEY, post_id INTEGER NOT NULL REFERENCES trend_posts(id) ON DELETE CASCADE, name TEXT NOT NULL, size INTEGER NOT NULL, data TEXT NOT NULL)'),
     db.prepare('CREATE INDEX IF NOT EXISTS trend_comments_post ON trend_comments(post_id,id)'),
     db.prepare('CREATE TABLE IF NOT EXISTS trend_board_migrations (id TEXT PRIMARY KEY)')
   ]);

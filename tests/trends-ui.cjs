@@ -24,7 +24,8 @@ const { chromium } = require('playwright');
         if (url.origin !== origin) return route.abort();
         if (url.pathname === '/api/session') return route.fulfill({ json: { available: true, authenticated: true, user: { id: 'member', username: 'member', isAdmin: admin } } });
         if (url.pathname === '/api/trend-posts') {
-          if (req.method() === 'POST') { post = { ...req.postDataJSON(), id: 12, author: 'member', created_at: new Date().toISOString(), comments: 0 }; return route.fulfill({ json: { id: post.id } }); }
+          if (req.method() === 'PATCH') { post = { ...post, ...req.postDataJSON() }; return route.fulfill({ json: { id: post.id } }); }
+          if (req.method() === 'POST') { post = { ...req.postDataJSON(), id: 12, author: 'member', created_at: new Date().toISOString(), comments: 0 }; post.attachments = post.attachments.map((file,i)=>({...file,id:'file-'+i,size:10})); return route.fulfill({ json: { id: post.id } }); }
           return route.fulfill({ json: url.searchParams.has('id') ? { post, comments: [], permissions: { canEdit: true, canDelete: true } } : { posts: post ? [post] : [], next: null } });
         }
         if (url.pathname === '/api/trend-video') {
@@ -62,11 +63,20 @@ const { chromium } = require('playwright');
       await page.locator('.trend-editor-toolbar').first().getByLabel('글씨 크기').selectOption('24');
       await page.locator('.trend-editor-toolbar').first().getByRole('button',{name:'굵게'}).click();
       await page.locator('.trend-editor-toolbar input[type=color]').first().evaluate(el=>{el.value='#bd5636';el.dispatchEvent(new Event('input',{bubbles:true}));});
+      await page.locator('#board-post-files').setInputFiles({name:'전망.txt',mimeType:'text/plain',buffer:Buffer.from('trend data')});
       await page.locator('#board-post-submit').click();
       await page.waitForFunction(() => document.querySelector('#board-title').textContent === '외식 시장 전망');
       assert.equal(new URL(page.url()).pathname, '/trends');
       assert.ok(post.richBody.some(run=>run.size===24 && run.bold && run.color==='#bd5636'));
       assert.equal(await page.locator('#board-body script').count(),0);
+      assert.equal(post.attachments[0].data,Buffer.from('trend data').toString('base64'));
+      assert.equal(await page.locator('#trend-downloads a').textContent(),'전망.txt (1KB)');
+      await page.locator('#board-edit-open').click();
+      await page.getByRole('button',{name:'전망.txt 첨부 삭제'}).click();
+      await page.locator('#board-edit-submit').click();
+      await page.waitForFunction(()=>document.querySelector('#board-edit-form').hidden);
+      assert.deepEqual(post.attachments,[]);
+      assert.equal(await page.locator('#trend-downloads a').count(),0);
       await page.locator('#board-heading-link').click();
       await page.waitForSelector('.board-row');
       assert.equal(await page.locator('.board-row').getAttribute('href'), '/trends?post=12');

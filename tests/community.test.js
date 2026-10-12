@@ -1,3 +1,4 @@
+import { onRequest as trendFiles } from '../functions/api/trend-files.js';
 import { initialize as initializeTrends } from '../src/trend-community.js';
 import { onRequest as trendPosts } from '../functions/api/trend-posts.js';
 import { ensureLevels } from '../src/member-levels.js';
@@ -435,4 +436,28 @@ test('legacy trend content migrates once to independent tables without resurrect
   assert.equal((await db.prepare('SELECT body FROM trend_comments WHERE id=9').first()).body,'댓글');
   await db.prepare('DELETE FROM trend_comments WHERE post_id=42').run();await db.prepare('DELETE FROM trend_posts WHERE id=42').run();
   await initializeTrends(db);assert.equal(await db.prepare('SELECT id FROM trend_posts WHERE id=42').first(),null);
+});
+
+
+test('trend attachments round trip, reject foreign references, protect secrets and delete with posts', async t => {
+  auth(t,{username:'lsh451600'}); const settings=env(t);
+  const payload={title:'첨부 자료',body:'자료입니다.',attachments:[{name:'전망.txt',data:btoa('trend data')}]};
+  const create=await trendPosts({env:settings,request:request('trend-posts',payload,true)});
+  assert.equal(create.status,201); const {id}=await create.json();
+  const detail=await (await trendPosts({env:settings,request:request('trend-posts?id='+id)})).json();
+  const file=detail.post.attachments[0]; assert.equal(file.name,'전망.txt'); assert.equal(file.size,10); assert.equal(file.data,undefined);
+  const download=await trendFiles({env:settings,request:request('trend-files?id='+file.id)});
+  assert.equal(download.status,200); assert.equal(await download.text(),'trend data'); assert.match(download.headers.get('Content-Disposition'),/^attachment;/);
+  const foreign=await trendPosts({env:settings,request:request('trend-posts',{...payload,attachments:[{id:file.id}]},true)});
+  assert.equal(foreign.status,400);
+  for (const attachments of [[{name:'empty',data:''}],[{name:'bad',data:'!bad'}],[{name:'large',data:btoa('a'.repeat(500*1024+1))}],Array.from({length:6},()=>payload.attachments[0]),Array.from({length:3},()=>({name:'large',data:btoa('a'.repeat(400*1024))}))]) {
+    assert.equal((await trendPosts({env:settings,request:request('trend-posts',{...payload,attachments},true)})).status,400);
+  }
+  assert.equal((await trendPosts({env:settings,request:request('trend-posts?id='+id,{...payload,is_secret:true,attachments:[{id:file.id}]},true,undefined,'PATCH')})).status,200);
+  assert.equal((await trendFiles({env:settings,request:request('trend-files?id='+file.id)})).status,403);
+  assert.equal((await trendFiles({env:settings,request:request('trend-files?id='+file.id,undefined,true)})).status,200);
+  assert.equal((await trendPosts({env:settings,request:request('trend-posts?id='+id,{title:'수정',body:'유지'},true,undefined,'PATCH')})).status,200);
+  assert.equal((await settings.MEMBERS_DB.prepare('SELECT COUNT(*) AS n FROM trend_files').first()).n,1);
+  assert.equal((await trendPosts({env:settings,request:request('trend-posts?id='+id,undefined,true,undefined,'DELETE')})).status,200);
+  assert.equal((await trendFiles({env:settings,request:request('trend-files?id='+file.id)})).status,404);
 });
