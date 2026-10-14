@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-10-13T12:19:51.356206+00:00",
+  "updated_at": "2026-10-14T00:27:59.139898+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "‘2027 식품외식산업 전망’ 11월 4~5일 코엑스서 개최",
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE04TE1UQzdtNWN6Wm44by1JOVR1X3d1dGRaNm5RUHNzTU1pSGFrcW1nX2w2MF8tVGhIUVFHNEVKbFJxUjhScmlSMnM0dURjOEJMWm5fbjZJazVWSFVoNlYwcUdiUHdnbzVaOUl1ZDJn?oc=5",
+      "source": "팜인사이트",
+      "published_at": "2026-10-13T23:26:47+00:00",
+      "original_url": "https://www.farminsight.net/news/articleView.html?idxno=17028"
+    },
     {
       "title": "농식품부·aT, 11월 식품외식산업 전망 행사 개최",
       "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1PWUdnTnRReTV6cmNBdWQ2cjFiaVprTnN3Y2txbXBrcVI4NGFSSTR2LXRHYjdKOFpCUDdwdDZzNlJvd1J2QTZCc3QwQU5HT0JFbFl5YmtmX3UzdDdBNU1pYWNxTTBvWk5zR0EtOGZtR2NiZw?oc=5",
@@ -31,18 +38,11 @@ export const snapshot = {
       "original_url": "https://www.kenews.co.kr/news/article.html?no=90106"
     },
     {
-      "title": "“기술과 가치가 만든 미래 밥상”…aT, ‘2027 식품외식산업 전망’ 11월 4~5일 개최",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5wRzBiQ0J2aHpJQWswdS00VENZU1dwZVpYQ0Jpbkg0ckw4dzUzQ2JnaDNmRG1BMDVLVi0wNjhNb1F5YnQ3ZE5QSl92dTJqRmlDQVRQaTc5NkYwZzJVR3hpNDlPbWxnUmVNeEU4MFBB?oc=5",
-      "source": "식품저널 foodnews",
-      "published_at": "2026-10-13T06:15:46+00:00",
-      "original_url": "https://www.foodnews.co.kr/news/articleView.html?idxno=120510"
-    },
-    {
-      "title": "허희수 사장, 치폴레로 외식사업 외연 확장... 쉐이크쉑 10년 성장 진두지휘",
-      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1HVm1yeFNaU3hKMnBsZFZ4S2NfZUJqeWZxRDVERFg5cDRzdWRJM2hnVEVEaHFxdWZwNC1aZ2NNTWJaRjEwaHhWZTBURFkyWTFyYlhqeHE2Tm0zOGhiMTVrT1luTEY?oc=5",
-      "source": "법률방송뉴스",
-      "published_at": "2026-10-13T03:20:31+00:00",
-      "original_url": "https://www.lawtv.kr/news/articleView.html?idxno=61129"
+      "title": "2027 식품·외식시장, 어디서 기회 찾을까…K-푸드 수출부터 AI·소비 변화까지",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5saWgtQ2xYUERhWjJkYlVVYWgydVd1b1lSUGJMVWphaVFNei1Od0Z1RkxuXzYtcDFKa0RuWG1RVmQ0ajRyMEFpcEhVYUFsUEZidDhyYTBhczJpVFY4WXFOcXRwZnUzTkVpbTZoZA?oc=5",
+      "source": "푸드아이콘",
+      "published_at": "2026-10-13T06:33:00+00:00",
+      "original_url": "https://www.foodicon.co.kr/news/articleView.html?idxno=35657"
     }
   ],
   "history": [
@@ -155,6 +155,16 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE1HVm1yeFNaU3hKMnBsZFZ4S2NfZUJqeWZxRDVERFg5cDRzdWRJM2hnVEVEaHFxdWZwNC1aZ2NNTWJaRjEwaHhWZTBURFkyWTFyYlhqeHE2Tm0zOGhiMTVrT1luTEY?oc=5",
       "title": "허희수 사장, 치폴레로 외식사업 외연 확장... 쉐이크쉑 10년 성장 진두지휘",
       "published_at": "2026-10-13T03:20:31+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE04TE1UQzdtNWN6Wm44by1JOVR1X3d1dGRaNm5RUHNzTU1pSGFrcW1nX2w2MF8tVGhIUVFHNEVKbFJxUjhScmlSMnM0dURjOEJMWm5fbjZJazVWSFVoNlYwcUdiUHdnbzVaOUl1ZDJn?oc=5",
+      "title": "‘2027 식품외식산업 전망’ 11월 4~5일 코엑스서 개최",
+      "published_at": "2026-10-13T23:26:47+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5saWgtQ2xYUERhWjJkYlVVYWgydVd1b1lSUGJMVWphaVFNei1Od0Z1RkxuXzYtcDFKa0RuWG1RVmQ0ajRyMEFpcEhVYUFsUEZidDhyYTBhczJpVFY4WXFOcXRwZnUzTkVpbTZoZA?oc=5",
+      "title": "2027 식품·외식시장, 어디서 기회 찾을까…K-푸드 수출부터 AI·소비 변화까지",
+      "published_at": "2026-10-13T06:33:00+00:00"
     }
   ],
   "new_articles": 0
