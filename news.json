@@ -1,7 +1,21 @@
 {
-  "updated_at": "2026-10-16T00:26:03.340201+00:00",
+  "updated_at": "2026-10-16T12:29:09.356519+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "[트렌드] 햄버거집도 아침밥 판다 외식업계에 부는 ‘모닝 전쟁’",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFB5TXFYaGZidjlfQTdDb29ZbkFVekhzbjVMeGV0Uzh5ZUJlZlBSclY2QlllZndVS0ZuNjlzcVJLZThKcThUdmZSTWY5TU9nYl9iVERkbld6NkpPbmNwSDBEVDEtOGd4X0RGU0pldmc5cw?oc=5",
+      "source": "아이러브PC방",
+      "published_at": "2026-10-16T07:02:23+00:00",
+      "original_url": "https://www.ilovepcbang.com/news/articleView.html?idxno=202240"
+    },
+    {
+      "title": "치솟는 외식물가에 '배달 특화' 등 사업전략 다시 짜는 외식업계",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9Cb09GbzBleU9oWmdyV3V0WkIzQjhVUFFiNlh2X2JzTVZQajFZMi1jcFRxcnh4RmFjZjRiQ2xsODlvaWNTV1JiWExrVENXdFlMM2dzWVhSQVZXdHlYZWhJMmdiMmlfaXh4Tk9FYmpMNWnSAXRBVV95cUxOdXEwOTBjdUN3UjZSdS0zN1dGVDl2RTczU1dnaldFZC1HNEl4QnVhaE1LaDdQQ1JXRVNfc1NHQjJzUzVRNm5tRk1Vb1JKQUM2UWxjcmpwNFc0dzhNSnlKNGxnVzRZR1QzT3RHc1YtMXpmVWIzRQ?oc=5",
+      "source": "IT조선",
+      "published_at": "2026-10-15T21:30:00+00:00",
+      "original_url": "https://it.chosun.com/news/articleView.html?idxno=2023092172101"
+    },
     {
       "title": "농협경제지주·CJ프레시웨이, 전국 유치원 급식에 ‘농협안심한우’ 공급…학교·외식시장 확대 추진",
       "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5zRExSWGhTQklULW1uVWJBemJpTkRBNll2eUZsNG04eUdUcUFqTDVzWHpDMlBMa05zTnJmMUVPUmhpSnhWaVVxZHR5YzBIbUxnTzRjZDBCVHpBN0NuRW9OMmNFWlZ3ZW5w?oc=5",
@@ -17,32 +31,18 @@
       "original_url": "https://www.koreayouthdaily.com/news/562796"
     },
     {
+      "title": "식품·외식산업 미래 전략 한자리에",
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5DR0RkQmIxVHhCUjlXa2hSdGlUcFZWbC0tRVdFWVVFamh6NGlFRmNwaGVVT2hNaUxNR2VHQVVaaGFDcDNBNzI3VndRSUJ1SnVtRDZYVk9HYkRYM0NlVTJSZDdaM1JROVd1Z0E?oc=5",
+      "source": "농축유통신문",
+      "published_at": "2026-10-15T02:24:48+00:00",
+      "original_url": "https://www.amnews.co.kr/news/articleView.html?idxno=75026"
+    },
+    {
       "title": "일본 정부, 외식업계 요청 '식사권 지원' 보류 방침…식품 소비세 인하에 업계 반발 예상",
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE10XzNCZ3ZoWUdHNy02WHNKZzhBaXpLUm81QTRRUi1vSnJqZ1NHYXg3c3dBY1dSV0x5ZDg1elBRbnJxMzdPRlhFNl81N0tjNHpwdkJzcU5ERmZ3SHgwRXFCc3FCOHFFMUM2Yzh5TQ?oc=5",
       "source": "재팬코리아데일리",
       "published_at": "2026-10-14T03:03:10+00:00",
       "original_url": "https://www.jk-daily.co.kr/news/articleView.html?idxno=41821"
-    },
-    {
-      "title": "‘2027 식품외식산업 전망’ 11월 4~5일 코엑스서 개최",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE04TE1UQzdtNWN6Wm44by1JOVR1X3d1dGRaNm5RUHNzTU1pSGFrcW1nX2w2MF8tVGhIUVFHNEVKbFJxUjhScmlSMnM0dURjOEJMWm5fbjZJazVWSFVoNlYwcUdiUHdnbzVaOUl1ZDJn?oc=5",
-      "source": "팜인사이트",
-      "published_at": "2026-10-13T23:26:47+00:00",
-      "original_url": "https://www.farminsight.net/news/articleView.html?idxno=17028"
-    },
-    {
-      "title": "한국농수산식품유통공사, ‘2027 식품외식산업 전망’ 개최",
-      "url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTFBiQ3hSWlpobmZJR0NlT0VwODlVWnJDd3RJMkZJVU5CLXNhVE1sR2ZWR1ZGVjRCZlpuMGhmTzJJUWZJcXJqbnFXR1B2UlM?oc=5",
-      "source": "이코노믹포스트",
-      "published_at": "2026-10-13T09:13:23+00:00",
-      "original_url": "https://www.economicpost.co.kr/181098"
-    },
-    {
-      "title": "농식품부·aT, 11월 식품외식산업 전망 행사 개최",
-      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1PWUdnTnRReTV6cmNBdWQ2cjFiaVprTnN3Y2txbXBrcVI4NGFSSTR2LXRHYjdKOFpCUDdwdDZzNlJvd1J2QTZCc3QwQU5HT0JFbFl5YmtmX3UzdDdBNU1pYWNxTTBvWk5zR0EtOGZtR2NiZw?oc=5",
-      "source": "인더스트리뉴스",
-      "published_at": "2026-10-13T08:01:41+00:00",
-      "original_url": "https://www.industrynews.co.kr/news/articleView.html?idxno=87460"
     }
   ],
   "history": [
@@ -185,7 +185,22 @@
       "url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTFBiQ3hSWlpobmZJR0NlT0VwODlVWnJDd3RJMkZJVU5CLXNhVE1sR2ZWR1ZGVjRCZlpuMGhmTzJJUWZJcXJqbnFXR1B2UlM?oc=5",
       "title": "한국농수산식품유통공사, ‘2027 식품외식산업 전망’ 개최",
       "published_at": "2026-10-13T09:13:23+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFB5TXFYaGZidjlfQTdDb29ZbkFVekhzbjVMeGV0Uzh5ZUJlZlBSclY2QlllZndVS0ZuNjlzcVJLZThKcThUdmZSTWY5TU9nYl9iVERkbld6NkpPbmNwSDBEVDEtOGd4X0RGU0pldmc5cw?oc=5",
+      "title": "[트렌드] 햄버거집도 아침밥 판다 외식업계에 부는 ‘모닝 전쟁’",
+      "published_at": "2026-10-16T07:02:23+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9Cb09GbzBleU9oWmdyV3V0WkIzQjhVUFFiNlh2X2JzTVZQajFZMi1jcFRxcnh4RmFjZjRiQ2xsODlvaWNTV1JiWExrVENXdFlMM2dzWVhSQVZXdHlYZWhJMmdiMmlfaXh4Tk9FYmpMNWnSAXRBVV95cUxOdXEwOTBjdUN3UjZSdS0zN1dGVDl2RTczU1dnaldFZC1HNEl4QnVhaE1LaDdQQ1JXRVNfc1NHQjJzUzVRNm5tRk1Vb1JKQUM2UWxjcmpwNFc0dzhNSnlKNGxnVzRZR1QzT3RHc1YtMXpmVWIzRQ?oc=5",
+      "title": "치솟는 외식물가에 '배달 특화' 등 사업전략 다시 짜는 외식업계",
+      "published_at": "2026-10-15T21:30:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5DR0RkQmIxVHhCUjlXa2hSdGlUcFZWbC0tRVdFWVVFamh6NGlFRmNwaGVVT2hNaUxNR2VHQVVaaGFDcDNBNzI3VndRSUJ1SnVtRDZYVk9HYkRYM0NlVTJSZDdaM1JROVd1Z0E?oc=5",
+      "title": "식품·외식산업 미래 전략 한자리에",
+      "published_at": "2026-10-15T02:24:48+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 1
 }
