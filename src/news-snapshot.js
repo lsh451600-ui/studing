@@ -1,5 +1,5 @@
 export const snapshot = {
-  "updated_at": "2026-10-17T00:26:51.035784+00:00",
+  "updated_at": "2026-10-17T12:22:01.480499+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -38,11 +38,11 @@ export const snapshot = {
       "original_url": "https://www.amnews.co.kr/news/articleView.html?idxno=75026"
     },
     {
-      "title": "일본 정부, 외식업계 요청 '식사권 지원' 보류 방침…식품 소비세 인하에 업계 반발 예상",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE10XzNCZ3ZoWUdHNy02WHNKZzhBaXpLUm81QTRRUi1vSnJqZ1NHYXg3c3dBY1dSV0x5ZDg1elBRbnJxMzdPRlhFNl81N0tjNHpwdkJzcU5ERmZ3SHgwRXFCc3FCOHFFMUM2Yzh5TQ?oc=5",
-      "source": "재팬코리아데일리",
-      "published_at": "2026-10-14T03:03:10+00:00",
-      "original_url": "https://www.jk-daily.co.kr/news/articleView.html?idxno=41821"
+      "title": "[주목할 만한 코조 외식 뉴스 #147] 77개 매장에서 379개 매장으로 급성장, 골드만삭스가 인수한 버거킹의 쾌속 진격――매출 1,200억 엔 '모스버거 추월'을 사정권에 둔 노무라 카즈히로 사장의 승산과 '피클 11장'에서 엿보는 체험형 마케팅의 진수｜佐藤 こうぞう",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1OVExyRy1oaTNqbWRFNVJTc2Q4NTJzNWpZVHFfWU1PSG01QWpvckktLXI2SUQzMHVYZEFLcldFUS1QRmV1Ql9ZalY4VVBWUGNJQnNheU04VHo?oc=5",
+      "source": "note",
+      "published_at": "2026-10-14T21:59:19+00:00",
+      "original_url": "https://note.com/kozo_s/n/n653e6f2c73c5?hl=ko"
     }
   ],
   "history": [
@@ -200,6 +200,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5DR0RkQmIxVHhCUjlXa2hSdGlUcFZWbC0tRVdFWVVFamh6NGlFRmNwaGVVT2hNaUxNR2VHQVVaaGFDcDNBNzI3VndRSUJ1SnVtRDZYVk9HYkRYM0NlVTJSZDdaM1JROVd1Z0E?oc=5",
       "title": "식품·외식산업 미래 전략 한자리에",
       "published_at": "2026-10-15T02:24:48+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1OVExyRy1oaTNqbWRFNVJTc2Q4NTJzNWpZVHFfWU1PSG01QWpvckktLXI2SUQzMHVYZEFLcldFUS1QRmV1Ql9ZalY4VVBWUGNJQnNheU04VHo?oc=5",
+      "title": "[주목할 만한 코조 외식 뉴스 #147] 77개 매장에서 379개 매장으로 급성장, 골드만삭스가 인수한 버거킹의 쾌속 진격――매출 1,200억 엔 '모스버거 추월'을 사정권에 둔 노무라 카즈히로 사장의 승산과 '피클 11장'에서 엿보는 체험형 마케팅의 진수｜佐藤 こうぞう",
+      "published_at": "2026-10-14T21:59:19+00:00"
     }
   ],
   "new_articles": 0
