@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-10-17T12:22:01.480499+00:00",
+  "updated_at": "2026-10-18T00:26:38.070406+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "관절부터 체취까지…식품·외식업계, 소비력 잡는다[큰손 액티브시니어②]",
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1rd1A2cDdIaXozYkJoWlZCdWJ0cFhnS1pVYXVRd2czSVlSSVlhR0Vtb1VLQVJGaDV3aTFtUVl6aWVYaUtSMXp0LVE5UWZfYTJmRGRXMkxLUXNxbVBqT2Nkd9IBeEFVX3lxTE52bVEyXzdTLUhJNkVkWTloRE4wMWN3TDlKQjNQTFlXQ29QX2hrN2VwaTlTajlmdDNDaHhtZHNDTDg0Q3NBSXltT1hIRVhld1RZTXdFSXNTaVhxYnVEQ2hiQUV1aGtYNWVZV1pWZ0drb0JUT2JWTGdVZA?oc=5",
+      "source": "뉴시스",
+      "published_at": "2026-10-17T02:00:00+00:00",
+      "original_url": "https://www.newsis.com/view/NISX20261016_0003829472"
+    },
     {
       "title": "[트렌드] 햄버거집도 아침밥 판다 외식업계에 부는 ‘모닝 전쟁’",
       "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFB5TXFYaGZidjlfQTdDb29ZbkFVekhzbjVMeGV0Uzh5ZUJlZlBSclY2QlllZndVS0ZuNjlzcVJLZThKcThUdmZSTWY5TU9nYl9iVERkbld6NkpPbmNwSDBEVDEtOGd4X0RGU0pldmc5cw?oc=5",
@@ -24,25 +31,18 @@ export const snapshot = {
       "original_url": "https://www.news33.net/news/articleView.html?idxno=118659"
     },
     {
+      "title": "레이캬비크에서 가장 저렴하면서 맛있는 가성비 좋은 식당 10곳",
+      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQdjk3VnNhcjVqdV9iSlNmMGlwSi1VcFRGZ1hWS1AxSmQtVHhJZEh3U0JVMmdkelZubnA1ZEFQbUpoYVpEQXFNTWpwdV9pMmF0cUFuNzBCRzFyTm5LWDNzR3BVN3ZTZmFlVkVFOHBTN0dTb05EMkJ3R3lleWJsblZ6SERHb0I0QVFKaG9lX3pXbkVzOUU?oc=5",
+      "source": "Guide to Iceland",
+      "published_at": "2026-10-15T07:00:00+00:00",
+      "original_url": "https://guidetoiceland.is/ko/reykjavik-guide/top-10-best-value-places-to-eat-in-reykjavik"
+    },
+    {
       "title": "용봉동 치킨, 외식 소비 트렌드 변화 속 맛과 가성비 갖춘 치킨 전문점 관심",
       "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBhUnNPQWdMTEsyR3dKYS1mdjl1OUhGbnpvWUdkemxFLXNITElsTnRzTHc3X0htOXhNcWs2R1lONHlfdldXQlBjOEgxZ3hUeTR5VFBJZE1B?oc=5",
       "source": "대한청년일보",
       "published_at": "2026-10-15T06:19:26+00:00",
       "original_url": "https://www.koreayouthdaily.com/news/562796"
-    },
-    {
-      "title": "식품·외식산업 미래 전략 한자리에",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5DR0RkQmIxVHhCUjlXa2hSdGlUcFZWbC0tRVdFWVVFamh6NGlFRmNwaGVVT2hNaUxNR2VHQVVaaGFDcDNBNzI3VndRSUJ1SnVtRDZYVk9HYkRYM0NlVTJSZDdaM1JROVd1Z0E?oc=5",
-      "source": "농축유통신문",
-      "published_at": "2026-10-15T02:24:48+00:00",
-      "original_url": "https://www.amnews.co.kr/news/articleView.html?idxno=75026"
-    },
-    {
-      "title": "[주목할 만한 코조 외식 뉴스 #147] 77개 매장에서 379개 매장으로 급성장, 골드만삭스가 인수한 버거킹의 쾌속 진격――매출 1,200억 엔 '모스버거 추월'을 사정권에 둔 노무라 카즈히로 사장의 승산과 '피클 11장'에서 엿보는 체험형 마케팅의 진수｜佐藤 こうぞう",
-      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1OVExyRy1oaTNqbWRFNVJTc2Q4NTJzNWpZVHFfWU1PSG01QWpvckktLXI2SUQzMHVYZEFLcldFUS1QRmV1Ql9ZalY4VVBWUGNJQnNheU04VHo?oc=5",
-      "source": "note",
-      "published_at": "2026-10-14T21:59:19+00:00",
-      "original_url": "https://note.com/kozo_s/n/n653e6f2c73c5?hl=ko"
     }
   ],
   "history": [
@@ -205,7 +205,17 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1OVExyRy1oaTNqbWRFNVJTc2Q4NTJzNWpZVHFfWU1PSG01QWpvckktLXI2SUQzMHVYZEFLcldFUS1QRmV1Ql9ZalY4VVBWUGNJQnNheU04VHo?oc=5",
       "title": "[주목할 만한 코조 외식 뉴스 #147] 77개 매장에서 379개 매장으로 급성장, 골드만삭스가 인수한 버거킹의 쾌속 진격――매출 1,200억 엔 '모스버거 추월'을 사정권에 둔 노무라 카즈히로 사장의 승산과 '피클 11장'에서 엿보는 체험형 마케팅의 진수｜佐藤 こうぞう",
       "published_at": "2026-10-14T21:59:19+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1rd1A2cDdIaXozYkJoWlZCdWJ0cFhnS1pVYXVRd2czSVlSSVlhR0Vtb1VLQVJGaDV3aTFtUVl6aWVYaUtSMXp0LVE5UWZfYTJmRGRXMkxLUXNxbVBqT2Nkd9IBeEFVX3lxTE52bVEyXzdTLUhJNkVkWTloRE4wMWN3TDlKQjNQTFlXQ29QX2hrN2VwaTlTajlmdDNDaHhtZHNDTDg0Q3NBSXltT1hIRVhld1RZTXdFSXNTaVhxYnVEQ2hiQUV1aGtYNWVZV1pWZ0drb0JUT2JWTGdVZA?oc=5",
+      "title": "관절부터 체취까지…식품·외식업계, 소비력 잡는다[큰손 액티브시니어②]",
+      "published_at": "2026-10-17T02:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQdjk3VnNhcjVqdV9iSlNmMGlwSi1VcFRGZ1hWS1AxSmQtVHhJZEh3U0JVMmdkelZubnA1ZEFQbUpoYVpEQXFNTWpwdV9pMmF0cUFuNzBCRzFyTm5LWDNzR3BVN3ZTZmFlVkVFOHBTN0dTb05EMkJ3R3lleWJsblZ6SERHb0I0QVFKaG9lX3pXbkVzOUU?oc=5",
+      "title": "레이캬비크에서 가장 저렴하면서 맛있는 가성비 좋은 식당 10곳",
+      "published_at": "2026-10-15T07:00:00+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 1
 };
