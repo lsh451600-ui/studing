@@ -1,48 +1,48 @@
 export const snapshot = {
-  "updated_at": "2026-10-19T00:26:43.908187+00:00",
+  "updated_at": "2026-10-19T12:32:09.889812+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
-      "title": "북한, 신의주·함흥·원산 등 11곳에 대형 불고기 식당 준공…경기 개선으로 육류소비 증가 가능성",
-      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1sN25MMmRHN1NMZTNLNDFtQ01STzRRWkZGYVFvbjRsWmZoZTNYRUxSYUxJVDA4VFBRdFdxNzNmcEJUamZUazQ1NXdQa3g1d2xJMUlNN3FfdE9pRFFERkRQbGxwUU5TZw?oc=5",
-      "source": "남북경협뉴스",
-      "published_at": "2026-10-19T00:08:51+00:00",
-      "original_url": "https://www.snkpress.kr/news/articleView.html?idxno=2585"
+      "title": "서울 외식물가 폭등, 비빔밥 가격 1만2천원 돌파하며 '비상'",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE13ZWdQc2ZKSmxpanhJMDQ2UDV2T1F5aWppZmFJblpWOGR1UG5Wak9FZEx4dFgzZGhqUTA1MUpsOGZQbERhOUFoQ1NScTR3U2I2MDJBUkZNaHBoMTBNMmVnWHY5UzUwWWZO?oc=5",
+      "source": "공감신문",
+      "published_at": "2026-10-19T11:44:19+00:00",
+      "original_url": "https://www.gokorea.kr/news/articleView.html?idxno=881974"
     },
     {
-      "title": "\"1만원으로 한 끼 외식 어렵다\"…물가 고공행진",
-      "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9oZVQteVM0VDg3ZXBvdDc3X0JEdDZVZHdSRi1kRUlkN19CRk1va2RKLXF2dW0tXzZwVXRWcHdXRjA1VkV1NVhkbi1Wb1NoVnJQZVItdlpwRGlvd2N3ZVJfeWFfUlVoMTA?oc=5",
-      "source": "연합뉴스TV",
-      "published_at": "2026-10-18T00:59:00+00:00",
-      "original_url": "https://www.yonhapnewstv.co.kr/news/MYH20261018095916ZMw"
+      "title": "'외식 물가' 압박...서울 비빔밥 한 그릇 1만2000원대 첫 진입",
+      "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1XLVNRYlk3TEd5cHRsdFluR2JDamNSSFJYQXNYVlIzSnZPejV6Q0RCWkwwSTVZM193X1dnZlVUZnQ1eGNUd25vZTYwcGlyeUNuYlRMMHItbXctVDVVZnJWcWc1Qm9oXzA?oc=5",
+      "source": "청년일보",
+      "published_at": "2026-10-19T08:59:04+00:00",
+      "original_url": "https://www.youthdaily.co.kr/news/article.html?no=228541"
     },
     {
-      "title": "관절부터 체취까지…식품·외식업계, 소비력 잡는다[큰손 액티브시니어②]",
-      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1rd1A2cDdIaXozYkJoWlZCdWJ0cFhnS1pVYXVRd2czSVlSSVlhR0Vtb1VLQVJGaDV3aTFtUVl6aWVYaUtSMXp0LVE5UWZfYTJmRGRXMkxLUXNxbVBqT2Nkd9IBeEFVX3lxTE52bVEyXzdTLUhJNkVkWTloRE4wMWN3TDlKQjNQTFlXQ29QX2hrN2VwaTlTajlmdDNDaHhtZHNDTDg0Q3NBSXltT1hIRVhld1RZTXdFSXNTaVhxYnVEQ2hiQUV1aGtYNWVZV1pWZ0drb0JUT2JWTGdVZA?oc=5",
-      "source": "뉴시스",
-      "published_at": "2026-10-17T02:00:00+00:00",
-      "original_url": "https://www.newsis.com/view/NISX20261016_0003829472"
+      "title": "수협, 정호영·이미영 셰프 앞세워 국산 수산물 해외 외식시장 공략",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9DT1FydzVZZG5raWN3OTkycG5NY1N4QkNoZzZoWnJzdHpLeDJ6OUZpb3Mwa1FkbjVOcC1ldGlSa0RCQmUxUFZsN0xDRkRuR3B0ZHpJMXM3LTbSAVhBVV95cUxPQ09Rcnc1WWRua2ljdzk5MnBuTWNTeEJDaGc2aFpyc3R6S3gyejlGaW9zMGtRZG41TnAtZXRpUmtEQkJlMVBWbDdMQ0ZEbkdwdGR6STFzNy02?oc=5",
+      "source": "미디어펜",
+      "published_at": "2026-10-19T08:48:16+00:00",
+      "original_url": "https://www.mediapen.com/newsamp/view/1131074"
     },
     {
-      "title": "[트렌드] 햄버거집도 아침밥 판다 외식업계에 부는 ‘모닝 전쟁’",
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFB5TXFYaGZidjlfQTdDb29ZbkFVekhzbjVMeGV0Uzh5ZUJlZlBSclY2QlllZndVS0ZuNjlzcVJLZThKcThUdmZSTWY5TU9nYl9iVERkbld6NkpPbmNwSDBEVDEtOGd4X0RGU0pldmc5cw?oc=5",
-      "source": "아이러브PC방",
-      "published_at": "2026-10-16T07:02:23+00:00",
-      "original_url": "https://www.ilovepcbang.com/news/articleView.html?idxno=202240"
+      "title": "수협, '흑백요리사 스타 셰프' 의기투합…한국 수산물 해외 외식시장 전파",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1WUGpSSFFjMDRsQ0hoeFpUSkt3c296S0dYc0dWZDE3Y0M1RUVETHdnNmhtUHpxTlN2QkxxemthQW1CbDJENklKWGhUQUoydmhCeENsbGNTT3Z3Sk9OaU00OUR1OFktMGNQNTRzMmxfMNIBc0FVX3lxTFAzZmxTampheUR6M2JkOW42c05LYk1lZjY3QjRxeFRPSFRUZ3V0UUxOVjB0ODZQQW1saDdTR1RqUXVkMVRmbnFzWkpONV90WG1qU0VmaFE4Y2ZIdVFDWi1HLUpNTFd1OHlHcXhlWkNyTUZsQzQ?oc=5",
+      "source": "뉴스웍스",
+      "published_at": "2026-10-19T08:09:26+00:00",
+      "original_url": "https://www.newsworks.co.kr/news/articleView.html?idxno=856931"
     },
     {
-      "title": "치솟는 외식물가에 '배달 특화' 등 사업전략 다시 짜는 외식업계",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9Cb09GbzBleU9oWmdyV3V0WkIzQjhVUFFiNlh2X2JzTVZQajFZMi1jcFRxcnh4RmFjZjRiQ2xsODlvaWNTV1JiWExrVENXdFlMM2dzWVhSQVZXdHlYZWhJMmdiMmlfaXh4Tk9FYmpMNWnSAXRBVV95cUxOdXEwOTBjdUN3UjZSdS0zN1dGVDl2RTczU1dnaldFZC1HNEl4QnVhaE1LaDdQQ1JXRVNfc1NHQjJzUzVRNm5tRk1Vb1JKQUM2UWxjcmpwNFc0dzhNSnlKNGxnVzRZR1QzT3RHc1YtMXpmVWIzRQ?oc=5",
-      "source": "IT조선",
-      "published_at": "2026-10-15T21:30:00+00:00",
-      "original_url": "https://it.chosun.com/news/articleView.html?idxno=2023092172101"
+      "title": "수협, 흑백요리사와 국산 수산물 해외 외식 시장 공략",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1iSGtZYzJZTTNrX3dhdnluaTdZUXA5R0VNVV84T2dPeHB6a0hOY1lkR0MyOC00eWstSzYyYXo1U09SbzM2U1kxUi1XWlA3N0hFTmRSbEUxa3oxTG9ERmZKWThJcGVNQ0FUMkoxYzVOc9IBb0FVX3lxTE1iSGtZYzJZTTNrX3dhdnluaTdZUXA5R0VNVV84T2dPeHB6a0hOY1lkR0MyOC00eWstSzYyYXo1U09SbzM2U1kxUi1XWlA3N0hFTmRSbEUxa3oxTG9ERmZKWThJcGVNQ0FUMkoxYzVOcw?oc=5",
+      "source": "시민일보",
+      "published_at": "2026-10-19T06:58:28+00:00",
+      "original_url": "https://m.siminilbo.co.kr/news/amp.html?ncode=1160290691130014"
     },
     {
-      "title": "농협경제지주·CJ프레시웨이, 전국 유치원 급식에 ‘농협안심한우’ 공급…학교·외식시장 확대 추진",
-      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5zRExSWGhTQklULW1uVWJBemJpTkRBNll2eUZsNG04eUdUcUFqTDVzWHpDMlBMa05zTnJmMUVPUmhpSnhWaVVxZHR5YzBIbUxnTzRjZDBCVHpBN0NuRW9OMmNFWlZ3ZW5w?oc=5",
-      "source": "창업일보",
-      "published_at": "2026-10-15T07:19:08+00:00",
-      "original_url": "https://www.news33.net/news/articleView.html?idxno=118659"
+      "title": "김밥 4000원·비빔밥 1만2000원 눈앞…외식물가 부담 커진다",
+      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1EbXhSaklUQjZCR29pRXh0TVlzUzlILXdwbXRrN1VTamFva3liNTlveUFHaG9qdEFXcFlfRl9JTXhEdFZDNkp3OFQ4cGFYajBoS1lIRzgyS3ZLejVxWktKQmJ5TkxwRDdhYWYyTEY3TmV6UQ?oc=5",
+      "source": "프라임경제",
+      "published_at": "2026-10-19T06:41:55+00:00",
+      "original_url": "https://m.newsprime.co.kr/section_view.html?no=751478&menu=index"
     }
   ],
   "history": [
@@ -225,7 +225,37 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1sN25MMmRHN1NMZTNLNDFtQ01STzRRWkZGYVFvbjRsWmZoZTNYRUxSYUxJVDA4VFBRdFdxNzNmcEJUamZUazQ1NXdQa3g1d2xJMUlNN3FfdE9pRFFERkRQbGxwUU5TZw?oc=5",
       "title": "북한, 신의주·함흥·원산 등 11곳에 대형 불고기 식당 준공…경기 개선으로 육류소비 증가 가능성",
       "published_at": "2026-10-19T00:08:51+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE13ZWdQc2ZKSmxpanhJMDQ2UDV2T1F5aWppZmFJblpWOGR1UG5Wak9FZEx4dFgzZGhqUTA1MUpsOGZQbERhOUFoQ1NScTR3U2I2MDJBUkZNaHBoMTBNMmVnWHY5UzUwWWZO?oc=5",
+      "title": "서울 외식물가 폭등, 비빔밥 가격 1만2천원 돌파하며 '비상'",
+      "published_at": "2026-10-19T11:44:19+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1XLVNRYlk3TEd5cHRsdFluR2JDamNSSFJYQXNYVlIzSnZPejV6Q0RCWkwwSTVZM193X1dnZlVUZnQ1eGNUd25vZTYwcGlyeUNuYlRMMHItbXctVDVVZnJWcWc1Qm9oXzA?oc=5",
+      "title": "'외식 물가' 압박...서울 비빔밥 한 그릇 1만2000원대 첫 진입",
+      "published_at": "2026-10-19T08:59:04+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9DT1FydzVZZG5raWN3OTkycG5NY1N4QkNoZzZoWnJzdHpLeDJ6OUZpb3Mwa1FkbjVOcC1ldGlSa0RCQmUxUFZsN0xDRkRuR3B0ZHpJMXM3LTbSAVhBVV95cUxPQ09Rcnc1WWRua2ljdzk5MnBuTWNTeEJDaGc2aFpyc3R6S3gyejlGaW9zMGtRZG41TnAtZXRpUmtEQkJlMVBWbDdMQ0ZEbkdwdGR6STFzNy02?oc=5",
+      "title": "수협, 정호영·이미영 셰프 앞세워 국산 수산물 해외 외식시장 공략",
+      "published_at": "2026-10-19T08:48:16+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1WUGpSSFFjMDRsQ0hoeFpUSkt3c296S0dYc0dWZDE3Y0M1RUVETHdnNmhtUHpxTlN2QkxxemthQW1CbDJENklKWGhUQUoydmhCeENsbGNTT3Z3Sk9OaU00OUR1OFktMGNQNTRzMmxfMNIBc0FVX3lxTFAzZmxTampheUR6M2JkOW42c05LYk1lZjY3QjRxeFRPSFRUZ3V0UUxOVjB0ODZQQW1saDdTR1RqUXVkMVRmbnFzWkpONV90WG1qU0VmaFE4Y2ZIdVFDWi1HLUpNTFd1OHlHcXhlWkNyTUZsQzQ?oc=5",
+      "title": "수협, '흑백요리사 스타 셰프' 의기투합…한국 수산물 해외 외식시장 전파",
+      "published_at": "2026-10-19T08:09:26+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1iSGtZYzJZTTNrX3dhdnluaTdZUXA5R0VNVV84T2dPeHB6a0hOY1lkR0MyOC00eWstSzYyYXo1U09SbzM2U1kxUi1XWlA3N0hFTmRSbEUxa3oxTG9ERmZKWThJcGVNQ0FUMkoxYzVOc9IBb0FVX3lxTE1iSGtZYzJZTTNrX3dhdnluaTdZUXA5R0VNVV84T2dPeHB6a0hOY1lkR0MyOC00eWstSzYyYXo1U09SbzM2U1kxUi1XWlA3N0hFTmRSbEUxa3oxTG9ERmZKWThJcGVNQ0FUMkoxYzVOcw?oc=5",
+      "title": "수협, 흑백요리사와 국산 수산물 해외 외식 시장 공략",
+      "published_at": "2026-10-19T06:58:28+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1EbXhSaklUQjZCR29pRXh0TVlzUzlILXdwbXRrN1VTamFva3liNTlveUFHaG9qdEFXcFlfRl9JTXhEdFZDNkp3OFQ4cGFYajBoS1lIRzgyS3ZLejVxWktKQmJ5TkxwRDdhYWYyTEY3TmV6UQ?oc=5",
+      "title": "김밥 4000원·비빔밥 1만2000원 눈앞…외식물가 부담 커진다",
+      "published_at": "2026-10-19T06:41:55+00:00"
     }
   ],
-  "new_articles": 1
+  "new_articles": 0
 };
