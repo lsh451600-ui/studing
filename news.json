@@ -1,7 +1,14 @@
 {
-  "updated_at": "2026-10-18T12:22:05.416020+00:00",
+  "updated_at": "2026-10-19T00:26:43.908187+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "북한, 신의주·함흥·원산 등 11곳에 대형 불고기 식당 준공…경기 개선으로 육류소비 증가 가능성",
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1sN25MMmRHN1NMZTNLNDFtQ01STzRRWkZGYVFvbjRsWmZoZTNYRUxSYUxJVDA4VFBRdFdxNzNmcEJUamZUazQ1NXdQa3g1d2xJMUlNN3FfdE9pRFFERkRQbGxwUU5TZw?oc=5",
+      "source": "남북경협뉴스",
+      "published_at": "2026-10-19T00:08:51+00:00",
+      "original_url": "https://www.snkpress.kr/news/articleView.html?idxno=2585"
+    },
     {
       "title": "\"1만원으로 한 끼 외식 어렵다\"…물가 고공행진",
       "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9oZVQteVM0VDg3ZXBvdDc3X0JEdDZVZHdSRi1kRUlkN19CRk1va2RKLXF2dW0tXzZwVXRWcHdXRjA1VkV1NVhkbi1Wb1NoVnJQZVItdlpwRGlvd2N3ZVJfeWFfUlVoMTA?oc=5",
@@ -36,13 +43,6 @@
       "source": "창업일보",
       "published_at": "2026-10-15T07:19:08+00:00",
       "original_url": "https://www.news33.net/news/articleView.html?idxno=118659"
-    },
-    {
-      "title": "레이캬비크에서 가장 저렴하면서 맛있는 가성비 좋은 식당 10곳",
-      "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQdjk3VnNhcjVqdV9iSlNmMGlwSi1VcFRGZ1hWS1AxSmQtVHhJZEh3U0JVMmdkelZubnA1ZEFQbUpoYVpEQXFNTWpwdV9pMmF0cUFuNzBCRzFyTm5LWDNzR3BVN3ZTZmFlVkVFOHBTN0dTb05EMkJ3R3lleWJsblZ6SERHb0I0QVFKaG9lX3pXbkVzOUU?oc=5",
-      "source": "Guide to Iceland",
-      "published_at": "2026-10-15T07:00:00+00:00",
-      "original_url": "https://guidetoiceland.is/ko/reykjavik-guide/top-10-best-value-places-to-eat-in-reykjavik"
     }
   ],
   "history": [
@@ -220,7 +220,12 @@
       "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9oZVQteVM0VDg3ZXBvdDc3X0JEdDZVZHdSRi1kRUlkN19CRk1va2RKLXF2dW0tXzZwVXRWcHdXRjA1VkV1NVhkbi1Wb1NoVnJQZVItdlpwRGlvd2N3ZVJfeWFfUlVoMTA?oc=5",
       "title": "\"1만원으로 한 끼 외식 어렵다\"…물가 고공행진",
       "published_at": "2026-10-18T00:59:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1sN25MMmRHN1NMZTNLNDFtQ01STzRRWkZGYVFvbjRsWmZoZTNYRUxSYUxJVDA4VFBRdFdxNzNmcEJUamZUazQ1NXdQa3g1d2xJMUlNN3FfdE9pRFFERkRQbGxwUU5TZw?oc=5",
+      "title": "북한, 신의주·함흥·원산 등 11곳에 대형 불고기 식당 준공…경기 개선으로 육류소비 증가 가능성",
+      "published_at": "2026-10-19T00:08:51+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 1
 }
