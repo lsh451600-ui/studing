@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-10-19T12:32:09.889812+00:00",
+  "updated_at": "2026-10-20T00:30:11.892129+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "수협, ‘흑백요리사’ 스타 셰프들과 손잡고 ‘K수산물 해외 외식시장 공략’",
+      "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5kR1hJcWZNcV9aRFVxTmhkSTk1YUlxZzhGSFdFMGNoSVlmNVNkUjRwYm1fd3c0SlN3RkhRMjZack1hYnVrZ2dISWNHU0pBNDFJNlYweE91RlZFTFNWbzU1cFV4Z2I2NzJhdVVQY25laFRyaGtiTUtwMTZidjE?oc=5",
+      "source": "부산일보",
+      "published_at": "2026-10-19T12:52:06+00:00",
+      "original_url": "https://mobile.busan.com/view/election/view.php?code=2026101921211015626"
+    },
     {
       "title": "서울 외식물가 폭등, 비빔밥 가격 1만2천원 돌파하며 '비상'",
       "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE13ZWdQc2ZKSmxpanhJMDQ2UDV2T1F5aWppZmFJblpWOGR1UG5Wak9FZEx4dFgzZGhqUTA1MUpsOGZQbERhOUFoQ1NScTR3U2I2MDJBUkZNaHBoMTBNMmVnWHY5UzUwWWZO?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "시민일보",
       "published_at": "2026-10-19T06:58:28+00:00",
       "original_url": "https://m.siminilbo.co.kr/news/amp.html?ncode=1160290691130014"
-    },
-    {
-      "title": "김밥 4000원·비빔밥 1만2000원 눈앞…외식물가 부담 커진다",
-      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1EbXhSaklUQjZCR29pRXh0TVlzUzlILXdwbXRrN1VTamFva3liNTlveUFHaG9qdEFXcFlfRl9JTXhEdFZDNkp3OFQ4cGFYajBoS1lIRzgyS3ZLejVxWktKQmJ5TkxwRDdhYWYyTEY3TmV6UQ?oc=5",
-      "source": "프라임경제",
-      "published_at": "2026-10-19T06:41:55+00:00",
-      "original_url": "https://m.newsprime.co.kr/section_view.html?no=751478&menu=index"
     }
   ],
   "history": [
@@ -255,6 +255,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1EbXhSaklUQjZCR29pRXh0TVlzUzlILXdwbXRrN1VTamFva3liNTlveUFHaG9qdEFXcFlfRl9JTXhEdFZDNkp3OFQ4cGFYajBoS1lIRzgyS3ZLejVxWktKQmJ5TkxwRDdhYWYyTEY3TmV6UQ?oc=5",
       "title": "김밥 4000원·비빔밥 1만2000원 눈앞…외식물가 부담 커진다",
       "published_at": "2026-10-19T06:41:55+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5kR1hJcWZNcV9aRFVxTmhkSTk1YUlxZzhGSFdFMGNoSVlmNVNkUjRwYm1fd3c0SlN3RkhRMjZack1hYnVrZ2dISWNHU0pBNDFJNlYweE91RlZFTFNWbzU1cFV4Z2I2NzJhdVVQY25laFRyaGtiTUtwMTZidjE?oc=5",
+      "title": "수협, ‘흑백요리사’ 스타 셰프들과 손잡고 ‘K수산물 해외 외식시장 공략’",
+      "published_at": "2026-10-19T12:52:06+00:00"
     }
   ],
   "new_articles": 0
