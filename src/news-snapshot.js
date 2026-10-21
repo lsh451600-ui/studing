@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-10-21T00:27:54.142474+00:00",
+  "updated_at": "2026-10-21T12:30:25.697965+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "유가네닭갈비, 외식 트렌드 반영한 소형 매장 ‘김해장유점’ 오픈",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5jS1kzME1xNnJOZDVKcGNBZDlKYklaLUtCNGFNdC1YODJmRGJUOGtoZ3ptdWUwRC10dFFvWkt2LW9kU2ppYW5wN3JaTEVDbE9xRXZ5WFMzVUsxZWtGSjlPd0lrT2NoOUdHcUFR0gFrQVVfeXFMTmNLWTMwTXE2ck5kNUpwY0FkOUpiSVotS0I0YU10LVg4MmZEYlQ4a2hnem11ZTBELXR0UW9aS3Ytb2RTamlhbnA3clpMRUNsT3FFdnlYUzNVSzFla0ZKOU93SWtPY2g5R0dxQVE?oc=5",
+      "source": "이투뉴스",
+      "published_at": "2026-10-21T08:14:38+00:00",
+      "original_url": "https://www.e2news.com/news/articleView.html?idxno=335265"
+    },
+    {
+      "title": "더본코리아 새마을식당, 美 매출 성장세 지속…\"글로벌 운영 노하우 확대\"",
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1vQU1sUk9iMlg2a2hQak5Yc0VTU1R5UHVyeENUZG1DSzI2bUtWdjhxUU4zdWQ4S0ZXMWFSM3hfY3FnWHdaTjNBLTFaQ29TUU1jUmdUNjNkWERQcDN6a2V4bmRVYmx2M2N2VE1TMTRR?oc=5",
+      "source": "비즈니스플러스",
+      "published_at": "2026-10-21T00:20:47+00:00",
+      "original_url": "https://www.businessplus.kr/news/articleView.html?idxno=118472"
+    },
     {
       "title": "더본코리아 새마을식당, 美 진출 3년 만에 월평균 매출 70% 성장…",
       "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE44eEdmSjdVZmhCcGFmS2JEWWQyM1JtRjNYX2tmSXR3M0hrV29yRkJXSkxObzdzUHdPR0RwLXRhS2xOQ0xiVTViQWZVT1Z4T1YzM2htRy1iRlVWdw?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "광주일등뉴스",
       "published_at": "2026-10-20T02:44:25+00:00",
       "original_url": "https://www.igj.co.kr/news/articleView.html?idxno=302937"
-    },
-    {
-      "title": "수협중앙회, '정호영 셰프'와 국산 수산물 해외 외식 시장 공략",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBDVVpEdVNpYXY2LUxXT2VWYzdRdjdLUzVsc21rMW9MRURkc1lGZWpSTVN6WEo5a2JPNmkwd0hVYjdzT3IyZ19PdWd4S2xvQmJ3VmlTRnYzNHR1dDFBTzdfTlNoOVZiZGdIZjlr?oc=5",
-      "source": "마일드경제",
-      "published_at": "2026-10-20T01:11:00+00:00",
-      "original_url": "https://www.todaymild.com/news/articleView.html?idxno=39999"
-    },
-    {
-      "title": "bhc, 호찌민 랜드마크 81에 2호점…베트남 외식시장 공략",
-      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE43UU5OS25KQzhSM29sdy0yVFVzVU53TjRFbFFuNTBOdUwyak5DR1gwSlRNZFpENHdLQ21CR2ZLNTlMUWZFeGdydUNhQ3VGRU5mQUZyOFllUlJfMDVGdU9kUlYzelZNM3NJTlNWbXpmQVhndXBC0gF0QVVfeXFMTjdRTk5LbkpDOFIzb2x3LTJUVXNVTndONEVsUW41ME51TDJqTkNHWDBKVE1kWkQ0d0tDbUJHZks1OUxRZkV4Z3J1Q2FDdUZFTmZBRnI4WWVSUl8wNUZ1T2RSVjN6Vk0zc0lOU1ZtemZBWGd1cEI?oc=5",
-      "source": "더페어",
-      "published_at": "2026-10-20T00:50:03+00:00",
-      "original_url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=91245"
     }
   ],
   "history": [
@@ -295,7 +295,17 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBDVVpEdVNpYXY2LUxXT2VWYzdRdjdLUzVsc21rMW9MRURkc1lGZWpSTVN6WEo5a2JPNmkwd0hVYjdzT3IyZ19PdWd4S2xvQmJ3VmlTRnYzNHR1dDFBTzdfTlNoOVZiZGdIZjlr?oc=5",
       "title": "수협중앙회, '정호영 셰프'와 국산 수산물 해외 외식 시장 공략",
       "published_at": "2026-10-20T01:11:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1vQU1sUk9iMlg2a2hQak5Yc0VTU1R5UHVyeENUZG1DSzI2bUtWdjhxUU4zdWQ4S0ZXMWFSM3hfY3FnWHdaTjNBLTFaQ29TUU1jUmdUNjNkWERQcDN6a2V4bmRVYmx2M2N2VE1TMTRR?oc=5",
+      "title": "더본코리아 새마을식당, 美 매출 성장세 지속…\"글로벌 운영 노하우 확대\"",
+      "published_at": "2026-10-21T00:20:47+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5jS1kzME1xNnJOZDVKcGNBZDlKYklaLUtCNGFNdC1YODJmRGJUOGtoZ3ptdWUwRC10dFFvWkt2LW9kU2ppYW5wN3JaTEVDbE9xRXZ5WFMzVUsxZWtGSjlPd0lrT2NoOUdHcUFR0gFrQVVfeXFMTmNLWTMwTXE2ck5kNUpwY0FkOUpiSVotS0I0YU10LVg4MmZEYlQ4a2hnem11ZTBELXR0UW9aS3Ytb2RTamlhbnA3clpMRUNsT3FFdnlYUzNVSzFla0ZKOU93SWtPY2g5R0dxQVE?oc=5",
+      "title": "유가네닭갈비, 외식 트렌드 반영한 소형 매장 ‘김해장유점’ 오픈",
+      "published_at": "2026-10-21T08:14:38+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 1
 };
