@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T12:30:25.697965+00:00",
+  "updated_at": "2026-10-22T00:28:56.217492+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -24,6 +24,13 @@
       "original_url": "https://www.hankyung.com/article/202610214681P"
     },
     {
+      "title": "[코조 외식 뉴스 편집 후기 #151] 외식 전국시대! '인의 없는 전쟁'이 시장을 흥미롭게 만든다 (2026.10.21)｜佐藤 こうぞう",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1BaGttczNnS214d2FVNWNTXzhpN2dvS1NOX256X1VnQTV6OUhoc3M0MmM0aEVLcGxTdWs4Z0JmZTZrNnZpcXVsNkhSNklmdUdPVUNSd2txdkg?oc=5",
+      "source": "note",
+      "published_at": "2026-10-20T22:32:23+00:00",
+      "original_url": "https://note.com/kozo_s/n/nbb937c5db30f?hl=ko"
+    },
+    {
       "title": "캐치테이블, ‘스시 오마카세’ 소비 트렌드 공개 “반짝 유행 넘어 단골 외식으로”",
       "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE5NQldBTEJHYlNaZnFndmFweGVMdWpqWG15aXJWWGNDbXFfTXpjeENLVF9MMHFGR2FoVVlvc2RJXy1Yd01TYWFZOEMxUmNGYnJzTXpIWUVJYVFRcHRoczBCbVRpNNIBY0FVX3lxTE5NQldBTEJHYlNaZnFndmFweGVMdWpqWG15aXJWWGNDbXFfTXpjeENLVF9MMHFGR2FoVVlvc2RJXy1Yd01TYWFZOEMxUmNGYnJzTXpIWUVJYVFRcHRoczBCbVRpNA?oc=5",
       "source": "스포츠경향",
@@ -36,13 +43,6 @@
       "source": "싱글리스트",
       "published_at": "2026-10-20T02:54:25+00:00",
       "original_url": "https://www.slist.kr/news/articleView.html?idxno=774852"
-    },
-    {
-      "title": "윤병태 나주시장 “나주 음식문화, 미식관광·외식산업 핵심 경쟁력으로 키울 것”",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBMSy11MDllbnpZZDlLWlJWUGhOSUFUY2M4WnZxdzZlZi00dnJpcW5FWU45SUpmUmpfakNOUUkyZGFBOWZYWVlYVTlVOE9Yb2tyWURSWkRWdl9GdmtXSzRNTHRfOTJfTm9wSEo40gFrQVVfeXFMUExLLXUwOWVuellkOUtaUlZQaE5JQVRjYzhadnF3NmVmLTR2cmlxbkVZTjlJSmZSal9qQ05RSTJkYUE5ZlhZWVhVOVU4T1hva3JZRFJaRFZ2X0Z2a1dLNE1MdF85Ml9Ob3BISjg?oc=5",
-      "source": "광주일등뉴스",
-      "published_at": "2026-10-20T02:44:25+00:00",
-      "original_url": "https://www.igj.co.kr/news/articleView.html?idxno=302937"
     }
   ],
   "history": [
@@ -305,7 +305,12 @@
       "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5jS1kzME1xNnJOZDVKcGNBZDlKYklaLUtCNGFNdC1YODJmRGJUOGtoZ3ptdWUwRC10dFFvWkt2LW9kU2ppYW5wN3JaTEVDbE9xRXZ5WFMzVUsxZWtGSjlPd0lrT2NoOUdHcUFR0gFrQVVfeXFMTmNLWTMwTXE2ck5kNUpwY0FkOUpiSVotS0I0YU10LVg4MmZEYlQ4a2hnem11ZTBELXR0UW9aS3Ytb2RTamlhbnA3clpMRUNsT3FFdnlYUzNVSzFla0ZKOU93SWtPY2g5R0dxQVE?oc=5",
       "title": "유가네닭갈비, 외식 트렌드 반영한 소형 매장 ‘김해장유점’ 오픈",
       "published_at": "2026-10-21T08:14:38+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1BaGttczNnS214d2FVNWNTXzhpN2dvS1NOX256X1VnQTV6OUhoc3M0MmM0aEVLcGxTdWs4Z0JmZTZrNnZpcXVsNkhSNklmdUdPVUNSd2txdkg?oc=5",
+      "title": "[코조 외식 뉴스 편집 후기 #151] 외식 전국시대! '인의 없는 전쟁'이 시장을 흥미롭게 만든다 (2026.10.21)｜佐藤 こうぞう",
+      "published_at": "2026-10-20T22:32:23+00:00"
     }
   ],
-  "new_articles": 1
+  "new_articles": 0
 }
