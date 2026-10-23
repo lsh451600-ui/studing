@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-10-23T00:30:32.366723+00:00",
+  "updated_at": "2026-10-23T12:26:29.868524+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "남양유업, 미국산 버터로 외식시장 공략···시연회 열어",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1ra0MzZ1pDdVk4eWVDWVlFNkhJTDdhYUdvWHhKTUVkNlpUZzI5N1NQcTBXcHoxLXNQczREbUxDNkI5SzJVNmJGeDVDeWh5dy1DSEE2emdUeUY4N1I2a1cyNGdEVWt5dDgw0gFrQVVfeXFMT2hPa0Y0dVZGQUdJNERXbzZWR0l5Sy1tRUttVkJjOWREVzA0aFpzVjVsUVJhckJEN1lwRUdOSmpkdUJidllYNEZzckZOa0R4OHdHRW9VWUVQSkdjUTg1cUtsN3ZMOEE5c292TW8?oc=5",
+      "source": "현대경제신문",
+      "published_at": "2026-10-23T01:43:40+00:00",
+      "original_url": "https://www.finomy.com/news/articleView.html?idxno=264452"
+    },
+    {
+      "title": "국내 최대 규모 창업 플랫폼 ‘IFS 프랜차이즈 창업·산업 박람회’ 개최",
+      "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBicWRXMU1rUXdYVGJwYjBUS0dFaGxWeUp5TlJBazI0N3l4bmtNam1EWlZ2Q2RPNGcwek9tVUU4V0R4dHg3elp6TnN2SnZVZnhWZV9sdGNRQUdsVEN3?oc=5",
+      "source": "시사뉴스",
+      "published_at": "2026-10-23T00:39:42+00:00",
+      "original_url": "https://sisa-news.com/news/article.html?no=277937"
+    },
     {
       "title": "김치 수출은 늘어나는데 국내 식당선 수입산 구매 증가…해남 배추농가의 고민",
       "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1ua0JFN215aWw2X09Ca2Iwd0VXa1Y3Z19kRjdTd09wbUdvZmxBa3lLM014b3V3alUyT0JTX1NVSGVPbXJMVDJzTURvMjFEa0dYNWdFelg1N1RCenE3VHRFRVNYNGdFQkU?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "이투뉴스",
       "published_at": "2026-10-21T08:14:38+00:00",
       "original_url": "https://www.e2news.com/news/articleView.html?idxno=335265"
-    },
-    {
-      "title": "[심층분석] 글로벌 시장 뚫은 새마을식당…성공 방정식 살펴보니",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFB0WjhNbkpib0VBRERxSHRiR3J1Z196WUJab2lwNjJsc2o1MkdYVFVfNDhNZ2NQX24wY1ZwSm85YklsMzlES1Q4MV9KN2RwVU9Ya0IwcXNZOVRqZlJlSDE0bXhfRGdXYVhjZklN?oc=5",
-      "source": "더바이어",
-      "published_at": "2026-10-21T07:21:16+00:00",
-      "original_url": "https://www.withbuyer.com/news/articleView.html?idxno=33670"
-    },
-    {
-      "title": "외식시장 ‘저가 외국산’ 잠식…“국산김치 사용 확대 법 만들어야”",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE93NVEta1RIUXNERklqVm1JV3BRZjAxbU9RNVZZY1B6NVMzRFc1T1g0VFpTWmhwTHRQVTcwcW9MYkxqaHdaazktbE9SU20ydjcxMzBtY2RGTFhRdw?oc=5",
-      "source": "농민신문",
-      "published_at": "2026-10-21T07:00:00+00:00",
-      "original_url": "https://www.nongmin.com/article/20261021500551"
     }
   ],
   "history": [
@@ -335,6 +335,16 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE93NVEta1RIUXNERklqVm1JV3BRZjAxbU9RNVZZY1B6NVMzRFc1T1g0VFpTWmhwTHRQVTcwcW9MYkxqaHdaazktbE9SU20ydjcxMzBtY2RGTFhRdw?oc=5",
       "title": "외식시장 ‘저가 외국산’ 잠식…“국산김치 사용 확대 법 만들어야”",
       "published_at": "2026-10-21T07:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1ra0MzZ1pDdVk4eWVDWVlFNkhJTDdhYUdvWHhKTUVkNlpUZzI5N1NQcTBXcHoxLXNQczREbUxDNkI5SzJVNmJGeDVDeWh5dy1DSEE2emdUeUY4N1I2a1cyNGdEVWt5dDgw0gFrQVVfeXFMT2hPa0Y0dVZGQUdJNERXbzZWR0l5Sy1tRUttVkJjOWREVzA0aFpzVjVsUVJhckJEN1lwRUdOSmpkdUJidllYNEZzckZOa0R4OHdHRW9VWUVQSkdjUTg1cUtsN3ZMOEE5c292TW8?oc=5",
+      "title": "남양유업, 미국산 버터로 외식시장 공략···시연회 열어",
+      "published_at": "2026-10-23T01:43:40+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBicWRXMU1rUXdYVGJwYjBUS0dFaGxWeUp5TlJBazI0N3l4bmtNam1EWlZ2Q2RPNGcwek9tVUU4V0R4dHg3elp6TnN2SnZVZnhWZV9sdGNRQUdsVEN3?oc=5",
+      "title": "국내 최대 규모 창업 플랫폼 ‘IFS 프랜차이즈 창업·산업 박람회’ 개최",
+      "published_at": "2026-10-23T00:39:42+00:00"
     }
   ],
   "new_articles": 0
