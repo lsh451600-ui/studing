@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-10-23T12:26:29.868524+00:00",
+  "updated_at": "2026-10-24T00:32:28.476214+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "수입 김치 범람하는 외식 시장, 김치 자급률 높이는 길은②발제",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9XN3Y2WVcybVFWNWZtM2NWRTlRenlMZEpCWFRFZjJHNVBTZVYtc2ZhMGJZYXBPeFdrTll3RUtZa1ZBdWpjX1dPWWgyWUcwcmgzcndzcFYzeGJ5cTh6TFg2aGhGWVFjSVlyc0RV0gFrQVVfeXFMT1c3djZZVzJtUVY1Zm0zY1ZFOVF6eUxkSkJYVEVmMkc1UFNlVi1zZmEwYllhcE94V2tOWXdFS1lrVkF1amNfV09ZaDJZRzByaDNyd3NwVjN4YnlxOHpMWDZoaEZZUWNJWXJzRFU?oc=5",
+      "source": "한국농정신문",
+      "published_at": "2026-10-23T13:57:06+00:00",
+      "original_url": "https://www.ikpnews.net/news/articleView.html?idxno=71771"
+    },
     {
       "title": "남양유업, 미국산 버터로 외식시장 공략···시연회 열어",
       "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1ra0MzZ1pDdVk4eWVDWVlFNkhJTDdhYUdvWHhKTUVkNlpUZzI5N1NQcTBXcHoxLXNQczREbUxDNkI5SzJVNmJGeDVDeWh5dy1DSEE2emdUeUY4N1I2a1cyNGdEVWt5dDgw0gFrQVVfeXFMT2hPa0Y0dVZGQUdJNERXbzZWR0l5Sy1tRUttVkJjOWREVzA0aFpzVjVsUVJhckJEN1lwRUdOSmpkdUJidllYNEZzckZOa0R4OHdHRW9VWUVQSkdjUTg1cUtsN3ZMOEE5c292TW8?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "전업농신문",
       "published_at": "2026-10-21T22:35:00+00:00",
       "original_url": "https://www.palnews.co.kr/news/articleView.html?idxno=237717"
-    },
-    {
-      "title": "유가네닭갈비, 외식 트렌드 반영한 소형 매장 ‘김해장유점’ 오픈",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5jS1kzME1xNnJOZDVKcGNBZDlKYklaLUtCNGFNdC1YODJmRGJUOGtoZ3ptdWUwRC10dFFvWkt2LW9kU2ppYW5wN3JaTEVDbE9xRXZ5WFMzVUsxZWtGSjlPd0lrT2NoOUdHcUFR0gFrQVVfeXFMTmNLWTMwTXE2ck5kNUpwY0FkOUpiSVotS0I0YU10LVg4MmZEYlQ4a2hnem11ZTBELXR0UW9aS3Ytb2RTamlhbnA3clpMRUNsT3FFdnlYUzNVSzFla0ZKOU93SWtPY2g5R0dxQVE?oc=5",
-      "source": "이투뉴스",
-      "published_at": "2026-10-21T08:14:38+00:00",
-      "original_url": "https://www.e2news.com/news/articleView.html?idxno=335265"
     }
   ],
   "history": [
@@ -345,6 +345,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBicWRXMU1rUXdYVGJwYjBUS0dFaGxWeUp5TlJBazI0N3l4bmtNam1EWlZ2Q2RPNGcwek9tVUU4V0R4dHg3elp6TnN2SnZVZnhWZV9sdGNRQUdsVEN3?oc=5",
       "title": "국내 최대 규모 창업 플랫폼 ‘IFS 프랜차이즈 창업·산업 박람회’ 개최",
       "published_at": "2026-10-23T00:39:42+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9XN3Y2WVcybVFWNWZtM2NWRTlRenlMZEpCWFRFZjJHNVBTZVYtc2ZhMGJZYXBPeFdrTll3RUtZa1ZBdWpjX1dPWWgyWUcwcmgzcndzcFYzeGJ5cTh6TFg2aGhGWVFjSVlyc0RV0gFrQVVfeXFMT1c3djZZVzJtUVY1Zm0zY1ZFOVF6eUxkSkJYVEVmMkc1UFNlVi1zZmEwYllhcE94V2tOWXdFS1lrVkF1amNfV09ZaDJZRzByaDNyd3NwVjN4YnlxOHpMWDZoaEZZUWNJWXJzRFU?oc=5",
+      "title": "수입 김치 범람하는 외식 시장, 김치 자급률 높이는 길은②발제",
+      "published_at": "2026-10-23T13:57:06+00:00"
     }
   ],
   "new_articles": 0
