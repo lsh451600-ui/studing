@@ -1,7 +1,28 @@
 {
-  "updated_at": "2026-10-25T00:23:52.975759+00:00",
+  "updated_at": "2026-10-25T12:24:24.715819+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "‘아웃백-K’ 캠페인…브라질 외식시장 내 한국 식재료",
+      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5EWVdNakFIRHQzd2UwT1YybDhHaTVVODdDOVVVaW9sekg4UUc5bGw0YzRkVmdyVEpWR3ViSUJuRmpLYnJPZTlfem5SUDMta2pEa3BIN1VaTQ?oc=5",
+      "source": "www.realfoods.co.kr",
+      "published_at": "2026-10-25T05:53:09+00:00",
+      "original_url": "https://www.realfoods.co.kr/article/10913908"
+    },
+    {
+      "title": "[게시판] 농식품부, 내달 4∼5일 '2027 식품외식산업전망' 개최",
+      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE56WHQ2RUR1djYtZ0RrSEJNYzhxOTVVejJkTGZPNmgxa1lOV1V5dlJJb001SlprQUxxV1FWYXBrZkdLcEt4eWZrNGVXcEdJaGRTakE?oc=5",
+      "source": "매일경제 마켓",
+      "published_at": "2026-10-25T02:00:06+00:00",
+      "original_url": "https://stock.mk.co.kr/news/view/1180706"
+    },
+    {
+      "title": "외식업 활로 찾는다…'2027 식품 외식 산업 전망' 11월 개최",
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5ZVXpKYzlGRVVxaW1sYXBYRE4zXzh6MnpPbnpRcjFwaThlZVhTN0xkZkQwZ3ZrMmhBakQtcEIxdXVKNDZxSUdZU2s3QkFNN1E2cVc4ekk0UnhTUQ?oc=5",
+      "source": "뉴스1",
+      "published_at": "2026-10-25T02:00:00+00:00",
+      "original_url": "https://www.news1.kr/economy/agri-food/6330720"
+    },
     {
       "title": "수입 김치 범람하는 외식 시장, 김치 자급률 높이는 길은②발제",
       "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9XN3Y2WVcybVFWNWZtM2NWRTlRenlMZEpCWFRFZjJHNVBTZVYtc2ZhMGJZYXBPeFdrTll3RUtZa1ZBdWpjX1dPWWgyWUcwcmgzcndzcFYzeGJ5cTh6TFg2aGhGWVFjSVlyc0RV0gFrQVVfeXFMT1c3djZZVzJtUVY1Zm0zY1ZFOVF6eUxkSkJYVEVmMkc1UFNlVi1zZmEwYllhcE94V2tOWXdFS1lrVkF1amNfV09ZaDJZRzByaDNyd3NwVjN4YnlxOHpMWDZoaEZZUWNJWXJzRFU?oc=5",
@@ -22,27 +43,6 @@
       "source": "시사뉴스",
       "published_at": "2026-10-23T00:39:42+00:00",
       "original_url": "https://sisa-news.com/news/article.html?no=277937"
-    },
-    {
-      "title": "김치 수출은 늘어나는데 국내 식당선 수입산 구매 증가…해남 배추농가의 고민",
-      "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1ua0JFN215aWw2X09Ca2Iwd0VXa1Y3Z19kRjdTd09wbUdvZmxBa3lLM014b3V3alUyT0JTX1NVSGVPbXJMVDJzTURvMjFEa0dYNWdFelg1N1RCenE3VHRFRVNYNGdFQkU?oc=5",
-      "source": "지이코노미",
-      "published_at": "2026-10-22T07:52:58+00:00",
-      "original_url": "https://www.geconomy.co.kr/mobile/article.html?no=324704"
-    },
-    {
-      "title": "10개월 만에 24만명 홀렸다…CJ푸드빌 '올리페페', 외식시장 새 라이징스타",
-      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1MV3J6Mm9QM250YzlKMHR6TDZoRVFhZjFoM3FoZmtpM2xCU3lGUFU4cFpoOWZEb2xLM2NiMTdKaGxkVThxYXBha1dXRklfSnYzUHk2elF6QTEwRDJTbDVVRGxpQ3Z1d9IBakFVX3lxTE9TZS11d1lFVHdxaGtNeDJSNG5NS0NZZ3RJc2E1cTVuQWdiTkdka24yNk9RY3pjVWFaYm9Hbl9Wd2l6bFhLQ1hjb1MycGVrUHoxVjFwRjQ3Y25fcldoNWYzcmQ4ZXRJSTFlYnc?oc=5",
-      "source": "테크M",
-      "published_at": "2026-10-22T00:19:40+00:00",
-      "original_url": "https://www.techm.kr/news/articleView.html?idxno=156368"
-    },
-    {
-      "title": "국산 김치로 농민, 가공·외식업계, 소비자 모두 상생하려면…",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE96bnhkU0ZDTHd1Q1FJN2VERktoT2JSZ3phNFRyb2F5cUlKbWlneUdKbU1VTkpjRHlVbGFfSE9RakhZdEJ6VzRPdVBoeXBSdzdrdjA5M2JmOERTSGw3V18tdU1keVU1eGNiM01yQQ?oc=5",
-      "source": "전업농신문",
-      "published_at": "2026-10-21T22:35:00+00:00",
-      "original_url": "https://www.palnews.co.kr/news/articleView.html?idxno=237717"
     }
   ],
   "history": [
@@ -350,6 +350,21 @@
       "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9XN3Y2WVcybVFWNWZtM2NWRTlRenlMZEpCWFRFZjJHNVBTZVYtc2ZhMGJZYXBPeFdrTll3RUtZa1ZBdWpjX1dPWWgyWUcwcmgzcndzcFYzeGJ5cTh6TFg2aGhGWVFjSVlyc0RV0gFrQVVfeXFMT1c3djZZVzJtUVY1Zm0zY1ZFOVF6eUxkSkJYVEVmMkc1UFNlVi1zZmEwYllhcE94V2tOWXdFS1lrVkF1amNfV09ZaDJZRzByaDNyd3NwVjN4YnlxOHpMWDZoaEZZUWNJWXJzRFU?oc=5",
       "title": "수입 김치 범람하는 외식 시장, 김치 자급률 높이는 길은②발제",
       "published_at": "2026-10-23T13:57:06+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5EWVdNakFIRHQzd2UwT1YybDhHaTVVODdDOVVVaW9sekg4UUc5bGw0YzRkVmdyVEpWR3ViSUJuRmpLYnJPZTlfem5SUDMta2pEa3BIN1VaTQ?oc=5",
+      "title": "‘아웃백-K’ 캠페인…브라질 외식시장 내 한국 식재료",
+      "published_at": "2026-10-25T05:53:09+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE56WHQ2RUR1djYtZ0RrSEJNYzhxOTVVejJkTGZPNmgxa1lOV1V5dlJJb001SlprQUxxV1FWYXBrZkdLcEt4eWZrNGVXcEdJaGRTakE?oc=5",
+      "title": "[게시판] 농식품부, 내달 4∼5일 '2027 식품외식산업전망' 개최",
+      "published_at": "2026-10-25T02:00:06+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5ZVXpKYzlGRVVxaW1sYXBYRE4zXzh6MnpPbnpRcjFwaThlZVhTN0xkZkQwZ3ZrMmhBakQtcEIxdXVKNDZxSUdZU2s3QkFNN1E2cVc4ekk0UnhTUQ?oc=5",
+      "title": "외식업 활로 찾는다…'2027 식품 외식 산업 전망' 11월 개최",
+      "published_at": "2026-10-25T02:00:00+00:00"
     }
   ],
   "new_articles": 0
