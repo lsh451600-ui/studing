@@ -1,7 +1,35 @@
 {
-  "updated_at": "2026-10-26T00:34:03.327269+00:00",
+  "updated_at": "2026-10-26T14:35:15.493681+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "삼양식품 '불닭소스'로 미국 외식·급식 시장 공략, 김정수 현지 식탁 필수템 바라본다",
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1Yd2dyU2RHZTk1NW5EVTNTNFBLaUpkYWdoM1BEWmtNY0NxSFVsT3VjVngxc2h1d2FQY01RUDk5dUR4bUhWOUliZXpDM0l2UDcwNUdwRWZuN19xMnBBbkdNUzF5U2Jwa2c5OG5ZT1N5dHJRdVU?oc=5",
+      "source": "비즈니스포스트",
+      "published_at": "2026-10-26T06:44:32+00:00",
+      "original_url": "https://www.businesspost.co.kr/BP?command=article_view&num=450288"
+    },
+    {
+      "title": "'가성비 조식' 뜬다…프랜차이즈 업계, 3조원 시장서 격돌",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBrV0xFd2ZoRElrQk9LdHdKdzZfOUtjSmlLaTBJZzd5cDg3dEFkZTFIYnNMaDBLV0JfMlVxZEl5MHFWbExrRFJUcjgtSkFmVGhXR2F1VGZGVG_SAVhBVV95cUxQa1dMRXdmaERJa0JPS3R3Snc2XzlLY0ppS2kwSWc3eXA4N3RBZGUxSGJzTGgwS1dCXzJVcWRJeTBxVmxMa0RSVHI4LUpBZlRoV0dhdVRmRlRv?oc=5",
+      "source": "미디어펜",
+      "published_at": "2026-10-26T06:04:53+00:00",
+      "original_url": "https://www.mediapen.com/newsamp/view/1132483"
+    },
+    {
+      "title": "'2027 식품외식산업전망' 개최",
+      "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBhcG03OFdhdENHOVBIRjdxTkZ2VnhfcktNOVNDZXFZQU9jdHZaaEdYTDkwX0pCNjdQdkY3aEJKUWlkVGVtT1FybUVQVENxSDE1anV5ODlETV9EQXJRTDQzNHdn?oc=5",
+      "source": "보건신문",
+      "published_at": "2026-10-26T01:01:16+00:00",
+      "original_url": "https://www.bokuennews.com/m/m_article.html?no=286065"
+    },
+    {
+      "title": "AI가 바꾸는 미래 밥상…식품·외식산업, 성장전략 찾는다",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE96Z3lva1hiS2tKR2h1SjYwRHJLRERNajdYNmFuQ20tYXF6ZDFNelB2dHUzMGhFU1VlRm8tWVdZQ1k0a25mcTZLaVR1NVA5ODVaZy1aNXM4OU_SAVhBVV95cUxPemd5b2tYYktrSkdodUo2MERyS0RETWo3WDZhbkNtLWFxemQxTXpQdnR1MzBoRVNVZUZvLVlXWUNZNGtuZnE2S2lUdTVQOTg1WmctWjVzODlP?oc=5",
+      "source": "미디어펜",
+      "published_at": "2026-10-26T00:28:37+00:00",
+      "original_url": "https://www.mediapen.com/newsamp/view/1132385"
+    },
     {
       "title": "미래 밥상의 주인공은?…4~5일 ‘2027 식품외식산업전망’ 개최",
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5TMWw5al9JcjlYU0F2X2poLXlOLThYbDZERzhBRVVkaUI0V2hSU1BLVzNLaUZyR2tvdHJfbkRYZ0tYUFJsM0wwekgtdngyOVRGblBSdnF3amppaDM0TnVYNWVZN0ttV1UxRHhqWQ?oc=5",
@@ -15,34 +43,6 @@
       "source": "BBS불교방송",
       "published_at": "2026-10-25T10:44:32+00:00",
       "original_url": "https://news.bbsi.co.kr/news/articleView.html?idxno=4114543"
-    },
-    {
-      "title": "‘아웃백-K’ 캠페인…브라질 외식시장 내 한국 식재료",
-      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5EWVdNakFIRHQzd2UwT1YybDhHaTVVODdDOVVVaW9sekg4UUc5bGw0YzRkVmdyVEpWR3ViSUJuRmpLYnJPZTlfem5SUDMta2pEa3BIN1VaTQ?oc=5",
-      "source": "www.realfoods.co.kr",
-      "published_at": "2026-10-25T05:53:09+00:00",
-      "original_url": "https://www.realfoods.co.kr/article/10913908"
-    },
-    {
-      "title": "[게시판] 농식품부, 내달 4∼5일 '2027 식품외식산업전망' 개최",
-      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE56WHQ2RUR1djYtZ0RrSEJNYzhxOTVVejJkTGZPNmgxa1lOV1V5dlJJb001SlprQUxxV1FWYXBrZkdLcEt4eWZrNGVXcEdJaGRTakE?oc=5",
-      "source": "매일경제 마켓",
-      "published_at": "2026-10-25T02:00:06+00:00",
-      "original_url": "https://stock.mk.co.kr/news/view/1180706"
-    },
-    {
-      "title": "AI·로봇이 바꾸는 식탁…내달 ‘식품외식산업전망’ 열린다",
-      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE51V2ZWLVpMdFZxTGhRNGNFbjBvZU80dkNoby1hMENVdnRGQXpxUFhYZGNqTFdKVjlzeDNoTkt2d0RjcnlpMzRBYlNkQTZYTjJMT0Q2T3lFaW9JU3BpaVJSTXBDY1dwOTNFejlEU1paNUdDZE0?oc=5",
-      "source": "마켓인",
-      "published_at": "2026-10-25T02:00:05+00:00",
-      "original_url": "https://marketin.edaily.co.kr/News/ReadE?newsId=01426806645616528"
-    },
-    {
-      "title": "외식업 활로 찾는다…'2027 식품 외식 산업 전망' 11월 개최",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5ZVXpKYzlGRVVxaW1sYXBYRE4zXzh6MnpPbnpRcjFwaThlZVhTN0xkZkQwZ3ZrMmhBakQtcEIxdXVKNDZxSUdZU2s3QkFNN1E2cVc4ekk0UnhTUQ?oc=5",
-      "source": "뉴스1",
-      "published_at": "2026-10-25T02:00:00+00:00",
-      "original_url": "https://www.news1.kr/economy/agri-food/6330720"
     }
   ],
   "history": [
@@ -380,7 +380,27 @@
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5TMWw5al9JcjlYU0F2X2poLXlOLThYbDZERzhBRVVkaUI0V2hSU1BLVzNLaUZyR2tvdHJfbkRYZ0tYUFJsM0wwekgtdngyOVRGblBSdnF3amppaDM0TnVYNWVZN0ttV1UxRHhqWQ?oc=5",
       "title": "미래 밥상의 주인공은?…4~5일 ‘2027 식품외식산업전망’ 개최",
       "published_at": "2026-10-26T00:18:11+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1Yd2dyU2RHZTk1NW5EVTNTNFBLaUpkYWdoM1BEWmtNY0NxSFVsT3VjVngxc2h1d2FQY01RUDk5dUR4bUhWOUliZXpDM0l2UDcwNUdwRWZuN19xMnBBbkdNUzF5U2Jwa2c5OG5ZT1N5dHJRdVU?oc=5",
+      "title": "삼양식품 '불닭소스'로 미국 외식·급식 시장 공략, 김정수 현지 식탁 필수템 바라본다",
+      "published_at": "2026-10-26T06:44:32+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBrV0xFd2ZoRElrQk9LdHdKdzZfOUtjSmlLaTBJZzd5cDg3dEFkZTFIYnNMaDBLV0JfMlVxZEl5MHFWbExrRFJUcjgtSkFmVGhXR2F1VGZGVG_SAVhBVV95cUxQa1dMRXdmaERJa0JPS3R3Snc2XzlLY0ppS2kwSWc3eXA4N3RBZGUxSGJzTGgwS1dCXzJVcWRJeTBxVmxMa0RSVHI4LUpBZlRoV0dhdVRmRlRv?oc=5",
+      "title": "'가성비 조식' 뜬다…프랜차이즈 업계, 3조원 시장서 격돌",
+      "published_at": "2026-10-26T06:04:53+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBhcG03OFdhdENHOVBIRjdxTkZ2VnhfcktNOVNDZXFZQU9jdHZaaEdYTDkwX0pCNjdQdkY3aEJKUWlkVGVtT1FybUVQVENxSDE1anV5ODlETV9EQXJRTDQzNHdn?oc=5",
+      "title": "'2027 식품외식산업전망' 개최",
+      "published_at": "2026-10-26T01:01:16+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE96Z3lva1hiS2tKR2h1SjYwRHJLRERNajdYNmFuQ20tYXF6ZDFNelB2dHUzMGhFU1VlRm8tWVdZQ1k0a25mcTZLaVR1NVA5ODVaZy1aNXM4OU_SAVhBVV95cUxPemd5b2tYYktrSkdodUo2MERyS0RETWo3WDZhbkNtLWFxemQxTXpQdnR1MzBoRVNVZUZvLVlXWUNZNGtuZnE2S2lUdTVQOTg1WmctWjVzODlP?oc=5",
+      "title": "AI가 바꾸는 미래 밥상…식품·외식산업, 성장전략 찾는다",
+      "published_at": "2026-10-26T00:28:37+00:00"
     }
   ],
-  "new_articles": 1
+  "new_articles": 0
 }
