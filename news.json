@@ -1,7 +1,21 @@
 {
-  "updated_at": "2026-10-27T12:34:58.849594+00:00",
+  "updated_at": "2026-10-28T00:38:02.687714+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "외식 물가 부담에 ‘냉동 치킨’ 영토 확장… 식품업계, 공정 혁신으로 ‘식감 한계’ 넘는다",
+      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9mOGhEOW1haVIycHRDanFvaktDMlE4ak5kVi1wcmFMeHFUQlhBeG13Nld4MEd4REFvbDJWNlVTZlVFN1J0bnZYeDZlLUk3bmJBbnRLVmdYR1E0X0U?oc=5",
+      "source": "일간스포츠",
+      "published_at": "2026-10-28T00:10:00+00:00",
+      "original_url": "https://isplus.com/article/view/isp202610280036"
+    },
+    {
+      "title": "식품·외식산업의 미래는?… 소비 트렌드부터 AI 혁신까지 총망라",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5NQXhrVkJlY05NUlYzbHZieEhnSzFOSERoLUV2eWlQVGREOFZhbDdhN3VzZDV3cUZVczRHNkFqazY5a0MteGVFblVRR29rWnNNOEQxcHg3akstMmNld1NLWFhCeGRJN1NB0gFsQVVfeXFMTUduVVpJVlM3NmFQZ091ZW9TalpXNWkzU1dFSlMyckcybTlyV3BiQXAxRXlacXEwcFFQUlBzUzhCVFo1ZGFuREZ3cm5jRXYyODJUUi1PUVZlQkhHX29zXzdkeWozZm9BYm1iMFNu?oc=5",
+      "source": "한돈뉴스",
+      "published_at": "2026-10-27T20:33:00+00:00",
+      "original_url": "https://www.pignpork.com/news/articleView.html?idxno=20002"
+    },
     {
       "title": "신안 '1004굴', 말레이시아·홍콩 수출 확대…국내 고급 외식시장도 진출",
       "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1yaGNXbWY4dmdUTFl4b04xWlJjNlpfeERCdnl5OEhlUTlqTHRrWEdSbmtkMS11Y001YUwzaXRtbEJZR0JjUjJHNFE3Qm5QMlNCcDhGMzBkdWRjRWtZdjkwaWV0a2M3Tzk2RUpHQTRHQU9vdw?oc=5",
@@ -29,20 +43,6 @@
       "source": "센머니",
       "published_at": "2026-10-26T07:24:49+00:00",
       "original_url": "https://www.senmoney.co.kr/news/articleView.html?idxno=38157"
-    },
-    {
-      "title": "삼양식품 '불닭소스'로 미국 외식·급식 시장 공략, 김정수 현지 식탁 필수템 바라본다",
-      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1Yd2dyU2RHZTk1NW5EVTNTNFBLaUpkYWdoM1BEWmtNY0NxSFVsT3VjVngxc2h1d2FQY01RUDk5dUR4bUhWOUliZXpDM0l2UDcwNUdwRWZuN19xMnBBbkdNUzF5U2Jwa2c5OG5ZT1N5dHJRdVU?oc=5",
-      "source": "비즈니스포스트",
-      "published_at": "2026-10-26T06:44:32+00:00",
-      "original_url": "https://www.businesspost.co.kr/BP?command=article_view&num=450288"
-    },
-    {
-      "title": "'가성비 조식' 뜬다…프랜차이즈 업계, 3조원 시장서 격돌",
-      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBrV0xFd2ZoRElrQk9LdHdKdzZfOUtjSmlLaTBJZzd5cDg3dEFkZTFIYnNMaDBLV0JfMlVxZEl5MHFWbExrRFJUcjgtSkFmVGhXR2F1VGZGVG_SAVhBVV95cUxQa1dMRXdmaERJa0JPS3R3Snc2XzlLY0ppS2kwSWc3eXA4N3RBZGUxSGJzTGgwS1dCXzJVcWRJeTBxVmxMa0RSVHI4LUpBZlRoV0dhdVRmRlRv?oc=5",
-      "source": "미디어펜",
-      "published_at": "2026-10-26T06:04:53+00:00",
-      "original_url": "https://www.mediapen.com/newsamp/view/1132483"
     }
   ],
   "history": [
@@ -420,6 +420,16 @@
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9VYzNacHFyUlZiTDg2TG82NUwyc29KTEs4T254Q0RVcG9NOTdoaG9ZMHJCVWxWT0RqSDdLVFZSUXpnU3g2eVFXVUR1dkVXZHBoeVB6emtNd192WTNuM21udXFiTVVwTUlRN2tRUA?oc=5",
       "title": "[소비트렌드] 10월 4주, 점심값 부담에 할인 외식 쏠림",
       "published_at": "2026-10-26T07:24:49+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9mOGhEOW1haVIycHRDanFvaktDMlE4ak5kVi1wcmFMeHFUQlhBeG13Nld4MEd4REFvbDJWNlVTZlVFN1J0bnZYeDZlLUk3bmJBbnRLVmdYR1E0X0U?oc=5",
+      "title": "외식 물가 부담에 ‘냉동 치킨’ 영토 확장… 식품업계, 공정 혁신으로 ‘식감 한계’ 넘는다",
+      "published_at": "2026-10-28T00:10:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5NQXhrVkJlY05NUlYzbHZieEhnSzFOSERoLUV2eWlQVGREOFZhbDdhN3VzZDV3cUZVczRHNkFqazY5a0MteGVFblVRR29rWnNNOEQxcHg3akstMmNld1NLWFhCeGRJN1NB0gFsQVVfeXFMTUduVVpJVlM3NmFQZ091ZW9TalpXNWkzU1dFSlMyckcybTlyV3BiQXAxRXlacXEwcFFQUlBzUzhCVFo1ZGFuREZ3cm5jRXYyODJUUi1PUVZlQkhHX29zXzdkeWozZm9BYm1iMFNu?oc=5",
+      "title": "식품·외식산업의 미래는?… 소비 트렌드부터 AI 혁신까지 총망라",
+      "published_at": "2026-10-27T20:33:00+00:00"
     }
   ],
   "new_articles": 0
