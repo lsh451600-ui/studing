@@ -1,7 +1,28 @@
 export const snapshot = {
-  "updated_at": "2026-10-29T04:47:15.602986+00:00",
+  "updated_at": "2026-10-29T18:08:59.801995+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "[기획] 소비산업 고용 재편…매장·외식 줄고 ‘운수·창고업·배송’ 늘었다",
+      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE05eVJYNS1fZ0ZZVVlTREsySUVVM1M0dmpzdlVXaF9WeTF1bElCdk53dlJUcXhiUzRRaTJRdmlrTFQxS3hvM2tmNWM5dFhvMlU3UkJ1RGJmMXNvMElfUUlBV0hkNlA?oc=5",
+      "source": "매일일보",
+      "published_at": "2026-10-29T06:03:56+00:00",
+      "original_url": "https://www.m-i.kr/news/articleView.html?idxno=2011974"
+    },
+    {
+      "title": "가정·외식업체 쌀 소비 동반 감소",
+      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9fTnJzaHRVZEFxMmVYWWl3bVdvYWNiUWwwc3UyOGtaNlZ2MVZJa0xNcUQ4ZmNRdDczUlloVUk0UTZ5U21YeUZXaDZ3bXdzU3ZRTHNaTmd3ZHpJaFgzcnBURXVtUExVeDd5VUc0MVVzLWhZSmVMS2hpMdIBeEFVX3lxTE9fTnJzaHRVZEFxMmVYWWl3bVdvYWNiUWwwc3UyOGtaNlZ2MVZJa0xNcUQ4ZmNRdDczUlloVUk0UTZ5U21YeUZXaDZ3bXdzU3ZRTHNaTmd3ZHpJaFgzcnBURXVtUExVeDd5VUc0MVVzLWhZSmVMS2hpMQ?oc=5",
+      "source": "뉴시스",
+      "published_at": "2026-10-29T05:36:21+00:00",
+      "original_url": "https://mobile.newsis.com/view_amp.html?ar_id=NISI20261029_0021510109"
+    },
+    {
+      "title": "쌀값 내려도 판매는 부진… 가구 소비·외식업체 구매도 나란히 줄었다",
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9OSjRXQmFGZXNvYlAwXzJSRUxKcng1T1g3YVVOdjY3Zi0zQ1lTdGpGOG8wZVI4NWFGUktKTzF4MjdQZWpQaWRhMkNKcm5zV2dQR0pobkNNSWFsVVJPR2g0SDhzbnZnUEp0bHYwOVNRbmtsYms?oc=5",
+      "source": "경제시그널",
+      "published_at": "2026-10-29T02:40:57+00:00",
+      "original_url": "https://www.economicsignal.co.kr/news/articleView.html?idxno=1945"
+    },
     {
       "title": "외식 물가 상승에 냉동치킨 시장 급성장...CJ제일제당·오뚜기·하림 경쟁 가열",
       "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5ZemU5OHpQRXVGSXR3czk3aXlpSG1uU3NtaGZiWHdIaE41OVNraEZUczRxLXVHNnBmT0JCVjZiSmE4U1Nfcmp6NlJ4UkI2V1ZUSzJQMUlSRkd4SWNJRk8xUElYSkRvRWM?oc=5",
@@ -22,27 +43,6 @@ export const snapshot = {
       "source": "네이트",
       "published_at": "2026-10-28T21:10:00+00:00",
       "original_url": "https://m.news.nate.com/view/20261029n03142?issue_sq=11002"
-    },
-    {
-      "title": "기술은 기회, 소비 변화는 과제…식품·외식기업의 내년 전략 짚는다",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE9RWm1XOVdHY2NuSzdHME56S0sxQ3ZFX0xtUFFfUkVGTDhFVnlNdWdqelFXd2dhSUk5Z0JiU0VlUmlRVzNXdzhCZ3djVXc5U09ENkZIYnJVLUhCT0NOUmFtbm5sdEEtUTVvc1BIYzJB?oc=5",
-      "source": "한국영농신문",
-      "published_at": "2026-10-28T15:11:14+00:00",
-      "original_url": "https://www.youngnong.co.kr/news/articleView.html?idxno=71379"
-    },
-    {
-      "title": "[업계는 지금]밥 한 끼 가격도 부담…외식 물가 오르자 편의점·도시락 전문점 판매 '쑥'",
-      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFA5akRNa1M2MW9yQ2YwM1doT3VFaDZfclQtUUxMN3h2MGxtNmxVaUNuR0tQdHNPWkdYUTlMbm5WZzJYazhhT1d1VE1kN20ybm8zc0U4MV9IREk2b2VkbnlacUhSWk80QQ?oc=5",
-      "source": "푸드투데이",
-      "published_at": "2026-10-28T08:02:59+00:00",
-      "original_url": "https://www.foodtoday.or.kr/news/article.html?no=209215"
-    },
-    {
-      "title": "외식 물가 부담에 ‘냉동 치킨’ 영토 확장… 식품업계, 공정 혁신으로 ‘식감 한계’ 넘는다",
-      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9mOGhEOW1haVIycHRDanFvaktDMlE4ak5kVi1wcmFMeHFUQlhBeG13Nld4MEd4REFvbDJWNlVTZlVFN1J0bnZYeDZlLUk3bmJBbnRLVmdYR1E0X0U?oc=5",
-      "source": "일간스포츠",
-      "published_at": "2026-10-28T00:10:00+00:00",
-      "original_url": "https://isplus.com/article/view/isp202610280036"
     }
   ],
   "history": [
@@ -455,6 +455,21 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE84d1hod2pRX2c4Y01rOUJzWEJUR2pYSzVPdlVabE00Qkd1aHF5WkNNYjg1LTU4eVc2WU4xTW9jVEtkLS1DV0JXejZqMlNXbTdSMmU0c1NJc3ltZm9ISVYydVNJZmJ3a0VNLVE?oc=5",
       "title": "외식 물가 부담에 냉동치킨 '인기'…식품업계, 차별화 경쟁 속도",
       "published_at": "2026-10-28T21:10:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE05eVJYNS1fZ0ZZVVlTREsySUVVM1M0dmpzdlVXaF9WeTF1bElCdk53dlJUcXhiUzRRaTJRdmlrTFQxS3hvM2tmNWM5dFhvMlU3UkJ1RGJmMXNvMElfUUlBV0hkNlA?oc=5",
+      "title": "[기획] 소비산업 고용 재편…매장·외식 줄고 ‘운수·창고업·배송’ 늘었다",
+      "published_at": "2026-10-29T06:03:56+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9fTnJzaHRVZEFxMmVYWWl3bVdvYWNiUWwwc3UyOGtaNlZ2MVZJa0xNcUQ4ZmNRdDczUlloVUk0UTZ5U21YeUZXaDZ3bXdzU3ZRTHNaTmd3ZHpJaFgzcnBURXVtUExVeDd5VUc0MVVzLWhZSmVMS2hpMdIBeEFVX3lxTE9fTnJzaHRVZEFxMmVYWWl3bVdvYWNiUWwwc3UyOGtaNlZ2MVZJa0xNcUQ4ZmNRdDczUlloVUk0UTZ5U21YeUZXaDZ3bXdzU3ZRTHNaTmd3ZHpJaFgzcnBURXVtUExVeDd5VUc0MVVzLWhZSmVMS2hpMQ?oc=5",
+      "title": "가정·외식업체 쌀 소비 동반 감소",
+      "published_at": "2026-10-29T05:36:21+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9OSjRXQmFGZXNvYlAwXzJSRUxKcng1T1g3YVVOdjY3Zi0zQ1lTdGpGOG8wZVI4NWFGUktKTzF4MjdQZWpQaWRhMkNKcm5zV2dQR0pobkNNSWFsVVJPR2g0SDhzbnZnUEp0bHYwOVNRbmtsYms?oc=5",
+      "title": "쌀값 내려도 판매는 부진… 가구 소비·외식업체 구매도 나란히 줄었다",
+      "published_at": "2026-10-29T02:40:57+00:00"
     }
   ],
   "new_articles": 0
