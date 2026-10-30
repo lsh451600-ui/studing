@@ -1,7 +1,21 @@
 {
-  "updated_at": "2026-10-29T18:08:59.801995+00:00",
+  "updated_at": "2026-10-30T04:47:21.616300+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "여행엔 쓰고 외식엔 아꼈다…카드 소비 증가세 둔화",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5NT2lzcWdVeW11ajJEWXk0VzRKaXBZMm1yeThSMWx4dWpnc0lhSXZBSXVuWWZhRmdiZWw5LTNNeVE1dldybzVfUHZPZTZEUzR6SGNEemJvX2ZJRXpnaWhzVkJrbERUVkhU?oc=5",
+      "source": "www.ebn.co.kr",
+      "published_at": "2026-10-30T00:41:49+00:00",
+      "original_url": "https://www.ebn.co.kr/news/articleView.html?idxno=1729803"
+    },
+    {
+      "title": "압축소비 시대, 외식·여가 줄이고 뷰티·패션엔 더 쓴다",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9uRUszMzVsZk1xTDRKNDd5aVFuMFJROWRhTS05M0FZamhNTXRxSXVaOEpWaEpoY3Y5cFVFZEV4bk1Hd0hiSHBGZm1lT1I2bXpMMmJkQVBmdGpCcjQ1aFRxc2RwczI4LTRSbzZj?oc=5",
+      "source": "https://www.kmjournal.net/",
+      "published_at": "2026-10-29T22:00:46+00:00",
+      "original_url": "https://www.kmjournal.net/news/articleView.html?idxno=14019"
+    },
     {
       "title": "[기획] 소비산업 고용 재편…매장·외식 줄고 ‘운수·창고업·배송’ 늘었다",
       "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE05eVJYNS1fZ0ZZVVlTREsySUVVM1M0dmpzdlVXaF9WeTF1bElCdk53dlJUcXhiUzRRaTJRdmlrTFQxS3hvM2tmNWM5dFhvMlU3UkJ1RGJmMXNvMElfUUlBV0hkNlA?oc=5",
@@ -29,20 +43,6 @@
       "source": "M이코노미뉴스",
       "published_at": "2026-10-28T22:35:51+00:00",
       "original_url": "https://www.m-economynews.com/news/article.html?no=72244"
-    },
-    {
-      "title": "외식 물가 부담에 냉동치킨 시장 경쟁 가열",
-      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxON1JrUDNScy16YjhWa3hEaGpGamc1ZjMzVGpVRjZMeEtUeVdJYmtLMTgwdXVrUHNWWGVvR2JWUWVVYU9lS0ZTSE1nUFNoSlVLbko3SmttMnZmTWxlRkdDNW9UcGNmbXFLZGF5R2tVcnhETmVhd05pT3NzZVU2NTlKSmVlQkJyaEp6WjNIenZHVVp0dlh5N3c?oc=5",
-      "source": "데일리바이트(DAILY BYTE)",
-      "published_at": "2026-10-28T21:10:01+00:00",
-      "original_url": "https://www.mydailybyte.com/littlebit/news/4c0742eb-8b7d-4832-a6b3-50a303df8aad?iscd=097950"
-    },
-    {
-      "title": "외식 물가 부담에 냉동치킨 '인기'…식품업계, 차별화 경쟁 속도",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE84d1hod2pRX2c4Y01rOUJzWEJUR2pYSzVPdlVabE00Qkd1aHF5WkNNYjg1LTU4eVc2WU4xTW9jVEtkLS1DV0JXejZqMlNXbTdSMmU0c1NJc3ltZm9ISVYydVNJZmJ3a0VNLVE?oc=5",
-      "source": "네이트",
-      "published_at": "2026-10-28T21:10:00+00:00",
-      "original_url": "https://m.news.nate.com/view/20261029n03142?issue_sq=11002"
     }
   ],
   "history": [
@@ -470,6 +470,16 @@
       "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9OSjRXQmFGZXNvYlAwXzJSRUxKcng1T1g3YVVOdjY3Zi0zQ1lTdGpGOG8wZVI4NWFGUktKTzF4MjdQZWpQaWRhMkNKcm5zV2dQR0pobkNNSWFsVVJPR2g0SDhzbnZnUEp0bHYwOVNRbmtsYms?oc=5",
       "title": "쌀값 내려도 판매는 부진… 가구 소비·외식업체 구매도 나란히 줄었다",
       "published_at": "2026-10-29T02:40:57+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE5NT2lzcWdVeW11ajJEWXk0VzRKaXBZMm1yeThSMWx4dWpnc0lhSXZBSXVuWWZhRmdiZWw5LTNNeVE1dldybzVfUHZPZTZEUzR6SGNEemJvX2ZJRXpnaWhzVkJrbERUVkhU?oc=5",
+      "title": "여행엔 쓰고 외식엔 아꼈다…카드 소비 증가세 둔화",
+      "published_at": "2026-10-30T00:41:49+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9uRUszMzVsZk1xTDRKNDd5aVFuMFJROWRhTS05M0FZamhNTXRxSXVaOEpWaEpoY3Y5cFVFZEV4bk1Hd0hiSHBGZm1lT1I2bXpMMmJkQVBmdGpCcjQ1aFRxc2RwczI4LTRSbzZj?oc=5",
+      "title": "압축소비 시대, 외식·여가 줄이고 뷰티·패션엔 더 쓴다",
+      "published_at": "2026-10-29T22:00:46+00:00"
     }
   ],
   "new_articles": 0
