@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-10-30T17:47:39.445881+00:00",
+  "updated_at": "2026-10-31T04:31:47.308853+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "“골목이 살아야 도시가 산다”… ‘2027 대구 식품외식산업 전망 세미나’ 뜨거운 열기 속 폐막",
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE80anVveWtwaHhuQ1JYTHJPY3VNblZkcnRZcnN1UFlSOXhkaW1CeHRRUU96VlEtWUhCdFVXYlU5bUo3amNJM2RnWXlIVUVUNHFXZkJtYTJ6eXZyZEhaSW5CdnZObGFfazQ1bFNiVGg2UTFReV9PUE9R0gF3QVVfeXFMTzRqdW95a3BoeG5DUlhMck9jdU1uVmRydFlyc3VQWVI5eGRpbUJ4dFFRT3pWUS1ZSEJ0VVdiVTltSjdqY0kzZGdZeUhVRVQ0cVdmQm1hMnp5dnJkSFpJbkJ2dk5sYV9rNDVsU2JUaDZRMVF5X09QT1E?oc=5",
+      "source": "한국시민기자협회 뉴스포털1",
+      "published_at": "2026-10-30T13:34:56+00:00",
+      "original_url": "https://www.civilreporter.co.kr/news/articleView.html?idxno=546598"
+    },
     {
       "title": "카드 소비도 ‘양극화’…백화점·온라인↑ 대형마트·외식↓",
       "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE53cGdIZjZqOVpGN3lsWnIxaXZGT1FpYkF5cVF1R0RweWNLd3F6MzBZa2ktOExZNGF6OG9oNE9EOTVmVXRTaXM2a3NlRTBnSmMzLWg1QzdydGlQVGtXMnk2MDNmQ29NXzJ3Z1VaYUViZVpUZlU?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "IndexBox",
       "published_at": "2026-10-29T19:31:26+00:00",
       "original_url": "https://www.indexbox.io/ko/blog/restaurant-meal-costs-climb-as-diners-cut-back-on-eating-out/"
-    },
-    {
-      "title": "[기획] 소비산업 고용 재편…매장·외식 줄고 ‘운수·창고업·배송’ 늘었다",
-      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE05eVJYNS1fZ0ZZVVlTREsySUVVM1M0dmpzdlVXaF9WeTF1bElCdk53dlJUcXhiUzRRaTJRdmlrTFQxS3hvM2tmNWM5dFhvMlU3UkJ1RGJmMXNvMElfUUlBV0hkNlA?oc=5",
-      "source": "매일일보",
-      "published_at": "2026-10-29T06:03:56+00:00",
-      "original_url": "https://www.m-i.kr/news/articleView.html?idxno=2011974"
     }
   ],
   "history": [
@@ -495,7 +495,12 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBkT2ppSEROdUhBN0drd1p3WEF5X2cyblZVTmplc2tDSTRIcjJYeWVJUEJ0OGdYd3JxbjFMTS1NRW8tRjJERU16N1N6S01FeXhwS1FZVnBsUnRGR05sNEdqQWVHSnR1NWFoTFhGSGdBOV9VZw?oc=5",
       "title": "초가성비 수요 급증…외식업계 전반으로 확대",
       "published_at": "2026-10-30T04:41:32+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE80anVveWtwaHhuQ1JYTHJPY3VNblZkcnRZcnN1UFlSOXhkaW1CeHRRUU96VlEtWUhCdFVXYlU5bUo3amNJM2RnWXlIVUVUNHFXZkJtYTJ6eXZyZEhaSW5CdnZObGFfazQ1bFNiVGg2UTFReV9PUE9R0gF3QVVfeXFMTzRqdW95a3BoeG5DUlhMck9jdU1uVmRydFlyc3VQWVI5eGRpbUJ4dFFRT3pWUS1ZSEJ0VVdiVTltSjdqY0kzZGdZeUhVRVQ0cVdmQm1hMnp5dnJkSFpJbkJ2dk5sYV9rNDVsU2JUaDZRMVF5X09QT1E?oc=5",
+      "title": "“골목이 살아야 도시가 산다”… ‘2027 대구 식품외식산업 전망 세미나’ 뜨거운 열기 속 폐막",
+      "published_at": "2026-10-30T13:34:56+00:00"
     }
   ],
-  "new_articles": 1
+  "new_articles": 0
 };
