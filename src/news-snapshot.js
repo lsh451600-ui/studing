@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-11-02T04:53:29.718535+00:00",
+  "updated_at": "2026-11-02T21:28:46.653573+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "땅스부대찌개, ‘2026 베트남 국제 프랜차이즈쇼’ 참가···동남아 시장 접점 확대",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1VYjB1Vkt2R3VWQjZFZkhGNWJSYTNzMFkwX2RaZEJocDR4SU9rTUhIUEdCeEhsV0dpZVAxR1JHWVVkazZnQmFaaVpwMDJ5REQ4eUkwa2ZZN1FKenRqMUdFblRTU1VVUWRheHdxMzNFTUPSAXBBVV95cUxNVWIwdVZLdkd1VkI2RWZIRjViUmEzczBZMF9kWmRCaHA0eElPa01ISFBHQnhIbFdHaWVQMUdSR1lVZGs2Z0JhWmlacDAyeUREOHlJMGtmWTdRSnp0ajFHRW5UU1NVVVFkYXh3cTMzRU1D?oc=5",
+      "source": "이넷뉴스",
+      "published_at": "2026-11-02T07:32:47+00:00",
+      "original_url": "https://www.enetnews.co.kr/news/articleView.html?idxno=55940"
+    },
+    {
+      "title": "인색해진 외식족, 할인에 지갑 열었다...美 버거킹 매출 3.8% 증가 반전 실적",
+      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPeDFxSDBPX2tmR1VQczRUYmptNzRhMVYzc0pOUHFHYjBFZFoySDhCcVNXd1BDdmxtSVpzSU5yS3I0cEo0Z1RNTVlBckJ5NGNjSUFRVmNRalc2WTl4Y2ZLdm16Q2JkemRIVUQxend0MGJKWDBra0RCSFhKYjBUc3B5M3hYMlB2cnNG?oc=5",
+      "source": "글로벌이코노믹",
+      "published_at": "2026-10-30T23:42:42+00:00",
+      "original_url": "https://www.g-enews.com/article/Global-Biz/2026/10/202610302313303522fda4f5ab74_1"
+    },
     {
       "title": "“골목이 살아야 도시가 산다”… ‘2027 대구 식품외식산업 전망 세미나’ 뜨거운 열기 속 폐막",
       "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE80anVveWtwaHhuQ1JYTHJPY3VNblZkcnRZcnN1UFlSOXhkaW1CeHRRUU96VlEtWUhCdFVXYlU5bUo3amNJM2RnWXlIVUVUNHFXZkJtYTJ6eXZyZEhaSW5CdnZObGFfazQ1bFNiVGg2UTFReV9PUE9R0gF3QVVfeXFMTzRqdW95a3BoeG5DUlhMck9jdU1uVmRydFlyc3VQWVI5eGRpbUJ4dFFRT3pWUS1ZSEJ0VVdiVTltSjdqY0kzZGdZeUhVRVQ0cVdmQm1hMnp5dnJkSFpJbkJ2dk5sYV9rNDVsU2JUaDZRMVF5X09QT1E?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "www.ebn.co.kr",
       "published_at": "2026-10-30T00:41:49+00:00",
       "original_url": "https://www.ebn.co.kr/news/articleView.html?idxno=1729803"
-    },
-    {
-      "title": "압축소비 시대, 외식·여가 줄이고 뷰티·패션엔 더 쓴다",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9uRUszMzVsZk1xTDRKNDd5aVFuMFJROWRhTS05M0FZamhNTXRxSXVaOEpWaEpoY3Y5cFVFZEV4bk1Hd0hiSHBGZm1lT1I2bXpMMmJkQVBmdGpCcjQ1aFRxc2RwczI4LTRSbzZj?oc=5",
-      "source": "https://www.kmjournal.net/",
-      "published_at": "2026-10-29T22:00:46+00:00",
-      "original_url": "https://www.kmjournal.net/news/articleView.html?idxno=14019"
-    },
-    {
-      "title": "외식 물가 2022년 이후 25% 상승…스테이크 디너 350달러 시대 - 뉴스 및 통계",
-      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOUkszR0VZLWpUUlo3NFBTajZWME1QS05pNWlmLU9WOFdHbzVXYXk4ajlSbjZnc25tTVVOUVM3akVtektucHZXUWdfbFZaMTRmWS1OQVE2bG01Sl9sMS1Cc0xKUTR4NTV1cWRRMzVVSFMtS1ZrQmNONlNWbmVma1FwRjZjRG9aNm81dV9yZFhjeGdKVk9iRmg3cQ?oc=5",
-      "source": "IndexBox",
-      "published_at": "2026-10-29T19:31:26+00:00",
-      "original_url": "https://www.indexbox.io/ko/blog/restaurant-meal-costs-climb-as-diners-cut-back-on-eating-out/"
     }
   ],
   "history": [
@@ -500,6 +500,16 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE80anVveWtwaHhuQ1JYTHJPY3VNblZkcnRZcnN1UFlSOXhkaW1CeHRRUU96VlEtWUhCdFVXYlU5bUo3amNJM2RnWXlIVUVUNHFXZkJtYTJ6eXZyZEhaSW5CdnZObGFfazQ1bFNiVGg2UTFReV9PUE9R0gF3QVVfeXFMTzRqdW95a3BoeG5DUlhMck9jdU1uVmRydFlyc3VQWVI5eGRpbUJ4dFFRT3pWUS1ZSEJ0VVdiVTltSjdqY0kzZGdZeUhVRVQ0cVdmQm1hMnp5dnJkSFpJbkJ2dk5sYV9rNDVsU2JUaDZRMVF5X09QT1E?oc=5",
       "title": "“골목이 살아야 도시가 산다”… ‘2027 대구 식품외식산업 전망 세미나’ 뜨거운 열기 속 폐막",
       "published_at": "2026-10-30T13:34:56+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1VYjB1Vkt2R3VWQjZFZkhGNWJSYTNzMFkwX2RaZEJocDR4SU9rTUhIUEdCeEhsV0dpZVAxR1JHWVVkazZnQmFaaVpwMDJ5REQ4eUkwa2ZZN1FKenRqMUdFblRTU1VVUWRheHdxMzNFTUPSAXBBVV95cUxNVWIwdVZLdkd1VkI2RWZIRjViUmEzczBZMF9kWmRCaHA0eElPa01ISFBHQnhIbFdHaWVQMUdSR1lVZGs2Z0JhWmlacDAyeUREOHlJMGtmWTdRSnp0ajFHRW5UU1NVVVFkYXh3cTMzRU1D?oc=5",
+      "title": "땅스부대찌개, ‘2026 베트남 국제 프랜차이즈쇼’ 참가···동남아 시장 접점 확대",
+      "published_at": "2026-11-02T07:32:47+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPeDFxSDBPX2tmR1VQczRUYmptNzRhMVYzc0pOUHFHYjBFZFoySDhCcVNXd1BDdmxtSVpzSU5yS3I0cEo0Z1RNTVlBckJ5NGNjSUFRVmNRalc2WTl4Y2ZLdm16Q2JkemRIVUQxend0MGJKWDBra0RCSFhKYjBUc3B5M3hYMlB2cnNG?oc=5",
+      "title": "인색해진 외식족, 할인에 지갑 열었다...美 버거킹 매출 3.8% 증가 반전 실적",
+      "published_at": "2026-10-30T23:42:42+00:00"
     }
   ],
   "new_articles": 0
