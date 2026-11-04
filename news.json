@@ -1,48 +1,48 @@
 {
-  "updated_at": "2026-11-03T19:13:00.638457+00:00",
+  "updated_at": "2026-11-04T05:14:20.958851+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "가공식품·외식비 상승에 10월 물가 2.8%↑…반년째 3% 안팎",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1RR0x6OVdPa3lXbDhpMGdwWXJua1U0d0Z4OF9wd1dzZ1NjU0VuMFo3U1lnZElZRWloejNVZkhzdjNJeVBnNV9UUzA2VUZVcjAxUUtSa1F6OXBPTHdCN3ctMDhtUm1aMDRsWkNRdg?oc=5",
+      "source": "세무사신문",
+      "published_at": "2026-11-04T02:52:49+00:00",
+      "original_url": "https://webzine.kacta.or.kr/news/articleView.html?idxno=26257"
+    },
+    {
+      "title": "10월 소비자물가 2.8% 상승…채소·과일 내렸지만 가공식품·외식 오름폭 확대",
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE02aFQweTRhUkExUXN4UFNkRnU0WGprS3R3dFVJZGVhMlY0MVZfc2tUSFFmY3pfYW5FTXF1bFlOand0Q0xCd3FJVkxVb0VSOFh4Vmpv?oc=5",
+      "source": "산업종합저널",
+      "published_at": "2026-11-04T02:29:40+00:00",
+      "original_url": "https://industryjournal.co.kr/news/247995"
+    },
+    {
+      "title": "10월 물가 2.8% 상승…채소 내렸지만 석유류·외식 부담 여전",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBVZHJJTjlMWjh1OWxGYnJtRDBqMUlKd3ZXMldkX250aUtZaTdVYlp2Yk1XalBVRGNtZzZCUkw3U1J2WWc5ek1LVnNFVkNvR2tqNlJQalJMVWNYbDlZbXVDREUtUk9wakU4eWhj?oc=5",
+      "source": "https://www.newsinspace.kr/",
+      "published_at": "2026-11-04T01:45:43+00:00",
+      "original_url": "https://www.newsinspace.kr/news/articleView.html?idxno=2264"
+    },
+    {
+      "title": "뷔페는 북적이고 간편식은 불티…애슐리, 외식·집밥 시장 동시 공략",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9zY09tRVVkNzJ0OHFjVFp5UUVEWEhZazVvVjBSdVpXdFp3QzNDa2hvdGtJTFBEVG1ZaWFFV2JMUXFsbXBmRlFGR0QwbWYzRTZSOTFsRWtoQVJQdmxMeVpkOEtpSnoyVjl2ZVNQYXRsbDU?oc=5",
+      "source": "위키리크스한국",
+      "published_at": "2026-11-04T01:39:47+00:00",
+      "original_url": "https://www.wikileaks-kr.org/news/articleView.html?idxno=194175"
+    },
+    {
+      "title": "美 외식 소비 위축에도 … 허진수號 파리바게뜨, 1000호점 목표 '순항'",
+      "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNb1JjWDlaV2ZYSlBuZ09xRzZCbEkwNFNUcGNFV2Rfei1nOUZNWFNzYTVSTjhIejlBZDk1Q2ZjWkxpNTIxcHA3TXQ5TnczR2pjenk3UGVYRlRodmhraW5MZkVna1VjRmpFdzhvQkh6WW1VVnBHWmZGVTA3UGZrc2pJbdIBgAFBVV95cUxNb1JjWDlaV2ZYSlBuZ09xRzZCbEkwNFNUcGNFV2Rfei1nOUZNWFNzYTVSTjhIejlBZDk1Q2ZjWkxpNTIxcHA3TXQ5TnczR2pjenk3UGVYRlRodmhraW5MZkVna1VjRmpFdzhvQkh6WW1VVnBHWmZGVTA3UGZrc2pJbQ?oc=5",
+      "source": "뉴데일리",
+      "published_at": "2026-11-04T01:17:00+00:00",
+      "original_url": "https://biz.newdaily.co.kr/site/data/html/2026/11/04/2026110400110.amp.html"
+    },
     {
       "title": "가공식품·외식비 상승에 10월 물가 2.8%↑",
       "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE42YzR3WEhjQkhJWWJ5ak9icVJ5RzM0TzlZZkRuMXhTSDhuXzBGckVKdG5iTkpaWWk4SHN0QXQ0WkJVUnlwTkJqMXhEWFNwVzJ5NDF5YWJGTXg1WG5hcFFLeHFYd0h0UmRCVUZyQ082a9IBc0FVX3lxTE5hR2RwYkFYRV9PUWdjU3p6M0x0QlZvb0VBSkQ3TWNfeHVhSXVCWVVOXzhOdi1fWjF0MzRWeHgyejVXMjJMQUgzZUg4MUtSc2tkdFBjWGNIeDE0OHMyazhqQnhNRGt0c3pwMXo2UlV2QTd2d1U?oc=5",
       "source": "데일리한국",
       "published_at": "2026-11-03T08:43:49+00:00",
       "original_url": "https://daily.hankooki.com/news/articleView.html?idxno=1421363"
-    },
-    {
-      "title": "가공식품·외식 비용 올랐다…경남 소비자물가 3.2% 상승",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFAwbC1JQmh0Z1F4bXNfdHVpajBTbzhBTDJPM240UEtjNE1CcTNvZlFQb0JNMHFIZHhtUklPdFpjTzRmMWg1dXNRUzBtMl9zT3g5ZGRVZGtxWDB2RXRzQW1ON0cyNUp1UFhaTFE?oc=5",
-      "source": "경남도민일보",
-      "published_at": "2026-11-03T08:25:00+00:00",
-      "original_url": "https://www.idomin.com/news/articleView.html?idxno=2018652"
-    },
-    {
-      "title": "가공식품 11개월, 외식 물가 9개월만 최고…10월 물가 2.8%↑",
-      "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBINjNZZ1JTWTFvalNoYkpHV29DRUJKZFBoczFOTzU4TWE2Y2xvbVVvc0RGOUROWUhZRlF6czZScXlHeUFTVElDS0lMX3Fhb2VKQUgxdA?oc=5",
-      "source": "JTBC",
-      "published_at": "2026-11-03T07:14:00+00:00",
-      "original_url": "https://news.jtbc.co.kr/article/NB12326237"
-    },
-    {
-      "title": "10월 물가 3% 밑돌았으나 석유·가공식품·외식 뜀박질",
-      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5taHpFVEloSmJvLWRXdzZJUkZJa21yRGFLclc3X29QM2h0R2w0V2xBNkNVQWRpTnRMcEVXQXdrcGdXUDJpNEF3SUZvSmtvSjVmb1l2YzNHR3NSc3dXcWVtWQ?oc=5",
-      "source": "메트로신문",
-      "published_at": "2026-11-03T06:32:14+00:00",
-      "original_url": "https://www.metroseoul.co.kr/article/20261103500403"
-    },
-    {
-      "title": "10월, 소비자물가지수 2.8% ‘껑충’…가공식품 11개월·외식 8개월 만에 ‘최고치’",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1ocVBLcmZaLS1pUmIzUnNWSDBKcUYyVmFkOGljVk9wQWFuQTZSMTFoWC01ajZ0Znk5M1hreXhfMTFwbXFEaU16UjlNSV9NcTNld09lMXJxSmlyMmFxLWo0cFF6d1EybVRWNklr0gFrQVVfeXFMTWhxUEtyZlotLWlSYjNSc1ZIMEpxRjJWYWQ4aWNWT3BBYW5BNlIxMWhYLTVqNnRmeTkzWGt5eF8xMXBtcURpTXpSOU1JX01xM2V3T2UxcnFKaXIyYXEtajRwUXp3UTJtVFY2SWs?oc=5",
-      "source": "SWTV",
-      "published_at": "2026-11-03T03:21:48+00:00",
-      "original_url": "https://m.swtvnews.com/news/amp.html?ncode=1065577102505627"
-    },
-    {
-      "title": "가공식품·외식 오름폭 커져…10월 소비자물가 2.8%↑",
-      "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxQQnZ1bWRBM3Juejh4Rlg0MGx6YTZpNENQaXk5YXo3ZFJ2TnJlakJMdlZBWjRrY0lQS2J5ZnpXSGZsOS1ta1hCNC1RT0lBcXlKV3J6UkY4cWlEN1B5a2lvSUlpQkxQaWJpOHJydTcwNkp6LUtMbDZzU2NUakVGSnlLdmVsYmFGYXZVZm1lM1FiMNIBZkFVX3lxTE43amhsR2hYVmJKcDF1N3RZNk9FSmg5U1JVZ3ZDX3BjOVh6cEhqTVUyN2dpTGtyNzBnMHd5Qk5kNFRrM1UtaEEybEpXWW5WZVVfdTh3dTluWXhZM19YQTFwVTBmamtPZw?oc=5",
-      "source": "SBS 뉴스",
-      "published_at": "2026-11-03T03:11:05+00:00",
-      "original_url": "https://news.sbs.co.kr/news/endPage.do?news_id=N1008828112&plink=RSSLINK&cooper=GSTAND"
     }
   ],
   "history": [
@@ -570,6 +570,31 @@
       "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1ocVBLcmZaLS1pUmIzUnNWSDBKcUYyVmFkOGljVk9wQWFuQTZSMTFoWC01ajZ0Znk5M1hreXhfMTFwbXFEaU16UjlNSV9NcTNld09lMXJxSmlyMmFxLWo0cFF6d1EybVRWNklr0gFrQVVfeXFMTWhxUEtyZlotLWlSYjNSc1ZIMEpxRjJWYWQ4aWNWT3BBYW5BNlIxMWhYLTVqNnRmeTkzWGt5eF8xMXBtcURpTXpSOU1JX01xM2V3T2UxcnFKaXIyYXEtajRwUXp3UTJtVFY2SWs?oc=5",
       "title": "10월, 소비자물가지수 2.8% ‘껑충’…가공식품 11개월·외식 8개월 만에 ‘최고치’",
       "published_at": "2026-11-03T03:21:48+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1RR0x6OVdPa3lXbDhpMGdwWXJua1U0d0Z4OF9wd1dzZ1NjU0VuMFo3U1lnZElZRWloejNVZkhzdjNJeVBnNV9UUzA2VUZVcjAxUUtSa1F6OXBPTHdCN3ctMDhtUm1aMDRsWkNRdg?oc=5",
+      "title": "가공식품·외식비 상승에 10월 물가 2.8%↑…반년째 3% 안팎",
+      "published_at": "2026-11-04T02:52:49+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE02aFQweTRhUkExUXN4UFNkRnU0WGprS3R3dFVJZGVhMlY0MVZfc2tUSFFmY3pfYW5FTXF1bFlOand0Q0xCd3FJVkxVb0VSOFh4Vmpv?oc=5",
+      "title": "10월 소비자물가 2.8% 상승…채소·과일 내렸지만 가공식품·외식 오름폭 확대",
+      "published_at": "2026-11-04T02:29:40+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBVZHJJTjlMWjh1OWxGYnJtRDBqMUlKd3ZXMldkX250aUtZaTdVYlp2Yk1XalBVRGNtZzZCUkw3U1J2WWc5ek1LVnNFVkNvR2tqNlJQalJMVWNYbDlZbXVDREUtUk9wakU4eWhj?oc=5",
+      "title": "10월 물가 2.8% 상승…채소 내렸지만 석유류·외식 부담 여전",
+      "published_at": "2026-11-04T01:45:43+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE9zY09tRVVkNzJ0OHFjVFp5UUVEWEhZazVvVjBSdVpXdFp3QzNDa2hvdGtJTFBEVG1ZaWFFV2JMUXFsbXBmRlFGR0QwbWYzRTZSOTFsRWtoQVJQdmxMeVpkOEtpSnoyVjl2ZVNQYXRsbDU?oc=5",
+      "title": "뷔페는 북적이고 간편식은 불티…애슐리, 외식·집밥 시장 동시 공략",
+      "published_at": "2026-11-04T01:39:47+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNb1JjWDlaV2ZYSlBuZ09xRzZCbEkwNFNUcGNFV2Rfei1nOUZNWFNzYTVSTjhIejlBZDk1Q2ZjWkxpNTIxcHA3TXQ5TnczR2pjenk3UGVYRlRodmhraW5MZkVna1VjRmpFdzhvQkh6WW1VVnBHWmZGVTA3UGZrc2pJbdIBgAFBVV95cUxNb1JjWDlaV2ZYSlBuZ09xRzZCbEkwNFNUcGNFV2Rfei1nOUZNWFNzYTVSTjhIejlBZDk1Q2ZjWkxpNTIxcHA3TXQ5TnczR2pjenk3UGVYRlRodmhraW5MZkVna1VjRmpFdzhvQkh6WW1VVnBHWmZGVTA3UGZrc2pJbQ?oc=5",
+      "title": "美 외식 소비 위축에도 … 허진수號 파리바게뜨, 1000호점 목표 '순항'",
+      "published_at": "2026-11-04T01:17:00+00:00"
     }
   ],
   "new_articles": 0
