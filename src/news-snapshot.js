@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-11-05T05:35:48.566583+00:00",
+  "updated_at": "2026-11-05T19:38:10.979862+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "롯데GRS, 프리미엄 한식 브랜드 ‘열두달화덕’ 첫선…백화점 외식시장 공략",
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5JWFJla0ktZGRIYlc0cEJScEFjb3NMOXk1NlVILUdQQUozNnFBSjBQSk82SHR6VWVEUkNLOVBOSV9GV2hOdXI2WkowaFFhTmNFaFgwdFgtLWNCeGprczZEdVNjYVBUZXp2eUhrZllR?oc=5",
+      "source": "월드투데이",
+      "published_at": "2026-11-05T08:06:15+00:00",
+      "original_url": "https://www.iworldtoday.com/news/articleView.html?idxno=425610"
+    },
     {
       "title": "식품·외식산업, 기술과 소비 변화 속 미래 성장전략 모색",
       "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9YOVU3cG16Q08wTDg2Qk1DbUVrbVFtQW1PRERXb0Z0NWpiY01fclBnaWd0X000OTFROVVDekotc1M3d1RTZVRmVkNqdERfVGNXQ0J5ckZGNldoZ0ltZkppeE83THpDQlE?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "뉴시스",
       "published_at": "2026-11-04T03:08:26+00:00",
       "original_url": "https://mobile.newsis.com/view_amp.html?ar_id=NISI20261104_0021518699"
-    },
-    {
-      "title": "가공식품·외식비 상승에 10월 물가 2.8%↑…반년째 3% 안팎",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1RR0x6OVdPa3lXbDhpMGdwWXJua1U0d0Z4OF9wd1dzZ1NjU0VuMFo3U1lnZElZRWloejNVZkhzdjNJeVBnNV9UUzA2VUZVcjAxUUtSa1F6OXBPTHdCN3ctMDhtUm1aMDRsWkNRdg?oc=5",
-      "source": "세무사신문",
-      "published_at": "2026-11-04T02:52:49+00:00",
-      "original_url": "https://webzine.kacta.or.kr/news/articleView.html?idxno=26257"
     }
   ],
   "history": [
@@ -620,6 +620,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE5qanVrU0d6TTNkM1JMUDdrZ19LMUxpbGhta1dHdF9KN0hkQ3RKZjlMT21KTWROLTN5a3lOOGFnZnpxMDZKOEdzanQzQVVWemFMZXk2M2hFMnZiWnhLSGtnak8zaGczV1JCMlZjY2NYQnVaUEJPcHZ4eNIBeEFVX3lxTE5qanVrU0d6TTNkM1JMUDdrZ19LMUxpbGhta1dHdF9KN0hkQ3RKZjlMT21KTWROLTN5a3lOOGFnZnpxMDZKOEdzanQzQVVWemFMZXk2M2hFMnZiWnhLSGtnak8zaGczV1JCMlZjY2NYQnVaUEJPcHZ4eA?oc=5",
       "title": "식품·외식업계 가격 인상에 먹거리 물가 부담",
       "published_at": "2026-11-04T03:08:26+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5JWFJla0ktZGRIYlc0cEJScEFjb3NMOXk1NlVILUdQQUozNnFBSjBQSk82SHR6VWVEUkNLOVBOSV9GV2hOdXI2WkowaFFhTmNFaFgwdFgtLWNCeGprczZEdVNjYVBUZXp2eUhrZllR?oc=5",
+      "title": "롯데GRS, 프리미엄 한식 브랜드 ‘열두달화덕’ 첫선…백화점 외식시장 공략",
+      "published_at": "2026-11-05T08:06:15+00:00"
     }
   ],
   "new_articles": 0
