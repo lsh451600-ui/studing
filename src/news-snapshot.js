@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-11-06T18:59:42.068958+00:00",
+  "updated_at": "2026-11-07T05:00:31.350227+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "참치 통조림용 원료 시장 2035년 전망: 외식 수요가 성장 견인 - 뉴스 및 통계",
+      "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNWjROOWx4dVFpaU5ZZFI4bkk4WjU4MjFPR0k5eWJCN3ptODNabmFBWDVaVVlJOVN6WXB0MHF5SWgyM1plbTNpaG9LdmxybDB4Y0lJT1d4OUZ0V080ZF9YQ3lYWFNGNzlCZjZ0UlRBcUVfTkV0UzhyVkNjX3pPazdsbGk1MmlpSE1KbVBiZm96UVd3X01nVFc1V3FZcU94RmpyNzg3TW1QMHNwQVRsWERqQ3JSWHo2cE9BaGZrQkh6d2wyM1I4QU1QSVBCSTlKbEU?oc=5",
+      "source": "IndexBox",
+      "published_at": "2026-11-06T20:11:03+00:00",
+      "original_url": "https://www.indexbox.io/ko/blog/canned-tuna-ingredients-market-forecast-to-2035-driven-by-foodservice-demand-for-shelf-stable-protein/"
+    },
     {
       "title": "창고43, 서브 브랜드 ′창고43 온′ 출범…백화점 외식시장 공략",
       "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1WVS1JZ1BPVnd2NEpiZndnWGJ6X0ZaWGcyU3lzSkM0elJzczZHTG9pNjRKMUNJeUxkU213bVpJNm5hUHNma3FnaEg4Q3pEYzlzSXRldFZRbFY1Ykk5RGNFT0Q1bUdHbzNTY084dndKR0RTd9IBckFVX3lxTE1WVS1JZ1BPVnd2NEpiZndnWGJ6X0ZaWGcyU3lzSkM0elJzczZHTG9pNjRKMUNJeUxkU213bVpJNm5hUHNma3FnaEg4Q3pEYzlzSXRldFZRbFY1Ykk5RGNFT0Q1bUdHbzNTY084dndKR0RTdw?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "뉴시스",
       "published_at": "2026-11-06T01:30:02+00:00",
       "original_url": "https://www.newsis.com/view/NISX20261106_0003857596"
-    },
-    {
-      "title": "롯데GRS, 프리미엄 한식 브랜드 ‘열두달화덕’ 첫선…백화점 외식시장 공략",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5JWFJla0ktZGRIYlc0cEJScEFjb3NMOXk1NlVILUdQQUozNnFBSjBQSk82SHR6VWVEUkNLOVBOSV9GV2hOdXI2WkowaFFhTmNFaFgwdFgtLWNCeGprczZEdVNjYVBUZXp2eUhrZllR?oc=5",
-      "source": "월드투데이",
-      "published_at": "2026-11-05T08:06:15+00:00",
-      "original_url": "https://www.iworldtoday.com/news/articleView.html?idxno=425610"
     }
   ],
   "history": [
@@ -650,6 +650,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9weGVlMXpkMlRCLTlRYUJpeXBXRno4VUxQb0NucEpLZ1hfNHNxSXlkcFZYT2pPTkRONWVZSkhwb0Z0clUxNkZTaTlOcUxRV1VnTWotekFQZmdNb0Y4Y0hvVFUwNUVZOTMwNXk0eA?oc=5",
       "title": "“소비자는 지갑을 닫은 게 아니라 영점이 맞는 곳에만 연다”",
       "published_at": "2026-11-06T10:53:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNWjROOWx4dVFpaU5ZZFI4bkk4WjU4MjFPR0k5eWJCN3ptODNabmFBWDVaVVlJOVN6WXB0MHF5SWgyM1plbTNpaG9LdmxybDB4Y0lJT1d4OUZ0V080ZF9YQ3lYWFNGNzlCZjZ0UlRBcUVfTkV0UzhyVkNjX3pPazdsbGk1MmlpSE1KbVBiZm96UVd3X01nVFc1V3FZcU94RmpyNzg3TW1QMHNwQVRsWERqQ3JSWHo2cE9BaGZrQkh6d2wyM1I4QU1QSVBCSTlKbEU?oc=5",
+      "title": "참치 통조림용 원료 시장 2035년 전망: 외식 수요가 성장 견인 - 뉴스 및 통계",
+      "published_at": "2026-11-06T20:11:03+00:00"
     }
   ],
   "new_articles": 0
