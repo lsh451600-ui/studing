@@ -1,7 +1,28 @@
 export const snapshot = {
-  "updated_at": "2026-11-07T17:31:46.536923+00:00",
+  "updated_at": "2026-11-08T04:55:57.866795+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "이스라엘 외식시장, 한식은 아직 ‘빈자리’",
+      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5jZG9BTnlLeFhJN1M2elNKQkpGNm5raGYzc3ByRGFsUWkwaVlFZHY3cll6ZlRxWnpBb29uMGotVzJuaGhQOXNWWS1aYi1TVmsyNnJFdHpEZw?oc=5",
+      "source": "www.realfoods.co.kr",
+      "published_at": "2026-11-08T04:44:21+00:00",
+      "original_url": "https://www.realfoods.co.kr/article/10929621"
+    },
+    {
+      "title": "농식품부, 내년 식품외식산업전망…\"건강·가치 소비 확산\"",
+      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE01OWFxNHhyU2EtTkFKSFRHSDJFeE5NNHNXWXVBSUp1Y2NGT0w4X2RwMkx1WXR4RzZBQV8wdllILUdwT1ZraVR6ZnNmejY3dHRNcFE?oc=5",
+      "source": "매일경제 마켓",
+      "published_at": "2026-11-08T02:00:03+00:00",
+      "original_url": "https://stock.mk.co.kr/news/view/1193240"
+    },
+    {
+      "title": "10월 소비자물가 2.8%...가공식품·외식은 상승폭 커졌다",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1ZcF9TaEs1T2xHT1hQOVdxUG1mWnJJUGJ2NEVYSExVZ2ZFTVp0N2k5QjVFekVhcENWbWlBTlRjclZQaW96aFpWNW1IU3A4WlV3ZjZNSzljZXFLWEVOWXBnUlJCZExtdUVq?oc=5",
+      "source": "팩트공감",
+      "published_at": "2026-11-07T07:53:27+00:00",
+      "original_url": "https://www.facton.co.kr/news/articleView.html?idxno=2447"
+    },
     {
       "title": "참치 통조림용 원료 시장 2035년 전망: 외식 수요가 성장 견인 - 뉴스 및 통계",
       "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNWjROOWx4dVFpaU5ZZFI4bkk4WjU4MjFPR0k5eWJCN3ptODNabmFBWDVaVVlJOVN6WXB0MHF5SWgyM1plbTNpaG9LdmxybDB4Y0lJT1d4OUZ0V080ZF9YQ3lYWFNGNzlCZjZ0UlRBcUVfTkV0UzhyVkNjX3pPazdsbGk1MmlpSE1KbVBiZm96UVd3X01nVFc1V3FZcU94RmpyNzg3TW1QMHNwQVRsWERqQ3JSWHo2cE9BaGZrQkh6d2wyM1I4QU1QSVBCSTlKbEU?oc=5",
@@ -22,27 +43,6 @@ export const snapshot = {
       "source": "식품외식경제",
       "published_at": "2026-11-06T10:53:00+00:00",
       "original_url": "https://www.foodbank.co.kr/news/articleView.html?idxno=68757"
-    },
-    {
-      "title": "높아진 외식물가, 더 든든해진 아워홈 도시락",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE92YjZqV0xfRk10WmVyY01sa0hkUG5Vd2lMQWNGRlhOTTdQU0ZNOFFNY3Z3WS1wOWJyTloxM2ttNEplSy0ycGR3MV81dkttVXVuOS1KS1pvQ0p0V0ZaSHg5SGdJZmxGeTUwX2ZrNQ?oc=5",
-      "source": "ER 이코노믹리뷰",
-      "published_at": "2026-11-06T04:59:40+00:00",
-      "original_url": "https://www.econovill.com/news/articleView.html?idxno=756312"
-    },
-    {
-      "title": "제주산 마늘 간편식 3종, 전국 급식·외식시장 진출 시동",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5wRzJ4TWQxVGpCdXVfdG9NSENobkVIbTJ3OXQ5T3hQYWEzN2xoQjBhTGc1bFEzYk43RW5pUWViM0lwZVZGVmFHY0VCVVdEcXBRWjBMNUEwRTlObzhLSzJVQ3Y3NGREdzlEMFRjMjN3?oc=5",
-      "source": "제주투데이",
-      "published_at": "2026-11-06T02:20:45+00:00",
-      "original_url": "https://www.ijejutoday.com/news/articleView.html?idxno=403646"
-    },
-    {
-      "title": "제주산 마늘 간편식, 전국 급식·외식 시장 진출 꾀한다",
-      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE40dUcwanNNbUhOeDZqeWFMSzRGWWs1N3FJdy00bUI3NjczVVhqd0cxSGFMZk5ZdnBHeWtRbHhubV8yX3dRM1h6WXBudGUydTJLcHR3ZDRSN3JDUHN4dm9YcdIBeEFVX3lxTE5zWnM2YXhDTGlNODllbUY0RmxOSmFRaHNlUVEwRWhjOEtQckgwb3kzSmYyU0E0blh1ZzhFNHdTX0Q3Rkp3Mi1MRm5TQkowNjhyU3hvX1haQWRmZ2ZPcFJuNXlsWF9nZTNhZURrMWJSZ00yUExkUkJaUA?oc=5",
-      "source": "뉴시스",
-      "published_at": "2026-11-06T01:30:02+00:00",
-      "original_url": "https://www.newsis.com/view/NISX20261106_0003857596"
     }
   ],
   "history": [
@@ -655,7 +655,22 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNWjROOWx4dVFpaU5ZZFI4bkk4WjU4MjFPR0k5eWJCN3ptODNabmFBWDVaVVlJOVN6WXB0MHF5SWgyM1plbTNpaG9LdmxybDB4Y0lJT1d4OUZ0V080ZF9YQ3lYWFNGNzlCZjZ0UlRBcUVfTkV0UzhyVkNjX3pPazdsbGk1MmlpSE1KbVBiZm96UVd3X01nVFc1V3FZcU94RmpyNzg3TW1QMHNwQVRsWERqQ3JSWHo2cE9BaGZrQkh6d2wyM1I4QU1QSVBCSTlKbEU?oc=5",
       "title": "참치 통조림용 원료 시장 2035년 전망: 외식 수요가 성장 견인 - 뉴스 및 통계",
       "published_at": "2026-11-06T20:11:03+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE01OWFxNHhyU2EtTkFKSFRHSDJFeE5NNHNXWXVBSUp1Y2NGT0w4X2RwMkx1WXR4RzZBQV8wdllILUdwT1ZraVR6ZnNmejY3dHRNcFE?oc=5",
+      "title": "농식품부, 내년 식품외식산업전망…\"건강·가치 소비 확산\"",
+      "published_at": "2026-11-08T02:00:03+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1ZcF9TaEs1T2xHT1hQOVdxUG1mWnJJUGJ2NEVYSExVZ2ZFTVp0N2k5QjVFekVhcENWbWlBTlRjclZQaW96aFpWNW1IU3A4WlV3ZjZNSzljZXFLWEVOWXBnUlJCZExtdUVq?oc=5",
+      "title": "10월 소비자물가 2.8%...가공식품·외식은 상승폭 커졌다",
+      "published_at": "2026-11-07T07:53:27+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5jZG9BTnlLeFhJN1M2elNKQkpGNm5raGYzc3ByRGFsUWkwaVlFZHY3cll6ZlRxWnpBb29uMGotVzJuaGhQOXNWWS1aYi1TVmsyNnJFdHpEZw?oc=5",
+      "title": "이스라엘 외식시장, 한식은 아직 ‘빈자리’",
+      "published_at": "2026-11-08T04:44:21+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 1
 };
