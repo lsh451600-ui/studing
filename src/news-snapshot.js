@@ -1,7 +1,35 @@
 export const snapshot = {
-  "updated_at": "2026-11-09T05:03:54.865605+00:00",
+  "updated_at": "2026-11-09T22:00:19.855260+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "[2027 식품외식산업 전망] 아시아 식품시장, 익숙한 맛을 새로운 경험으로 판매",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE0wRDFrZ2VuY0dDZjF4VXJpdUY5ZWhMTlVVQWFlRGtxTm53X0c1d2tkTkloSzVDeGVUdFAzRjBPMkNzclBxVXBQdm1mOUVYVS1kcVFBTjlyMHV2VUdoeDJaYnNlREZyV3BaT0o1NA?oc=5",
+      "source": "푸드아이콘",
+      "published_at": "2026-11-09T12:05:26+00:00",
+      "original_url": "https://www.foodicon.co.kr/news/articleView.html?idxno=36109"
+    },
+    {
+      "title": "[소비트렌드] 11월 2주, 외식 줄고 소용량 늘어",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE13V0ZVWklGaDZBVkVRV2tpS1l0NVBKZDJRVnZjRHhoYmRjVjloTlcyWW1ET0V2ZHl0M3JVaUhuRG0yczRZM2hSdjhra1I1anUxb1dqRnBxb0QzVDU1dUo3X0tTVThJQlI5YjViNg?oc=5",
+      "source": "센머니",
+      "published_at": "2026-11-09T07:24:51+00:00",
+      "original_url": "https://www.senmoney.co.kr/news/articleView.html?idxno=38486"
+    },
+    {
+      "title": "‘맛과 건강’ 모두 잡는다…식품·외식 분야 웰니스 소비 이어진다",
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBYQzY1bWd1WkVnQ2g4enV6czRBNnlsdEJESG9rVDZPTDJFNm1ya2REZnhKZ0FNcW8xVURFM21QYVJMV1VmVGY5cWNqd0NkM0RNRk5ta0pScDZPTktFdnBFOExVdTh1dHBPd0E?oc=5",
+      "source": "경남도민일보",
+      "published_at": "2026-11-09T07:04:05+00:00",
+      "original_url": "https://www.idomin.com/news/articleView.html?idxno=2019111"
+    },
+    {
+      "title": "전국한우협회, 푸드위크서 한우 소비촉진…외식·식품업계 공략",
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5YMzVLVDN0aHNOOWhOOWdMYTYtcUQxNlhhYng5MktJY3p4VHRkQW5EV3AwQU14SU9oNWhiSzBCbVIzOHlhd1J2QW1ROVlDS0x1LXAzaWh1Vml2YmJTeTNqbWRKNklDZw?oc=5",
+      "source": "푸드투데이",
+      "published_at": "2026-11-09T06:09:22+00:00",
+      "original_url": "https://www.foodtoday.or.kr/news/article.html?no=209523"
+    },
     {
       "title": "허희수의 글로벌 브랜드를 읽는 안목…쉐이크쉑부터 치폴레 유치까지 글로벌 외식 브랜드 국내 시장 안착 이끌어",
       "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9vZWpCY0RRZVI0QzBXMUUzQ0tKd21CcF9leWJkTnFjUXlCUEtSUEZSLVdkVU9zZzN0OGZFWWtKaFFHWVVtMk5hSnNDcHJpQQ?oc=5",
@@ -15,34 +43,6 @@ export const snapshot = {
       "source": "현대경제신문",
       "published_at": "2026-11-09T00:00:00+00:00",
       "original_url": "https://www.finomy.com/news/articleView.html?idxno=265936"
-    },
-    {
-      "title": "2027 식품·외식 트렌드는 '건강·맛·경험'…AI가 경쟁력 좌우",
-      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1wSUJQa3VQLWRpOTRMMURKVGViNDEwdXpBRjJPb1lVSjU2SGx5NlAyLXFwUXlKN2dvU24zRVZKbzB4Y3VzVlg5SFRCdW95YzZJM1BPaWVTU25rTUx2c0c1UU41b01kdw?oc=5",
-      "source": "푸드투데이",
-      "published_at": "2026-11-08T06:55:55+00:00",
-      "original_url": "https://www.foodtoday.or.kr/news/article.html?no=209495"
-    },
-    {
-      "title": "식품·외식 분야에서 ‘웰니스 소비’ 앞으로도 지속된다",
-      "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPc3JYZlVrWjlPUW1hd19hN0JMUWxjY0RnYl9ZSjh3TTZ2WnYwN2VHeUhuc2FtQTRWQ3pVRFRuQmRLbnRQREFqTU0xRHNXaWRnUTJ0eFdkb2ltUXlncW5QcFZkWEhveGFMdUdrQm1nSnN3QzNmOUp1cUdIMnBNX3I2RVVnVlRBaVF2Wndjcnp3?oc=5",
-      "source": "국제신문",
-      "published_at": "2026-11-08T05:16:00+00:00",
-      "original_url": "https://www.kookje.co.kr/news2011/asp/newsbody.asp?code=0200&key=20261108.99099002257"
-    },
-    {
-      "title": "이스라엘 외식시장, 한식은 아직 ‘빈자리’",
-      "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTE5jZG9BTnlLeFhJN1M2elNKQkpGNm5raGYzc3ByRGFsUWkwaVlFZHY3cll6ZlRxWnpBb29uMGotVzJuaGhQOXNWWS1aYi1TVmsyNnJFdHpEZw?oc=5",
-      "source": "www.realfoods.co.kr",
-      "published_at": "2026-11-08T04:44:21+00:00",
-      "original_url": "https://www.realfoods.co.kr/article/10929621"
-    },
-    {
-      "title": "농식품부, 내년 식품외식산업전망…\"건강·가치 소비 확산\"",
-      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE01OWFxNHhyU2EtTkFKSFRHSDJFeE5NNHNXWXVBSUp1Y2NGT0w4X2RwMkx1WXR4RzZBQV8wdllILUdwT1ZraVR6ZnNmejY3dHRNcFE?oc=5",
-      "source": "매일경제 마켓",
-      "published_at": "2026-11-08T02:00:03+00:00",
-      "original_url": "https://stock.mk.co.kr/news/view/1193240"
     }
   ],
   "history": [
@@ -695,6 +695,26 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFB4RnBXQWFBcU1kYVFkQ2dqTlp0bTlEU2NTdFhkeG1sU2ZWYWdqWjBRU25yMXJBeGlmeUR4eGxfaUEwU0JYUDVYQndfZ29zR1JQYVRzcVFnMGNBdzVRNDR0N2wwalVOblU50gFrQVVfeXFMT2ZzTHZhbDlvNGxSNEEwV3g5Q2dGUHZqa21qZHVwZnJtNnltSDZQY29EVkRKcXpkeEREYW00cHJWTTBQcWUtUm0xU0dvM2N1LXNyUVk2SG1DTW9sUnJaRG1GRVY5eHFtWURPQ00?oc=5",
       "title": "강원한우, 두바이 넘어 아부다비까지···UAE 외식시장 판로 확대",
       "published_at": "2026-11-09T00:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE0wRDFrZ2VuY0dDZjF4VXJpdUY5ZWhMTlVVQWFlRGtxTm53X0c1d2tkTkloSzVDeGVUdFAzRjBPMkNzclBxVXBQdm1mOUVYVS1kcVFBTjlyMHV2VUdoeDJaYnNlREZyV3BaT0o1NA?oc=5",
+      "title": "[2027 식품외식산업 전망] 아시아 식품시장, 익숙한 맛을 새로운 경험으로 판매",
+      "published_at": "2026-11-09T12:05:26+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE13V0ZVWklGaDZBVkVRV2tpS1l0NVBKZDJRVnZjRHhoYmRjVjloTlcyWW1ET0V2ZHl0M3JVaUhuRG0yczRZM2hSdjhra1I1anUxb1dqRnBxb0QzVDU1dUo3X0tTVThJQlI5YjViNg?oc=5",
+      "title": "[소비트렌드] 11월 2주, 외식 줄고 소용량 늘어",
+      "published_at": "2026-11-09T07:24:51+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBYQzY1bWd1WkVnQ2g4enV6czRBNnlsdEJESG9rVDZPTDJFNm1ya2REZnhKZ0FNcW8xVURFM21QYVJMV1VmVGY5cWNqd0NkM0RNRk5ta0pScDZPTktFdnBFOExVdTh1dHBPd0E?oc=5",
+      "title": "‘맛과 건강’ 모두 잡는다…식품·외식 분야 웰니스 소비 이어진다",
+      "published_at": "2026-11-09T07:04:05+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5YMzVLVDN0aHNOOWhOOWdMYTYtcUQxNlhhYng5MktJY3p4VHRkQW5EV3AwQU14SU9oNWhiSzBCbVIzOHlhd1J2QW1ROVlDS0x1LXAzaWh1Vml2YmJTeTNqbWRKNklDZw?oc=5",
+      "title": "전국한우협회, 푸드위크서 한우 소비촉진…외식·식품업계 공략",
+      "published_at": "2026-11-09T06:09:22+00:00"
     }
   ],
   "new_articles": 0
