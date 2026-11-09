@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-11-08T17:43:20.599838+00:00",
+  "updated_at": "2026-11-09T05:03:54.865605+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "허희수의 글로벌 브랜드를 읽는 안목…쉐이크쉑부터 치폴레 유치까지 글로벌 외식 브랜드 국내 시장 안착 이끌어",
+      "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9vZWpCY0RRZVI0QzBXMUUzQ0tKd21CcF9leWJkTnFjUXlCUEtSUEZSLVdkVU9zZzN0OGZFWWtKaFFHWVVtMk5hSnNDcHJpQQ?oc=5",
+      "source": "전자신문",
+      "published_at": "2026-11-09T02:01:43+00:00",
+      "original_url": "https://www.etnews.com/20261109000165"
+    },
+    {
+      "title": "강원한우, 두바이 넘어 아부다비까지···UAE 외식시장 판로 확대",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFB4RnBXQWFBcU1kYVFkQ2dqTlp0bTlEU2NTdFhkeG1sU2ZWYWdqWjBRU25yMXJBeGlmeUR4eGxfaUEwU0JYUDVYQndfZ29zR1JQYVRzcVFnMGNBdzVRNDR0N2wwalVOblU50gFrQVVfeXFMT2ZzTHZhbDlvNGxSNEEwV3g5Q2dGUHZqa21qZHVwZnJtNnltSDZQY29EVkRKcXpkeEREYW00cHJWTTBQcWUtUm0xU0dvM2N1LXNyUVk2SG1DTW9sUnJaRG1GRVY5eHFtWURPQ00?oc=5",
+      "source": "현대경제신문",
+      "published_at": "2026-11-09T00:00:00+00:00",
+      "original_url": "https://www.finomy.com/news/articleView.html?idxno=265936"
+    },
     {
       "title": "2027 식품·외식 트렌드는 '건강·맛·경험'…AI가 경쟁력 좌우",
       "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1wSUJQa3VQLWRpOTRMMURKVGViNDEwdXpBRjJPb1lVSjU2SGx5NlAyLXFwUXlKN2dvU24zRVZKbzB4Y3VzVlg5SFRCdW95YzZJM1BPaWVTU25rTUx2c0c1UU41b01kdw?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "매일경제 마켓",
       "published_at": "2026-11-08T02:00:03+00:00",
       "original_url": "https://stock.mk.co.kr/news/view/1193240"
-    },
-    {
-      "title": "마트 밖으로 나온 식품 브랜드···외식업계와 손잡고 소비자 공략",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5ZeXZpczVGV0pMcGpaV0RRZ0wxdmNzTVhWS2ZqeF9PcUFiQjJDeUJQcmMybC1QY1ZLU05ILUYwVGQtcXRvZGhiMlFQVzA3OUFqaXRJVEtzRTVlV3FFcHNqU25TWFZqUHpKb0E?oc=5",
-      "source": "서울파이낸스",
-      "published_at": "2026-11-08T00:00:00+00:00",
-      "original_url": "https://www.seoulfn.com/news/articleView.html?idxno=642139"
-    },
-    {
-      "title": "10월 소비자물가 2.8%...가공식품·외식은 상승폭 커졌다",
-      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE1ZcF9TaEs1T2xHT1hQOVdxUG1mWnJJUGJ2NEVYSExVZ2ZFTVp0N2k5QjVFekVhcENWbWlBTlRjclZQaW96aFpWNW1IU3A4WlV3ZjZNSzljZXFLWEVOWXBnUlJCZExtdUVq?oc=5",
-      "source": "팩트공감",
-      "published_at": "2026-11-07T07:53:27+00:00",
-      "original_url": "https://www.facton.co.kr/news/articleView.html?idxno=2447"
     }
   ],
   "history": [
@@ -685,6 +685,16 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5ZeXZpczVGV0pMcGpaV0RRZ0wxdmNzTVhWS2ZqeF9PcUFiQjJDeUJQcmMybC1QY1ZLU05ILUYwVGQtcXRvZGhiMlFQVzA3OUFqaXRJVEtzRTVlV3FFcHNqU25TWFZqUHpKb0E?oc=5",
       "title": "마트 밖으로 나온 식품 브랜드···외식업계와 손잡고 소비자 공략",
       "published_at": "2026-11-08T00:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9vZWpCY0RRZVI0QzBXMUUzQ0tKd21CcF9leWJkTnFjUXlCUEtSUEZSLVdkVU9zZzN0OGZFWWtKaFFHWVVtMk5hSnNDcHJpQQ?oc=5",
+      "title": "허희수의 글로벌 브랜드를 읽는 안목…쉐이크쉑부터 치폴레 유치까지 글로벌 외식 브랜드 국내 시장 안착 이끌어",
+      "published_at": "2026-11-09T02:01:43+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFB4RnBXQWFBcU1kYVFkQ2dqTlp0bTlEU2NTdFhkeG1sU2ZWYWdqWjBRU25yMXJBeGlmeUR4eGxfaUEwU0JYUDVYQndfZ29zR1JQYVRzcVFnMGNBdzVRNDR0N2wwalVOblU50gFrQVVfeXFMT2ZzTHZhbDlvNGxSNEEwV3g5Q2dGUHZqa21qZHVwZnJtNnltSDZQY29EVkRKcXpkeEREYW00cHJWTTBQcWUtUm0xU0dvM2N1LXNyUVk2SG1DTW9sUnJaRG1GRVY5eHFtWURPQ00?oc=5",
+      "title": "강원한우, 두바이 넘어 아부다비까지···UAE 외식시장 판로 확대",
+      "published_at": "2026-11-09T00:00:00+00:00"
     }
   ],
   "new_articles": 0
