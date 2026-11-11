@@ -1,48 +1,48 @@
 export const snapshot = {
-  "updated_at": "2026-11-10T19:25:39.065988+00:00",
+  "updated_at": "2026-11-11T05:05:46.562087+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
-      "title": "2035년 플레이트 시장 전망: 외식 확장과 지속가능 소재가 성장 견인 - 뉴스 및 통계",
-      "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNTWpzRko5QlFUMV9rcEFGVG9ZTkFnbmJwTkEwRkJFd0plS0ZRYnlfUXo3OVBLc2cyVl83aUYtNUJCSmVUaHNUbUptYkJOT1UyVlZFUkgyLXFKS2xWUjl6U3dwWWwyaUpZWHF5OTZhNXFJNVltSkhMM0JYUmJnUHNYU0w2M3dGYUlHeEJEVS1RaTlXRDluam5xVnZNOEswZXI0alM3WDd6QW9KaFNKX0FldmtHUXlPT0hoMmQ0ZUxZejM?oc=5",
-      "source": "IndexBox",
-      "published_at": "2026-11-10T14:36:04+00:00",
-      "original_url": "https://www.indexbox.io/ko/blog/plates-market-to-2035-foodservice-expansion-and-sustainable-materials-drive-forward-growth/"
+      "title": "[숫자로 본 뉴스] 올해 외식물가 가장 많이 오른 건 김밥",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBFeHhJeUthaDJfUDBwUnZUV25jdmNuOUpoS0ctaVhhOEFxYkFmTzRNcnk0ZlJxbEVEbmJQTnZyUmlaQWlPVEd4MURobndNUTJsak1OOEo1TXFmRUFwZDB2NXpiRXVyOWVPUG1TbEN3R3Q?oc=5",
+      "source": "신아일보",
+      "published_at": "2026-11-11T04:18:46+00:00",
+      "original_url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5082236"
     },
     {
-      "title": "전국한우협회, 홍콩 리젠트호텔과 손잡고 프리미엄 소비시장 공략",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1PRC1pXzI1NGF2VWlnLVU2MnlBUF9pYkFYM2xiMFk2cllZdFlSS01BWnEtSGxjZGJibG8yTklUdFU1d3BYSWhxdVVHeUd6TFZrbHU3OFdyelhzd2xtZUgxeDE5Q3NGYWhwQ2xoOQ?oc=5",
-      "source": "식품외식경제",
-      "published_at": "2026-11-10T03:50:00+00:00",
-      "original_url": "https://www.foodbank.co.kr/news/articleView.html?idxno=68771"
+      "title": "김밥 한 줄 4000원 시대 눈앞…외식물가 상승률 1위",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5BeVhpMnV3TXNhVjkzaHhLUlJJRFE2UU9qa3R4SzJPTXdyY0FqaUtfNmdwMXJiWm1xZmtjdEVIU1BaLXM1NWppdDhxTWF4dkFvOW5nbVdSX2tkazdvdkdOWnJ6ZWVfU2s4UUtDNkxCM0d0eDcx?oc=5",
+      "source": "파이낸셜포스트",
+      "published_at": "2026-11-11T00:09:20+00:00",
+      "original_url": "https://www.financialpost.co.kr/news/articleView.html?idxno=286054"
     },
     {
-      "title": "CJ푸드빌, 웰니스 외식시장 공략… 라이트밀 브랜드 ‘커먼이츠’ 론칭",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5lcDZkZTFKbS12M2I0eE41c1NPS3pnc045bDFpbHpfUk1ZR3U4X1k5c3VoWThfWTNhNldBR0ZmT2h6dDVfSGhaWHpSUmF5Z2x4QS15U05ud2xLUQ?oc=5",
+      "title": "김밥•도시락 줄줄이 치솟은 물가⋯ 서울 8개 외식 메뉴 평균 2.5% 상승",
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9vekpIUjg1RWhkaXFZM1hHRzNPRlo1T2VHNV9pcDB3eGNnWmtXX1ZvMVpRZnQ2enVwS2cySkZRY1ZKZC1rNjhtSWNpbndDUTFKMlh1dTVnQ1lJdw?oc=5",
       "source": "브릿지경제",
-      "published_at": "2026-11-10T00:11:00+00:00",
-      "original_url": "https://www.viva100.com/article/20261110500222"
+      "published_at": "2026-11-10T23:13:00+00:00",
+      "original_url": "https://www.viva100.com/article/20261111500031"
     },
     {
-      "title": "교촌치킨, 중국 선전 2호점 개점…현지 외식시장 공략 확대",
-      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE5LYl9IVVJFdDNCZW44Slp5QVZpMnhUYkJiV3BBM3hxbmdHVVBmM3FqSWJPOHdLQXlCYV9xVldUdlVfX2hpSEZwRVlxdHNPanI3Wjd3NnFvYVZaOHBFMjZocmNkakE?oc=5",
-      "source": "매일일보",
-      "published_at": "2026-11-10T00:08:34+00:00",
-      "original_url": "https://www.m-i.kr/news/articleView.html?idxno=2016455"
+      "title": "외식물가 상승률 1위는 '김밥'…한 줄에 4천원 눈앞",
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1pX1VvZXB5eFZZeEJyd3pLMWRKVExzcW5zdHNGQThrZ1JBaEtOa1Fhdl9Xbkg1c2V6Und0Y1VVUE45ZnRPTUdLdkJtOTJkc2p4bzYw0gFYQVVfeXFMTnVfc3ZoVURLYk05VlNDTXRILUJXOEtKQ1ZSSEg3Q25fMjFUc0plR0lTMEk0ejJGZEJvMXN6MF9OdDFMQTVqZkZYZ2hURmtMY2dIeGVIUUVvdw?oc=5",
+      "source": "SBS Biz",
+      "published_at": "2026-11-10T22:59:00+00:00",
+      "original_url": "https://biz.sbs.co.kr/article/20000345586"
     },
     {
-      "title": "강원한우, UAE 프리미엄 외식시장 공략 속도…현지 레스토랑 3곳과 협약",
-      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1fOVhWc3ByWWpoQ0RGcDhiWUlrYmlzR29WVWl5eHpDMGtUSmN1UEs3VDhoc3RoMEFhR2lkZzAzcVRFZEVoR1dZcjJGR3lkNFBSSHBfZnFOV2Q?oc=5",
-      "source": "뷰어스",
-      "published_at": "2026-11-10T00:00:11+00:00",
-      "original_url": "https://theviewers.co.kr/View.aspx?No=4303929"
+      "title": "올해 외식물가 상승률 1위 ‘김밥’…한 줄에 4000원 육박",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9ZMlZtNjl5ekZaU0lnMndCNk9CQVhzejdaMEYwSWRUcm5PRXBIRzhlN1FfV2psdExFbXhUUm1FYVBVcEdpN293UGRUazdCQ0RBV0NYTkg4VW5qM05fZ3dwSlU4RmN4SFIx?oc=5",
+      "source": "강원도민일보",
+      "published_at": "2026-11-10T22:45:54+00:00",
+      "original_url": "https://www.kado.net/news/curationView.html?idxno=2084059"
     },
     {
-      "title": "\"맛·건강·가치 다 잡아야 지갑 연다\"… 2027 식품외식 소비 변화",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5IUjJtNTl5MU52QzZBXzFhQnNYamN0TFItMTNqcy1jcDB3U2JEU2dyNEFRRjNUTFNFSTd5YWJ6cnExNW9YUEdHS2ZwR0RlLWhNdmNWSThCcG5JWENTVy1LaGhOWi1GeWw5MmVtMGhR?oc=5",
-      "source": "한국농업신문",
-      "published_at": "2026-11-09T17:51:56+00:00",
-      "original_url": "https://www.newsfarm.co.kr/news/articleView.html?idxno=102902"
+      "title": "\"김밥의 배신\" 외식 메뉴 물가 상승률 1위...계란값·인건비 상승 탓",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5KOW1IZ3NnQlZMSjZGZWJ5WjlHTlUyWXE2d2lwcXNueXJiU2tjZFZvaWNmTC0zUklCNGwtbUdZOE1UcF96WHZRZzlzRzVXcXViUTVRdElFb2d6VW5TWk14VXp5NjVVdm5Ya0NNZHpnX29oS1M2Wnc1aFYwTQ?oc=5",
+      "source": "KBC광주방송",
+      "published_at": "2026-11-10T22:16:26+00:00",
+      "original_url": "https://news.ikbc.co.kr/%EA%B2%BD%EC%A0%9C/article/view/kbc202611110004"
     }
   ],
   "history": [
@@ -745,7 +745,37 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5IUjJtNTl5MU52QzZBXzFhQnNYamN0TFItMTNqcy1jcDB3U2JEU2dyNEFRRjNUTFNFSTd5YWJ6cnExNW9YUEdHS2ZwR0RlLWhNdmNWSThCcG5JWENTVy1LaGhOWi1GeWw5MmVtMGhR?oc=5",
       "title": "\"맛·건강·가치 다 잡아야 지갑 연다\"… 2027 식품외식 소비 변화",
       "published_at": "2026-11-09T17:51:56+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5BeVhpMnV3TXNhVjkzaHhLUlJJRFE2UU9qa3R4SzJPTXdyY0FqaUtfNmdwMXJiWm1xZmtjdEVIU1BaLXM1NWppdDhxTWF4dkFvOW5nbVdSX2tkazdvdkdOWnJ6ZWVfU2s4UUtDNkxCM0d0eDcx?oc=5",
+      "title": "김밥 한 줄 4000원 시대 눈앞…외식물가 상승률 1위",
+      "published_at": "2026-11-11T00:09:20+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9vekpIUjg1RWhkaXFZM1hHRzNPRlo1T2VHNV9pcDB3eGNnWmtXX1ZvMVpRZnQ2enVwS2cySkZRY1ZKZC1rNjhtSWNpbndDUTFKMlh1dTVnQ1lJdw?oc=5",
+      "title": "김밥•도시락 줄줄이 치솟은 물가⋯ 서울 8개 외식 메뉴 평균 2.5% 상승",
+      "published_at": "2026-11-10T23:13:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1pX1VvZXB5eFZZeEJyd3pLMWRKVExzcW5zdHNGQThrZ1JBaEtOa1Fhdl9Xbkg1c2V6Und0Y1VVUE45ZnRPTUdLdkJtOTJkc2p4bzYw0gFYQVVfeXFMTnVfc3ZoVURLYk05VlNDTXRILUJXOEtKQ1ZSSEg3Q25fMjFUc0plR0lTMEk0ejJGZEJvMXN6MF9OdDFMQTVqZkZYZ2hURmtMY2dIeGVIUUVvdw?oc=5",
+      "title": "외식물가 상승률 1위는 '김밥'…한 줄에 4천원 눈앞",
+      "published_at": "2026-11-10T22:59:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9ZMlZtNjl5ekZaU0lnMndCNk9CQVhzejdaMEYwSWRUcm5PRXBIRzhlN1FfV2psdExFbXhUUm1FYVBVcEdpN293UGRUazdCQ0RBV0NYTkg4VW5qM05fZ3dwSlU4RmN4SFIx?oc=5",
+      "title": "올해 외식물가 상승률 1위 ‘김밥’…한 줄에 4000원 육박",
+      "published_at": "2026-11-10T22:45:54+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE5KOW1IZ3NnQlZMSjZGZWJ5WjlHTlUyWXE2d2lwcXNueXJiU2tjZFZvaWNmTC0zUklCNGwtbUdZOE1UcF96WHZRZzlzRzVXcXViUTVRdElFb2d6VW5TWk14VXp5NjVVdm5Ya0NNZHpnX29oS1M2Wnc1aFYwTQ?oc=5",
+      "title": "\"김밥의 배신\" 외식 메뉴 물가 상승률 1위...계란값·인건비 상승 탓",
+      "published_at": "2026-11-10T22:16:26+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBFeHhJeUthaDJfUDBwUnZUV25jdmNuOUpoS0ctaVhhOEFxYkFmTzRNcnk0ZlJxbEVEbmJQTnZyUmlaQWlPVEd4MURobndNUTJsak1OOEo1TXFmRUFwZDB2NXpiRXVyOWVPUG1TbEN3R3Q?oc=5",
+      "title": "[숫자로 본 뉴스] 올해 외식물가 가장 많이 오른 건 김밥",
+      "published_at": "2026-11-11T04:18:46+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 1
 };
