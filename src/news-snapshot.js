@@ -1,7 +1,28 @@
 export const snapshot = {
-  "updated_at": "2026-11-11T19:20:25.534385+00:00",
+  "updated_at": "2026-11-12T06:10:29.905572+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "[칼럼] 청년 일자리와 외식물가",
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5TVXMxeTFWd3lISTVMNE1aVG5pWEo1VjUyelhnN0xzcGFUYk5yQTM5MXJVVndXN3pBWTNpZVV2TTJXSUlId2pVUmhTcjUtNmxaSFRxZUtiRTBNdGRLRVJqTjIxUUlYbDBCdWc?oc=5",
+      "source": "한국재난뉴스",
+      "published_at": "2026-11-12T01:49:41+00:00",
+      "original_url": "https://www.hjnews.co.kr/news/articleView.html?idxno=25259"
+    },
+    {
+      "title": "무알코올 열풍, 외식·주류 메뉴판 바꾼다",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9KaHdvQnFFZHVTTUJvZGtENll5YUVELVVDZmFRWU9RdndLX3pNcXNITjg0LWZyWlA4WDBqeTh2TjUtWUZiTWU5aXg3QXNmX1dmNkxiRldBc012RktWeXNGVXB0c0NpWGxHX29r?oc=5",
+      "source": "https://www.kmjournal.net/",
+      "published_at": "2026-11-12T00:53:11+00:00",
+      "original_url": "https://www.kmjournal.net/news/articleView.html?idxno=14203"
+    },
+    {
+      "title": "새 브랜드로 새 수익 창출…외식 프랜차이즈 \"다변화만이 살 길\"",
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5YTmtJQTlPak9IM2dLMjRuS3A5dVA5Si1KT3JOTTB3ZEMwX1Z4d2YtckFBQ1BuQ0hnMDhVQVg1ZzdnS2VmdGgyNzFDWXJDU2JTWXpKYVRXdTZjVkZ1TzZBSDZhLVN2RkFsU0RlcEQ5V2U?oc=5",
+      "source": "포인트데일리",
+      "published_at": "2026-11-11T23:25:37+00:00",
+      "original_url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=325602"
+    },
     {
       "title": "삼겹살부터 김밥까지… 경남 외식 물가 모두 올랐다",
       "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFB6SkEtS0dUZjdpaWRqa3ZZTlphVHN3OFJUZjZKcVU4YXJhOTdUTHVldDhyaWRXOFNpU3U1QTFUUmdLX2U4MkR1VnNXSGtqUmM3SWdzM1JnSWxFQQ?oc=5",
@@ -10,39 +31,18 @@ export const snapshot = {
       "original_url": "https://m.knnews.co.kr/mView.php?idxno=1554875"
     },
     {
-      "title": "외식 물가 오르자 편의점 간편식 주목…세븐일레븐, 김우동 3개 9000원",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBXX0ZDT2ZrclVOaXNPcldfM05aTlRzUWg4UXFJOHh1UXNQTTV1aU9pUTNxbGJPdFF4Yjc4bUE0NHpneC1JaXdEbWpOZTRRTlp6RUthbl9tQUQyUQ?oc=5",
-      "source": "한국경제",
-      "published_at": "2026-11-11T05:00:52+00:00",
-      "original_url": "https://www.hankyung.com/article/202611110162O"
+      "title": "롯데GRS, '복주걱' 이어 한식브랜드 '열두달화덕'…백화점 외식시장 공략 속도",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFB2ZzRPNm1rVjVROGZMLWs4YlFnWEh3dGhiemc5TFZNRzN4WlhrblRPTWEtcTZvSXZpTlYyOWN4N21FM1BScFR5MEx6MEVfd3N6ckFrZDV4RWM0N1doOWpNMXhGbmdFUmEwTUtwbQ?oc=5",
+      "source": "미래경제",
+      "published_at": "2026-11-11T06:44:24+00:00",
+      "original_url": "https://www.mirae-biz.com/news/articleView.html?idxno=113408"
     },
     {
-      "title": "[숫자로 본 뉴스] 올해 외식물가 가장 많이 오른 건 김밥",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBFeHhJeUthaDJfUDBwUnZUV25jdmNuOUpoS0ctaVhhOEFxYkFmTzRNcnk0ZlJxbEVEbmJQTnZyUmlaQWlPVEd4MURobndNUTJsak1OOEo1TXFmRUFwZDB2NXpiRXVyOWVPUG1TbEN3R3Q?oc=5",
-      "source": "신아일보",
-      "published_at": "2026-11-11T04:18:46+00:00",
-      "original_url": "https://www.shinailbo.co.kr/news/articleView.html?idxno=5082236"
-    },
-    {
-      "title": "김밥 한 줄 4000원 시대 눈앞…외식물가 상승률 1위",
-      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5BeVhpMnV3TXNhVjkzaHhLUlJJRFE2UU9qa3R4SzJPTXdyY0FqaUtfNmdwMXJiWm1xZmtjdEVIU1BaLXM1NWppdDhxTWF4dkFvOW5nbVdSX2tkazdvdkdOWnJ6ZWVfU2s4UUtDNkxCM0d0eDcx?oc=5",
-      "source": "파이낸셜포스트",
-      "published_at": "2026-11-11T00:09:20+00:00",
-      "original_url": "https://www.financialpost.co.kr/news/articleView.html?idxno=286054"
-    },
-    {
-      "title": "김밥•도시락 줄줄이 치솟은 물가⋯ 서울 8개 외식 메뉴 평균 2.5% 상승",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE9vekpIUjg1RWhkaXFZM1hHRzNPRlo1T2VHNV9pcDB3eGNnWmtXX1ZvMVpRZnQ2enVwS2cySkZRY1ZKZC1rNjhtSWNpbndDUTFKMlh1dTVnQ1lJdw?oc=5",
-      "source": "브릿지경제",
-      "published_at": "2026-11-10T23:13:00+00:00",
-      "original_url": "https://www.viva100.com/article/20261111500031"
-    },
-    {
-      "title": "외식물가 상승률 1위는 '김밥'…한 줄에 4천원 눈앞",
-      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1pX1VvZXB5eFZZeEJyd3pLMWRKVExzcW5zdHNGQThrZ1JBaEtOa1Fhdl9Xbkg1c2V6Und0Y1VVUE45ZnRPTUdLdkJtOTJkc2p4bzYw0gFYQVVfeXFMTnVfc3ZoVURLYk05VlNDTXRILUJXOEtKQ1ZSSEg3Q25fMjFUc0plR0lTMEk0ejJGZEJvMXN6MF9OdDFMQTVqZkZYZ2hURmtMY2dIeGVIUUVvdw?oc=5",
-      "source": "SBS Biz",
-      "published_at": "2026-11-10T22:59:00+00:00",
-      "original_url": "https://biz.sbs.co.kr/article/20000345586"
+      "title": "[영상]김밥, 서울 외식물가 상승률 1위 '1줄 평균 3923원'",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE13TElzNmVrN2x0OWQzS3VBMWlocVhVUU92Uk1MRkcwbGZ1and0LUFnRVhVSXNWVlczUHM1YzhCQ0NjX2M1aUt2VS1HcTR5WElwY2RhVllQRkJtVm1wLXhEZ292dW00Q05uQ0R4LWNKUQ?oc=5",
+      "source": "비즈니스플러스",
+      "published_at": "2026-11-11T05:02:57+00:00",
+      "original_url": "https://www.businessplus.kr/news/articleView.html?idxno=119658"
     }
   ],
   "history": [
@@ -785,6 +785,31 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTFBXX0ZDT2ZrclVOaXNPcldfM05aTlRzUWg4UXFJOHh1UXNQTTV1aU9pUTNxbGJPdFF4Yjc4bUE0NHpneC1JaXdEbWpOZTRRTlp6RUthbl9tQUQyUQ?oc=5",
       "title": "외식 물가 오르자 편의점 간편식 주목…세븐일레븐, 김우동 3개 9000원",
       "published_at": "2026-11-11T05:00:52+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5TVXMxeTFWd3lISTVMNE1aVG5pWEo1VjUyelhnN0xzcGFUYk5yQTM5MXJVVndXN3pBWTNpZVV2TTJXSUlId2pVUmhTcjUtNmxaSFRxZUtiRTBNdGRLRVJqTjIxUUlYbDBCdWc?oc=5",
+      "title": "[칼럼] 청년 일자리와 외식물가",
+      "published_at": "2026-11-12T01:49:41+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9KaHdvQnFFZHVTTUJvZGtENll5YUVELVVDZmFRWU9RdndLX3pNcXNITjg0LWZyWlA4WDBqeTh2TjUtWUZiTWU5aXg3QXNmX1dmNkxiRldBc012RktWeXNGVXB0c0NpWGxHX29r?oc=5",
+      "title": "무알코올 열풍, 외식·주류 메뉴판 바꾼다",
+      "published_at": "2026-11-12T00:53:11+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5YTmtJQTlPak9IM2dLMjRuS3A5dVA5Si1KT3JOTTB3ZEMwX1Z4d2YtckFBQ1BuQ0hnMDhVQVg1ZzdnS2VmdGgyNzFDWXJDU2JTWXpKYVRXdTZjVkZ1TzZBSDZhLVN2RkFsU0RlcEQ5V2U?oc=5",
+      "title": "새 브랜드로 새 수익 창출…외식 프랜차이즈 \"다변화만이 살 길\"",
+      "published_at": "2026-11-11T23:25:37+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFB2ZzRPNm1rVjVROGZMLWs4YlFnWEh3dGhiemc5TFZNRzN4WlhrblRPTWEtcTZvSXZpTlYyOWN4N21FM1BScFR5MEx6MEVfd3N6ckFrZDV4RWM0N1doOWpNMXhGbmdFUmEwTUtwbQ?oc=5",
+      "title": "롯데GRS, '복주걱' 이어 한식브랜드 '열두달화덕'…백화점 외식시장 공략 속도",
+      "published_at": "2026-11-11T06:44:24+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE13TElzNmVrN2x0OWQzS3VBMWlocVhVUU92Uk1MRkcwbGZ1and0LUFnRVhVSXNWVlczUHM1YzhCQ0NjX2M1aUt2VS1HcTR5WElwY2RhVllQRkJtVm1wLXhEZ292dW00Q05uQ0R4LWNKUQ?oc=5",
+      "title": "[영상]김밥, 서울 외식물가 상승률 1위 '1줄 평균 3923원'",
+      "published_at": "2026-11-11T05:02:57+00:00"
     }
   ],
   "new_articles": 0
