@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-11-12T19:39:15.669124+00:00",
+  "updated_at": "2026-11-13T05:31:37.857184+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "韓서 ‘쉐이크쉑’ 키운 허희수…‘치폴레’로 아시아 외식 시장 공략",
+      "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE45M2J1NGMzd3ZaVENGUEZpVW1GYlN5RVU4cDcyU284MElvZVU0bHIxUmNsNjlQa2N3OHRJOHRvX0VqNEg2QkJUcVM1Vk5wNmJDaThOVEl1U1B6ZjRERXRLcnl3?oc=5",
+      "source": "이코노미스트",
+      "published_at": "2026-11-13T02:35:00+00:00",
+      "original_url": "https://economist.co.kr/article/view/ecn202611130013"
+    },
+    {
+      "title": "하동쌀 올해 수출 1000t 돌파…북미 외식시장 공급망 진입",
+      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE9vaHdJRjBHLXZsUHVJSWhkWGVYVm1PWEM5Sm5HRWRfSUxwNkRMQ1dhZUNaaWtjenZNOFBwenRDSnFMMS10RDRONw?oc=5",
+      "source": "브레이크뉴스",
+      "published_at": "2026-11-13T01:18:00+00:00",
+      "original_url": "https://www.breaknews.com/1250731"
+    },
     {
       "title": "日 식료품 소비세 인하 계획에 외식업계 가격 인하로 대비",
       "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE0wMTl4dmFBOWdLR1JubFlJc3czQWxzTlJqVzdvZnRRZVJXZ2RiSWRVTTNXb2tOOU1wVnBJa0drTDZ0SFpBVGxBR3VPWVB1TksybUFjN0ZYQVgzeTZjWE5YbDNtc2xpMHZpRTE0aTZITjJaa1dO?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "한국재난뉴스",
       "published_at": "2026-11-12T01:49:41+00:00",
       "original_url": "https://www.hjnews.co.kr/news/articleView.html?idxno=25259"
-    },
-    {
-      "title": "무알코올 열풍, 외식·주류 메뉴판 바꾼다",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9KaHdvQnFFZHVTTUJvZGtENll5YUVELVVDZmFRWU9RdndLX3pNcXNITjg0LWZyWlA4WDBqeTh2TjUtWUZiTWU5aXg3QXNmX1dmNkxiRldBc012RktWeXNGVXB0c0NpWGxHX29r?oc=5",
-      "source": "https://www.kmjournal.net/",
-      "published_at": "2026-11-12T00:53:11+00:00",
-      "original_url": "https://www.kmjournal.net/news/articleView.html?idxno=14203"
-    },
-    {
-      "title": "새 브랜드로 새 수익 창출…외식 프랜차이즈 \"다변화만이 살 길\"",
-      "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5YTmtJQTlPak9IM2dLMjRuS3A5dVA5Si1KT3JOTTB3ZEMwX1Z4d2YtckFBQ1BuQ0hnMDhVQVg1ZzdnS2VmdGgyNzFDWXJDU2JTWXpKYVRXdTZjVkZ1TzZBSDZhLVN2RkFsU0RlcEQ5V2U?oc=5",
-      "source": "포인트데일리",
-      "published_at": "2026-11-11T23:25:37+00:00",
-      "original_url": "https://www.pointdaily.co.kr/news/articleView.html?idxno=325602"
     }
   ],
   "history": [
@@ -825,6 +825,16 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBsZFhheURFOVpCcFNNS3lURkczdG9KcURXZDV6Wng3YkR0Q19lczNhb3ctUlZIX0ZxRzNScGRicnNfdlBXSTh4RWxRWm1HRVkxWDR4VXk4Tlc5ZnFWWUNfcXUxS1UybWU2VmRld25fNHczVEVpbWdhRdIBeEFVX3lxTFBsZFhheURFOVpCcFNNS3lURkczdG9KcURXZDV6Wng3YkR0Q19lczNhb3ctUlZIX0ZxRzNScGRicnNfdlBXSTh4RWxRWm1HRVkxWDR4VXk4Tlc5ZnFWWUNfcXUxS1UybWU2VmRld25fNHczVEVpbWdhRQ?oc=5",
       "title": "\"더 이상 급식기업 아니다\" 현대그린푸드, 외식·헬스케어 성장동력 확대",
       "published_at": "2026-11-12T06:34:33+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE45M2J1NGMzd3ZaVENGUEZpVW1GYlN5RVU4cDcyU284MElvZVU0bHIxUmNsNjlQa2N3OHRJOHRvX0VqNEg2QkJUcVM1Vk5wNmJDaThOVEl1U1B6ZjRERXRLcnl3?oc=5",
+      "title": "韓서 ‘쉐이크쉑’ 키운 허희수…‘치폴레’로 아시아 외식 시장 공략",
+      "published_at": "2026-11-13T02:35:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE9vaHdJRjBHLXZsUHVJSWhkWGVYVm1PWEM5Sm5HRWRfSUxwNkRMQ1dhZUNaaWtjenZNOFBwenRDSnFMMS10RDRONw?oc=5",
+      "title": "하동쌀 올해 수출 1000t 돌파…북미 외식시장 공급망 진입",
+      "published_at": "2026-11-13T01:18:00+00:00"
     }
   ],
   "new_articles": 0
