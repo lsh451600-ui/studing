@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-11-13T05:31:37.857184+00:00",
+  "updated_at": "2026-11-13T19:19:39.356943+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "한우협회, 홍콩 외식시장 공략…현지 유명 셰프와 협업",
+      "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBIN3p5cmZfVzBCYnpjZklxeUR0ejY5cDA1NzRQa3pTd2UyWndMQVA5Zm0xNzY1MTh0X1ZIRTJIUmRxVlFXb3dFb3RnbDJvNW1rTjFPU3JhMUp5aTQyTHNQM0lEV3hIZnfSAWtBVV95cUxNb19PbWFsRmZvSUVQcEl3cnAtOUVKY1BSbWZwdDY3a0Y4cUlVRGlzZHdPS3N3Ujdha2gzWko2U2IyMzB2ZjU2UTIwZzdsN1lMTDJTZVI5b1dmTENPZVk4UkN3VnZvWkxzcVZTWQ?oc=5",
+      "source": "한국농정신문",
+      "published_at": "2026-11-13T06:53:11+00:00",
+      "original_url": "https://www.ikpnews.net/news/articleView.html?idxno=71996"
+    },
     {
       "title": "韓서 ‘쉐이크쉑’ 키운 허희수…‘치폴레’로 아시아 외식 시장 공략",
       "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE45M2J1NGMzd3ZaVENGUEZpVW1GYlN5RVU4cDcyU284MElvZVU0bHIxUmNsNjlQa2N3OHRJOHRvX0VqNEg2QkJUcVM1Vk5wNmJDaThOVEl1U1B6ZjRERXRLcnl3?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "뉴시스",
       "published_at": "2026-11-12T06:34:33+00:00",
       "original_url": "https://mobile.newsis.com/view_amp.html?ar_id=NISX20261112_0003865423"
-    },
-    {
-      "title": "[칼럼] 청년 일자리와 외식물가",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5TVXMxeTFWd3lISTVMNE1aVG5pWEo1VjUyelhnN0xzcGFUYk5yQTM5MXJVVndXN3pBWTNpZVV2TTJXSUlId2pVUmhTcjUtNmxaSFRxZUtiRTBNdGRLRVJqTjIxUUlYbDBCdWc?oc=5",
-      "source": "한국재난뉴스",
-      "published_at": "2026-11-12T01:49:41+00:00",
-      "original_url": "https://www.hjnews.co.kr/news/articleView.html?idxno=25259"
     }
   ],
   "history": [
@@ -835,6 +835,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE9vaHdJRjBHLXZsUHVJSWhkWGVYVm1PWEM5Sm5HRWRfSUxwNkRMQ1dhZUNaaWtjenZNOFBwenRDSnFMMS10RDRONw?oc=5",
       "title": "하동쌀 올해 수출 1000t 돌파…북미 외식시장 공급망 진입",
       "published_at": "2026-11-13T01:18:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBIN3p5cmZfVzBCYnpjZklxeUR0ejY5cDA1NzRQa3pTd2UyWndMQVA5Zm0xNzY1MTh0X1ZIRTJIUmRxVlFXb3dFb3RnbDJvNW1rTjFPU3JhMUp5aTQyTHNQM0lEV3hIZnfSAWtBVV95cUxNb19PbWFsRmZvSUVQcEl3cnAtOUVKY1BSbWZwdDY3a0Y4cUlVRGlzZHdPS3N3Ujdha2gzWko2U2IyMzB2ZjU2UTIwZzdsN1lMTDJTZVI5b1dmTENPZVk4UkN3VnZvWkxzcVZTWQ?oc=5",
+      "title": "한우협회, 홍콩 외식시장 공략…현지 유명 셰프와 협업",
+      "published_at": "2026-11-13T06:53:11+00:00"
     }
   ],
   "new_articles": 0
