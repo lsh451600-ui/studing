@@ -1,5 +1,5 @@
 export const snapshot = {
-  "updated_at": "2026-11-13T19:19:39.356943+00:00",
+  "updated_at": "2026-11-14T05:23:07.637435+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -31,18 +31,18 @@ export const snapshot = {
       "original_url": "https://www.koreancenter.or.kr/news/articleView.html?idxno=1438671"
     },
     {
+      "title": "편의점·햄버거 브랜드, 카페까지 ‘아침밥 시장’ 경쟁 치열",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFA2MTVNdzk1YU16QkhCVmNLaVM1UV9vckpvblVSNTduSWV4cnBSV2otaERqMmxPeG1PZk96aEI4ai1qR1M5SC1MQi11SUlGalRwMVdhWllpMTJCWXpZOXAzY2Z5aUVLaUp4NTc5VA?oc=5",
+      "source": "식품외식경제",
+      "published_at": "2026-11-12T08:50:00+00:00",
+      "original_url": "https://www.foodbank.co.kr/news/articleView.html?idxno=68789"
+    },
+    {
       "title": "강원한우, UAE 하이엔드 외식시장 공략…현지 판로 확대",
       "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBwd2ZGb1JsT0k0ZThUZ29tUVV6aHJQdjFaWEh2N2g2R2xjaHkzRTNfSHc5WURzQURaYWFTU3pSUkFzb3dIazY5R0NWR2wzMm93MzhuZE1KTEc0N2N4WTFwM2pBTE9HVy1HTnJV?oc=5",
       "source": "CNB뉴스",
       "published_at": "2026-11-12T06:35:10+00:00",
       "original_url": "https://www.cnbnews.com/news/articleView.html?idxno=1023419"
-    },
-    {
-      "title": "\"더 이상 급식기업 아니다\" 현대그린푸드, 외식·헬스케어 성장동력 확대",
-      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBsZFhheURFOVpCcFNNS3lURkczdG9KcURXZDV6Wng3YkR0Q19lczNhb3ctUlZIX0ZxRzNScGRicnNfdlBXSTh4RWxRWm1HRVkxWDR4VXk4Tlc5ZnFWWUNfcXUxS1UybWU2VmRld25fNHczVEVpbWdhRdIBeEFVX3lxTFBsZFhheURFOVpCcFNNS3lURkczdG9KcURXZDV6Wng3YkR0Q19lczNhb3ctUlZIX0ZxRzNScGRicnNfdlBXSTh4RWxRWm1HRVkxWDR4VXk4Tlc5ZnFWWUNfcXUxS1UybWU2VmRld25fNHczVEVpbWdhRQ?oc=5",
-      "source": "뉴시스",
-      "published_at": "2026-11-12T06:34:33+00:00",
-      "original_url": "https://mobile.newsis.com/view_amp.html?ar_id=NISX20261112_0003865423"
     }
   ],
   "history": [
@@ -840,6 +840,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBIN3p5cmZfVzBCYnpjZklxeUR0ejY5cDA1NzRQa3pTd2UyWndMQVA5Zm0xNzY1MTh0X1ZIRTJIUmRxVlFXb3dFb3RnbDJvNW1rTjFPU3JhMUp5aTQyTHNQM0lEV3hIZnfSAWtBVV95cUxNb19PbWFsRmZvSUVQcEl3cnAtOUVKY1BSbWZwdDY3a0Y4cUlVRGlzZHdPS3N3Ujdha2gzWko2U2IyMzB2ZjU2UTIwZzdsN1lMTDJTZVI5b1dmTENPZVk4UkN3VnZvWkxzcVZTWQ?oc=5",
       "title": "한우협회, 홍콩 외식시장 공략…현지 유명 셰프와 협업",
       "published_at": "2026-11-13T06:53:11+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFA2MTVNdzk1YU16QkhCVmNLaVM1UV9vckpvblVSNTduSWV4cnBSV2otaERqMmxPeG1PZk96aEI4ai1qR1M5SC1MQi11SUlGalRwMVdhWllpMTJCWXpZOXAzY2Z5aUVLaUp4NTc5VA?oc=5",
+      "title": "편의점·햄버거 브랜드, 카페까지 ‘아침밥 시장’ 경쟁 치열",
+      "published_at": "2026-11-12T08:50:00+00:00"
     }
   ],
   "new_articles": 0
