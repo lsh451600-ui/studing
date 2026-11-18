@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-11-17T20:33:25.793628+00:00",
+  "updated_at": "2026-11-18T06:21:03.404938+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "외식 줄고 뷰티·패션 쑥...소비 재배열 가속",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFA2MkFJU2ZhMVRkeHhHeE1KV1Zwczk2UDYyTm4tSWw1NlZGYngwQVo0bkoxZWRzYkNva2ZZaVJVRG9nTDVkLWltb2VvNkRsTXVndXRHTURYNThGNy0ycXFhUDNpSUM2ek1wQWdV?oc=5",
+      "source": "https://www.kmjournal.net/",
+      "published_at": "2026-11-18T01:47:56+00:00",
+      "original_url": "https://www.kmjournal.net/news/articleView.html?idxno=14266"
+    },
     {
       "title": "위고비·마운자로에 외식·배달 '뚝'...내수 소비에도 영향? [앵커리포트]",
       "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1kZVJxUXdRMnhRRWtKM0R5WDRZY0phSWpGNEN0Q0JPSktCeHF3NGdXeEJPLVlYdi0xVlVMaTRmM3U3WnQ4YnZWZkZqZ1BzVE5KMnNfcWthb2gzMmw5YWVacThjck5GVF9pMnUtZmJpZw?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "한국농정신문",
       "published_at": "2026-11-13T06:53:11+00:00",
       "original_url": "https://www.ikpnews.net/news/articleView.html?idxno=71996"
-    },
-    {
-      "title": "韓서 ‘쉐이크쉑’ 키운 허희수…‘치폴레’로 아시아 외식 시장 공략",
-      "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE45M2J1NGMzd3ZaVENGUEZpVW1GYlN5RVU4cDcyU284MElvZVU0bHIxUmNsNjlQa2N3OHRJOHRvX0VqNEg2QkJUcVM1Vk5wNmJDaThOVEl1U1B6ZjRERXRLcnl3?oc=5",
-      "source": "이코노미스트",
-      "published_at": "2026-11-13T02:35:00+00:00",
-      "original_url": "https://economist.co.kr/article/view/ecn202611130013"
     }
   ],
   "history": [
@@ -865,6 +865,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBLaWVTc0lLTnlWVTRmY0JXN19ERjI1ZlBnYjdNTGtFSWMzRFlYbmppY21kZE15dU95dDZUQjFHazV6QlY5ZldqS1ljSEJ0UUxHcEdPbktNUlNEQ05FVWFkN0tadXFOcVp0c0VJRA?oc=5",
       "title": "[소비트렌드] 11월 3주, 점심은 구내식당 장보기는 양념값",
       "published_at": "2026-11-16T07:25:09+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFA2MkFJU2ZhMVRkeHhHeE1KV1Zwczk2UDYyTm4tSWw1NlZGYngwQVo0bkoxZWRzYkNva2ZZaVJVRG9nTDVkLWltb2VvNkRsTXVndXRHTURYNThGNy0ycXFhUDNpSUM2ek1wQWdV?oc=5",
+      "title": "외식 줄고 뷰티·패션 쑥...소비 재배열 가속",
+      "published_at": "2026-11-18T01:47:56+00:00"
     }
   ],
   "new_articles": 0
