@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-11-19T06:23:09.279456+00:00",
+  "updated_at": "2026-11-19T20:05:49.418308+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "K-푸드, 美 주류시장 정착 가속…외식·급식 식자재 시장 본격 공략",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1yTDRRbnZYMHY2SmdBSnR4TkJmTzFMRGZLTEhTZUF6QzBzcnJjOHJ4WmY3ZENlTWtJakN0b0E4S0FXc2FFbnZhVkFEMXY0QnJmV1lMeWdxbS1JTEhKdDZzY3dmMDdqb3pWYnhsVQ?oc=5",
+      "source": "푸드아이콘",
+      "published_at": "2026-11-19T08:40:57+00:00",
+      "original_url": "https://www.foodicon.co.kr/news/articleView.html?idxno=36314"
+    },
+    {
+      "title": "외식 물가 부담 완화 나선 유통가…이마트, ‘두 줄 김밥’ 정식 편입하며 실속 델리 강화",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9ZeGd2bmd5djlBZUwxcTJLWTVCNWR3MWVDaWtUNXFUR1U4QkdIdzgyWG9OWVE1SDdUZ3VpOEtxT3dIamhtYkNrN1hzdWoyNnJHNE55T1VJSnVJYmpsVURZUGFqQm9hWG51YU5qcnpsVXpJaEhu0gF0QVVfeXFMT1l4Z3ZuZ3l2OUFlTDFxMktZNUI1ZHcxZUNpa1Q1cVRHVThCR0h3ODJYb05ZUTVIN1RndWk4S3FPd0hqaG1iQ2s3WHN1ajI2ckc0TnlPVUlKdUliamxVRFlQYWpCb2FYbnVhTmpyemxVekloSG4?oc=5",
+      "source": "더페어",
+      "published_at": "2026-11-19T06:09:01+00:00",
+      "original_url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=94837"
+    },
     {
       "title": "K-푸드 영토 확장 본격화…한인마트 넘어 美 주류 유통·외식·급식시장 뚫는다",
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBvc2dlSXdIMklfWkVWaXd3UjVDdklzWmhKbEZtbmpDYm4wTUhUbGRCRzZXYkJaMFI1TmRBM0VBN1o3cXFHUFZQU1ZoVWV6T2ZZZzF0ajZlV1FnTmpGczdhMExBWlUtS0ZNNnY4Yw?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "청년일보",
       "published_at": "2026-11-19T00:35:36+00:00",
       "original_url": "https://www.youthdaily.co.kr/mobile/article.html?no=230052"
-    },
-    {
-      "title": "[가치소비] \"내 입맛대로 조립한다\"… BBQ, 올떡·화덕피자로 초개인화 외식 생태계 구축",
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9GVlEyU1c3aUxVWFY4YVpaUWFjX1R5djFKTUluME1fYmtfVzlBWTdScWxnOFBhY1ktSHBudW12djJ1cmlUalJJY05tdlVnOHRiSGFYREFObW9pWkUzUFp5UWhESGJiX28xZ2ZoOGV5RdIBc0FVX3lxTE9xZEJWNDRCcXFOVUpWZW9CVjY3QmNMUTkwcXE0YnVnbDAwUElKTFdra1o1RDRFT3U5clQyY3Bud3Zwc25pZ2dHUEYtVWNPT2tWUkk3NjdtVTlaX3dyODFMbGpOU1kzTkpGV0ZLVTdjby1NNkE?oc=5",
-      "source": "가치소비뉴스 컨슈머와이드",
-      "published_at": "2026-11-18T14:35:38+00:00",
-      "original_url": "https://www.consumerwide.com/news/articleView.html?idxno=67414"
-    },
-    {
-      "title": "슈퍼크리스피, 외식 물가 상승 속 가격·품질 균형 전략... 실속형 메뉴로 소비자 접점 확대",
-      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBpT2d3S2xZaGpNX2FNNFhKcndVWXNVTXNRYkMzc1Vzb1BLQWNySm5UaTRpLTFiaUdER2d3ejNjdGFBcmRKQ2tlRk4wZUdMb2tWbmZILXBCWTUzSnpkUTZHUXAyeXpCaGQ50gFsQVVfeXFMUFE4U2Jmd0ViYVg3UHYxOVRZeUp0Y1JGX3hTRVpFQ0p3b3ozUTZPRlNjaktxS1l0UUNHMXpyeXV2cmxoZWNuZlVCaFZHbTB6ZmxfeDdLbzdyMkRyRk5fYWhnLUFNMVZiWFJPbkdq?oc=5",
-      "source": "AP신문",
-      "published_at": "2026-11-18T03:06:58+00:00",
-      "original_url": "https://www.apnews.kr/news/articleView.html?idxno=3053260"
     }
   ],
   "history": [
@@ -900,7 +900,17 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBEeFZtb0pSeWpHamFFcVl0ZEcycnVvSmhDYkt4aDJXMTJKTEJBTG0wY0FVLXFPWGpJdDFLRUp3YWFOdGFSZ2U2NlNkVzhJd2pWeTZkTXRjTUpMYXphU3V5SmplM1dQZHh6TFpoNA?oc=5",
       "title": "서울 김밥 한 줄 3923원…외식·유통업계 ‘가성비 한 끼’ 경쟁",
       "published_at": "2026-11-19T05:09:14+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1yTDRRbnZYMHY2SmdBSnR4TkJmTzFMRGZLTEhTZUF6QzBzcnJjOHJ4WmY3ZENlTWtJakN0b0E4S0FXc2FFbnZhVkFEMXY0QnJmV1lMeWdxbS1JTEhKdDZzY3dmMDdqb3pWYnhsVQ?oc=5",
+      "title": "K-푸드, 美 주류시장 정착 가속…외식·급식 식자재 시장 본격 공략",
+      "published_at": "2026-11-19T08:40:57+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9ZeGd2bmd5djlBZUwxcTJLWTVCNWR3MWVDaWtUNXFUR1U4QkdIdzgyWG9OWVE1SDdUZ3VpOEtxT3dIamhtYkNrN1hzdWoyNnJHNE55T1VJSnVJYmpsVURZUGFqQm9hWG51YU5qcnpsVXpJaEhu0gF0QVVfeXFMT1l4Z3ZuZ3l2OUFlTDFxMktZNUI1ZHcxZUNpa1Q1cVRHVThCR0h3ODJYb05ZUTVIN1RndWk4S3FPd0hqaG1iQ2s3WHN1ajI2ckc0TnlPVUlKdUliamxVRFlQYWpCb2FYbnVhTmpyemxVekloSG4?oc=5",
+      "title": "외식 물가 부담 완화 나선 유통가…이마트, ‘두 줄 김밥’ 정식 편입하며 실속 델리 강화",
+      "published_at": "2026-11-19T06:09:01+00:00"
     }
   ],
-  "new_articles": 2
+  "new_articles": 0
 };
