@@ -1,7 +1,35 @@
 export const snapshot = {
-  "updated_at": "2026-11-18T20:06:11.650404+00:00",
+  "updated_at": "2026-11-19T06:23:09.279456+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "K-푸드 영토 확장 본격화…한인마트 넘어 美 주류 유통·외식·급식시장 뚫는다",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBvc2dlSXdIMklfWkVWaXd3UjVDdklzWmhKbEZtbmpDYm4wTUhUbGRCRzZXYkJaMFI1TmRBM0VBN1o3cXFHUFZQU1ZoVWV6T2ZZZzF0ajZlV1FnTmpGczdhMExBWlUtS0ZNNnY4Yw?oc=5",
+      "source": "와이드경제",
+      "published_at": "2026-11-19T05:34:13+00:00",
+      "original_url": "https://www.widedaily.com/news/articleView.html?idxno=304178"
+    },
+    {
+      "title": "서울 김밥 한 줄 3923원…외식·유통업계 ‘가성비 한 끼’ 경쟁",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBEeFZtb0pSeWpHamFFcVl0ZEcycnVvSmhDYkt4aDJXMTJKTEJBTG0wY0FVLXFPWGpJdDFLRUp3YWFOdGFSZ2U2NlNkVzhJd2pWeTZkTXRjTUpMYXphU3V5SmplM1dQZHh6TFpoNA?oc=5",
+      "source": "뉴시안",
+      "published_at": "2026-11-19T05:09:14+00:00",
+      "original_url": "https://www.newsian.co.kr/news/articleView.html?idxno=101579"
+    },
+    {
+      "title": "식품용 기름 흡수 시트 시장 2035년 전망: 외식 효율화와 건강 트렌드가 성장 뒷받침 - 뉴스 및 통계",
+      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOSDBIekN3eUFDZXR4RXRLTTUtaktGQWxXeGpIU3BjYkZOdGN5U1pzbUhXdFA5ZUNua1hNdlgyaWFRYUxEWnNDblBTd0VMelVSaGIxeGN6aXE2Um1JbUNpV1VrTjI1VUNvOGZnTVZkaGVLMXR0cE1XUVh1UTg0eVNWYmN5V25rVksySTgwaDZQNUpnM2ZzYkQtWDRxTU5MNXJ4RWQxdUxUaVRKS0F2Zy1qY3hDei1OZmdLWk5JTm94OWlxc2lEZ3IwS0hiN0h3YWF2cXE1bzV1aEJvUQ?oc=5",
+      "source": "IndexBox",
+      "published_at": "2026-11-19T04:01:04+00:00",
+      "original_url": "https://www.indexbox.io/ko/blog/food-oil-absorbing-sheet-market-forecast-to-2035-driven-by-foodservice-efficiency-and-healthier-frying-demand/"
+    },
+    {
+      "title": "\"스크린 속 공간 찾아 도심 골목으로\"…외식업계 '촬영지 소비' 확산",
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB4V25yaHBnNTVfRnJ6dDh4YV9jTTRzakZHWllSbmtjMnhEblZjQUtpQlVxcHA4aXlPNkZvaTVsRFViaWNHa213OElqN01XMkNCd3BmcndsZkhtSVZ0U0dnY2I1MHV3RzNoTlE?oc=5",
+      "source": "청년일보",
+      "published_at": "2026-11-19T00:35:36+00:00",
+      "original_url": "https://www.youthdaily.co.kr/mobile/article.html?no=230052"
+    },
     {
       "title": "[가치소비] \"내 입맛대로 조립한다\"… BBQ, 올떡·화덕피자로 초개인화 외식 생태계 구축",
       "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9GVlEyU1c3aUxVWFY4YVpaUWFjX1R5djFKTUluME1fYmtfVzlBWTdScWxnOFBhY1ktSHBudW12djJ1cmlUalJJY05tdlVnOHRiSGFYREFObW9pWkUzUFp5UWhESGJiX28xZ2ZoOGV5RdIBc0FVX3lxTE9xZEJWNDRCcXFOVUpWZW9CVjY3QmNMUTkwcXE0YnVnbDAwUElKTFdra1o1RDRFT3U5clQyY3Bud3Zwc25pZ2dHUEYtVWNPT2tWUkk3NjdtVTlaX3dyODFMbGpOU1kzTkpGV0ZLVTdjby1NNkE?oc=5",
@@ -10,39 +38,11 @@ export const snapshot = {
       "original_url": "https://www.consumerwide.com/news/articleView.html?idxno=67414"
     },
     {
-      "title": "외식 줄고 뷰티·패션 쑥...소비 재배열 가속",
-      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFA2MkFJU2ZhMVRkeHhHeE1KV1Zwczk2UDYyTm4tSWw1NlZGYngwQVo0bkoxZWRzYkNva2ZZaVJVRG9nTDVkLWltb2VvNkRsTXVndXRHTURYNThGNy0ycXFhUDNpSUM2ek1wQWdV?oc=5",
-      "source": "https://www.kmjournal.net/",
-      "published_at": "2026-11-18T01:47:56+00:00",
-      "original_url": "https://www.kmjournal.net/news/articleView.html?idxno=14266"
-    },
-    {
-      "title": "위고비·마운자로에 외식·배달 '뚝'...내수 소비에도 영향? [앵커리포트]",
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1kZVJxUXdRMnhRRWtKM0R5WDRZY0phSWpGNEN0Q0JPSktCeHF3NGdXeEJPLVlYdi0xVlVMaTRmM3U3WnQ4YnZWZkZqZ1BzVE5KMnNfcWthb2gzMmw5YWVacThjck5GVF9pMnUtZmJpZw?oc=5",
-      "source": "YTN",
-      "published_at": "2026-11-16T14:20:00+00:00",
-      "original_url": "https://www.ytn.co.kr/_cs/_ln_0102_202611162320011094_005.html"
-    },
-    {
-      "title": "[소비트렌드] 11월 3주, 점심은 구내식당 장보기는 양념값",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBLaWVTc0lLTnlWVTRmY0JXN19ERjI1ZlBnYjdNTGtFSWMzRFlYbmppY21kZE15dU95dDZUQjFHazV6QlY5ZldqS1ljSEJ0UUxHcEdPbktNUlNEQ05FVWFkN0tadXFOcVp0c0VJRA?oc=5",
-      "source": "센머니",
-      "published_at": "2026-11-16T07:25:09+00:00",
-      "original_url": "https://www.senmoney.co.kr/news/articleView.html?idxno=38647"
-    },
-    {
-      "title": "2035년 본딩 나이프 시장 전망: 프리미엄화와 외식 수요가 금액 성장 견인",
-      "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNOVhEczBTdVprcDZzUE05Um44MUJ4NnltZTVOemVUZUpDTzFUaHFETjJNT3d5YzdtdTdBeDJiS3Z1VGtiWmZGb3VQZXNQaEdRemE0ZHJ2Njc1ZVVYNm51dlpadGY4TEk3T2dJVVRaUUNfbUZQNmRMNXlkbE5fNDJvRDhtbGpCOXB4M1kwa0lBSkxQMjVuSDc1UWJrdVlfV2JOSjNJTTdoMWRISWk5REwwNGlVWklHSERvZDQySHM3UmlpSFZF?oc=5",
-      "source": "IndexBox",
-      "published_at": "2026-11-15T20:36:07+00:00",
-      "original_url": "https://www.indexbox.io/ko/blog/boning-knife-market-forecast-to-2035-premiumization-and-foodservice-demand-drive-value-growth/"
-    },
-    {
-      "title": "이형일 부총리, 물가 관리 방안 논의…가공식품·외식 오름폭 확대",
-      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1weUlDclF6TFh0c1EyeGxYNXdHUGRqTWdLN0hCTncwYWFQLU1hRWZRWjNXYjhoaFRya09qb2lJR3hqMGZuT1diWWR1bGlvNWlCT2VxLWxaX3XSAVhBVV95cUxNcHlJQ3JRekxYdHNRMnhsWDV3R1Bkak1nSzdIQk53MGFhUC1NYUVmUVozV2I4aGhUcmtPam9pSUd4ajBmbk9XYllkdWxpbzVpQk9lcS1sWl91?oc=5",
-      "source": "아주경제",
-      "published_at": "2026-11-15T10:27:30+00:00",
-      "original_url": "https://www.ajunews.com/amp/20261115191811645"
+      "title": "슈퍼크리스피, 외식 물가 상승 속 가격·품질 균형 전략... 실속형 메뉴로 소비자 접점 확대",
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBpT2d3S2xZaGpNX2FNNFhKcndVWXNVTXNRYkMzc1Vzb1BLQWNySm5UaTRpLTFiaUdER2d3ejNjdGFBcmRKQ2tlRk4wZUdMb2tWbmZILXBCWTUzSnpkUTZHUXAyeXpCaGQ50gFsQVVfeXFMUFE4U2Jmd0ViYVg3UHYxOVRZeUp0Y1JGX3hTRVpFQ0p3b3ozUTZPRlNjaktxS1l0UUNHMXpyeXV2cmxoZWNuZlVCaFZHbTB6ZmxfeDdLbzdyMkRyRk5fYWhnLUFNMVZiWFJPbkdq?oc=5",
+      "source": "AP신문",
+      "published_at": "2026-11-18T03:06:58+00:00",
+      "original_url": "https://www.apnews.kr/news/articleView.html?idxno=3053260"
     }
   ],
   "history": [
@@ -875,7 +875,32 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9GVlEyU1c3aUxVWFY4YVpaUWFjX1R5djFKTUluME1fYmtfVzlBWTdScWxnOFBhY1ktSHBudW12djJ1cmlUalJJY05tdlVnOHRiSGFYREFObW9pWkUzUFp5UWhESGJiX28xZ2ZoOGV5RdIBc0FVX3lxTE9xZEJWNDRCcXFOVUpWZW9CVjY3QmNMUTkwcXE0YnVnbDAwUElKTFdra1o1RDRFT3U5clQyY3Bud3Zwc25pZ2dHUEYtVWNPT2tWUkk3NjdtVTlaX3dyODFMbGpOU1kzTkpGV0ZLVTdjby1NNkE?oc=5",
       "title": "[가치소비] \"내 입맛대로 조립한다\"… BBQ, 올떡·화덕피자로 초개인화 외식 생태계 구축",
       "published_at": "2026-11-18T14:35:38+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOSDBIekN3eUFDZXR4RXRLTTUtaktGQWxXeGpIU3BjYkZOdGN5U1pzbUhXdFA5ZUNua1hNdlgyaWFRYUxEWnNDblBTd0VMelVSaGIxeGN6aXE2Um1JbUNpV1VrTjI1VUNvOGZnTVZkaGVLMXR0cE1XUVh1UTg0eVNWYmN5V25rVksySTgwaDZQNUpnM2ZzYkQtWDRxTU5MNXJ4RWQxdUxUaVRKS0F2Zy1qY3hDei1OZmdLWk5JTm94OWlxc2lEZ3IwS0hiN0h3YWF2cXE1bzV1aEJvUQ?oc=5",
+      "title": "식품용 기름 흡수 시트 시장 2035년 전망: 외식 효율화와 건강 트렌드가 성장 뒷받침 - 뉴스 및 통계",
+      "published_at": "2026-11-19T04:01:04+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB4V25yaHBnNTVfRnJ6dDh4YV9jTTRzakZHWllSbmtjMnhEblZjQUtpQlVxcHA4aXlPNkZvaTVsRFViaWNHa213OElqN01XMkNCd3BmcndsZkhtSVZ0U0dnY2I1MHV3RzNoTlE?oc=5",
+      "title": "\"스크린 속 공간 찾아 도심 골목으로\"…외식업계 '촬영지 소비' 확산",
+      "published_at": "2026-11-19T00:35:36+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBpT2d3S2xZaGpNX2FNNFhKcndVWXNVTXNRYkMzc1Vzb1BLQWNySm5UaTRpLTFiaUdER2d3ejNjdGFBcmRKQ2tlRk4wZUdMb2tWbmZILXBCWTUzSnpkUTZHUXAyeXpCaGQ50gFsQVVfeXFMUFE4U2Jmd0ViYVg3UHYxOVRZeUp0Y1JGX3hTRVpFQ0p3b3ozUTZPRlNjaktxS1l0UUNHMXpyeXV2cmxoZWNuZlVCaFZHbTB6ZmxfeDdLbzdyMkRyRk5fYWhnLUFNMVZiWFJPbkdq?oc=5",
+      "title": "슈퍼크리스피, 외식 물가 상승 속 가격·품질 균형 전략... 실속형 메뉴로 소비자 접점 확대",
+      "published_at": "2026-11-18T03:06:58+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBvc2dlSXdIMklfWkVWaXd3UjVDdklzWmhKbEZtbmpDYm4wTUhUbGRCRzZXYkJaMFI1TmRBM0VBN1o3cXFHUFZQU1ZoVWV6T2ZZZzF0ajZlV1FnTmpGczdhMExBWlUtS0ZNNnY4Yw?oc=5",
+      "title": "K-푸드 영토 확장 본격화…한인마트 넘어 美 주류 유통·외식·급식시장 뚫는다",
+      "published_at": "2026-11-19T05:34:13+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBEeFZtb0pSeWpHamFFcVl0ZEcycnVvSmhDYkt4aDJXMTJKTEJBTG0wY0FVLXFPWGpJdDFLRUp3YWFOdGFSZ2U2NlNkVzhJd2pWeTZkTXRjTUpMYXphU3V5SmplM1dQZHh6TFpoNA?oc=5",
+      "title": "서울 김밥 한 줄 3923원…외식·유통업계 ‘가성비 한 끼’ 경쟁",
+      "published_at": "2026-11-19T05:09:14+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 2
 };
