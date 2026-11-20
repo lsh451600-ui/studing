@@ -1,7 +1,14 @@
 export const snapshot = {
-  "updated_at": "2026-11-19T20:05:49.418308+00:00",
+  "updated_at": "2026-11-20T06:07:35.365961+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "bhc, 몽골 외식시장 도전…현지 유통망 업고 사업 확대",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9JWjNId0x0N0xDaExqUmdXVjhMOGdtczRjZ0l0SkhBZW5felhjbzlrNlVpb24xZjNPSWhFV1J4cENTQmhTWHpMaVZ6VW5TUTJwT0FVM21VbzhHVnUwdFJsQ3ktczN0c0JWQkZDWGxhRQ?oc=5",
+      "source": "이코노미사이언스",
+      "published_at": "2026-11-20T01:42:38+00:00",
+      "original_url": "https://www.e-science.co.kr/news/articleView.html?idxno=140326"
+    },
     {
       "title": "K-푸드, 美 주류시장 정착 가속…외식·급식 식자재 시장 본격 공략",
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1yTDRRbnZYMHY2SmdBSnR4TkJmTzFMRGZLTEhTZUF6QzBzcnJjOHJ4WmY3ZENlTWtJakN0b0E4S0FXc2FFbnZhVkFEMXY0QnJmV1lMeWdxbS1JTEhKdDZzY3dmMDdqb3pWYnhsVQ?oc=5",
@@ -36,13 +43,6 @@ export const snapshot = {
       "source": "IndexBox",
       "published_at": "2026-11-19T04:01:04+00:00",
       "original_url": "https://www.indexbox.io/ko/blog/food-oil-absorbing-sheet-market-forecast-to-2035-driven-by-foodservice-efficiency-and-healthier-frying-demand/"
-    },
-    {
-      "title": "\"스크린 속 공간 찾아 도심 골목으로\"…외식업계 '촬영지 소비' 확산",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFB4V25yaHBnNTVfRnJ6dDh4YV9jTTRzakZHWllSbmtjMnhEblZjQUtpQlVxcHA4aXlPNkZvaTVsRFViaWNHa213OElqN01XMkNCd3BmcndsZkhtSVZ0U0dnY2I1MHV3RzNoTlE?oc=5",
-      "source": "청년일보",
-      "published_at": "2026-11-19T00:35:36+00:00",
-      "original_url": "https://www.youthdaily.co.kr/mobile/article.html?no=230052"
     }
   ],
   "history": [
@@ -910,6 +910,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9ZeGd2bmd5djlBZUwxcTJLWTVCNWR3MWVDaWtUNXFUR1U4QkdIdzgyWG9OWVE1SDdUZ3VpOEtxT3dIamhtYkNrN1hzdWoyNnJHNE55T1VJSnVJYmpsVURZUGFqQm9hWG51YU5qcnpsVXpJaEhu0gF0QVVfeXFMT1l4Z3ZuZ3l2OUFlTDFxMktZNUI1ZHcxZUNpa1Q1cVRHVThCR0h3ODJYb05ZUTVIN1RndWk4S3FPd0hqaG1iQ2s3WHN1ajI2ckc0TnlPVUlKdUliamxVRFlQYWpCb2FYbnVhTmpyemxVekloSG4?oc=5",
       "title": "외식 물가 부담 완화 나선 유통가…이마트, ‘두 줄 김밥’ 정식 편입하며 실속 델리 강화",
       "published_at": "2026-11-19T06:09:01+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9JWjNId0x0N0xDaExqUmdXVjhMOGdtczRjZ0l0SkhBZW5felhjbzlrNlVpb24xZjNPSWhFV1J4cENTQmhTWHpMaVZ6VW5TUTJwT0FVM21VbzhHVnUwdFJsQ3ktczN0c0JWQkZDWGxhRQ?oc=5",
+      "title": "bhc, 몽골 외식시장 도전…현지 유통망 업고 사업 확대",
+      "published_at": "2026-11-20T01:42:38+00:00"
     }
   ],
   "new_articles": 0
