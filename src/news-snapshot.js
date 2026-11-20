@@ -1,7 +1,28 @@
 export const snapshot = {
-  "updated_at": "2026-11-20T06:07:35.365961+00:00",
+  "updated_at": "2026-11-20T19:41:49.379332+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "수능 끝, 소비 특수 잡아라…금융·유통·외식업계 수험생 공략",
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9IRzhSSkFVZVhpVjFHNWVoZWwzalAwWmxRODJsS3JuTmFSR3lJdmdiZndtTjZVZjkzMDRjdFJIUXlQUFQtdE9oMmFHQ3R3bEl0ODZCTkRwempxanRzMmREOGw4QjZscEVsQ0E?oc=5",
+      "source": "https://www.moneystorm.kr/",
+      "published_at": "2026-11-20T07:20:31+00:00",
+      "original_url": "https://www.moneystorm.kr/news/articleView.html?idxno=8673"
+    },
+    {
+      "title": "유럽여행경비, 스위스보다 비싼 곳은? 숙박·외식 물가 상위 5개국",
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5WbHRzU3QtYTN4cjdXUWRCYkNqMVdUOERKa3lJNW9mTmtfTldYZVRISTdhZklnSjBDeWw4djlLQnFRTkpCcTRGMVg1SDNpSVludHBV0gFYQVVfeXFMT0RMVGNjTzA5bWpneFU4VWR5YlJqa3c1dnBtTFdPVnI4SGZMdHZQclg5Vzkwa1VLY19BaWN1NFhha2hzUnkwZ3hZYmluM0pFZjlzX3c1Zms5Rw?oc=5",
+      "source": "네이트뷰",
+      "published_at": "2026-11-20T04:03:00+00:00",
+      "original_url": "https://view.nate.com/travel/view/426036/"
+    },
+    {
+      "title": "한인마트 넘어 식당·급식까지…K-푸드, 미국 주류시장으로",
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5abF9ZZ2gwbzVLQkNIMjczNUZOeE4zS21fSVQ4dHNYZ0RFUHQ2enp6N3l6Njdmem5JcVBBVVR5V1pLZ3o3WkVQZkpmZm04N0ZIZFFGWVR4WWQyUWJvRmJNTjl3Z2VhNnRXc0hqVg?oc=5",
+      "source": "한국농어민신문",
+      "published_at": "2026-11-20T02:25:17+00:00",
+      "original_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=409038"
+    },
     {
       "title": "bhc, 몽골 외식시장 도전…현지 유통망 업고 사업 확대",
       "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9JWjNId0x0N0xDaExqUmdXVjhMOGdtczRjZ0l0SkhBZW5felhjbzlrNlVpb24xZjNPSWhFV1J4cENTQmhTWHpMaVZ6VW5TUTJwT0FVM21VbzhHVnUwdFJsQ3ktczN0c0JWQkZDWGxhRQ?oc=5",
@@ -22,27 +43,6 @@ export const snapshot = {
       "source": "더페어",
       "published_at": "2026-11-19T06:09:01+00:00",
       "original_url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=94837"
-    },
-    {
-      "title": "K-푸드 영토 확장 본격화…한인마트 넘어 美 주류 유통·외식·급식시장 뚫는다",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBvc2dlSXdIMklfWkVWaXd3UjVDdklzWmhKbEZtbmpDYm4wTUhUbGRCRzZXYkJaMFI1TmRBM0VBN1o3cXFHUFZQU1ZoVWV6T2ZZZzF0ajZlV1FnTmpGczdhMExBWlUtS0ZNNnY4Yw?oc=5",
-      "source": "와이드경제",
-      "published_at": "2026-11-19T05:34:13+00:00",
-      "original_url": "https://www.widedaily.com/news/articleView.html?idxno=304178"
-    },
-    {
-      "title": "서울 김밥 한 줄 3923원…외식·유통업계 ‘가성비 한 끼’ 경쟁",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBEeFZtb0pSeWpHamFFcVl0ZEcycnVvSmhDYkt4aDJXMTJKTEJBTG0wY0FVLXFPWGpJdDFLRUp3YWFOdGFSZ2U2NlNkVzhJd2pWeTZkTXRjTUpMYXphU3V5SmplM1dQZHh6TFpoNA?oc=5",
-      "source": "뉴시안",
-      "published_at": "2026-11-19T05:09:14+00:00",
-      "original_url": "https://www.newsian.co.kr/news/articleView.html?idxno=101579"
-    },
-    {
-      "title": "식품용 기름 흡수 시트 시장 2035년 전망: 외식 효율화와 건강 트렌드가 성장 뒷받침 - 뉴스 및 통계",
-      "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOSDBIekN3eUFDZXR4RXRLTTUtaktGQWxXeGpIU3BjYkZOdGN5U1pzbUhXdFA5ZUNua1hNdlgyaWFRYUxEWnNDblBTd0VMelVSaGIxeGN6aXE2Um1JbUNpV1VrTjI1VUNvOGZnTVZkaGVLMXR0cE1XUVh1UTg0eVNWYmN5V25rVksySTgwaDZQNUpnM2ZzYkQtWDRxTU5MNXJ4RWQxdUxUaVRKS0F2Zy1qY3hDei1OZmdLWk5JTm94OWlxc2lEZ3IwS0hiN0h3YWF2cXE1bzV1aEJvUQ?oc=5",
-      "source": "IndexBox",
-      "published_at": "2026-11-19T04:01:04+00:00",
-      "original_url": "https://www.indexbox.io/ko/blog/food-oil-absorbing-sheet-market-forecast-to-2035-driven-by-foodservice-efficiency-and-healthier-frying-demand/"
     }
   ],
   "history": [
@@ -915,6 +915,21 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9JWjNId0x0N0xDaExqUmdXVjhMOGdtczRjZ0l0SkhBZW5felhjbzlrNlVpb24xZjNPSWhFV1J4cENTQmhTWHpMaVZ6VW5TUTJwT0FVM21VbzhHVnUwdFJsQ3ktczN0c0JWQkZDWGxhRQ?oc=5",
       "title": "bhc, 몽골 외식시장 도전…현지 유통망 업고 사업 확대",
       "published_at": "2026-11-20T01:42:38+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9IRzhSSkFVZVhpVjFHNWVoZWwzalAwWmxRODJsS3JuTmFSR3lJdmdiZndtTjZVZjkzMDRjdFJIUXlQUFQtdE9oMmFHQ3R3bEl0ODZCTkRwempxanRzMmREOGw4QjZscEVsQ0E?oc=5",
+      "title": "수능 끝, 소비 특수 잡아라…금융·유통·외식업계 수험생 공략",
+      "published_at": "2026-11-20T07:20:31+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5WbHRzU3QtYTN4cjdXUWRCYkNqMVdUOERKa3lJNW9mTmtfTldYZVRISTdhZklnSjBDeWw4djlLQnFRTkpCcTRGMVg1SDNpSVludHBV0gFYQVVfeXFMT0RMVGNjTzA5bWpneFU4VWR5YlJqa3c1dnBtTFdPVnI4SGZMdHZQclg5Vzkwa1VLY19BaWN1NFhha2hzUnkwZ3hZYmluM0pFZjlzX3c1Zms5Rw?oc=5",
+      "title": "유럽여행경비, 스위스보다 비싼 곳은? 숙박·외식 물가 상위 5개국",
+      "published_at": "2026-11-20T04:03:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5abF9ZZ2gwbzVLQkNIMjczNUZOeE4zS21fSVQ4dHNYZ0RFUHQ2enp6N3l6Njdmem5JcVBBVVR5V1pLZ3o3WkVQZkpmZm04N0ZIZFFGWVR4WWQyUWJvRmJNTjl3Z2VhNnRXc0hqVg?oc=5",
+      "title": "한인마트 넘어 식당·급식까지…K-푸드, 미국 주류시장으로",
+      "published_at": "2026-11-20T02:25:17+00:00"
     }
   ],
   "new_articles": 0
