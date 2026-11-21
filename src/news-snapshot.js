@@ -1,5 +1,5 @@
 export const snapshot = {
-  "updated_at": "2026-11-21T05:58:49.598334+00:00",
+  "updated_at": "2026-11-21T18:47:52.362185+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
     {
@@ -31,18 +31,18 @@ export const snapshot = {
       "original_url": "https://www.e-science.co.kr/news/articleView.html?idxno=140326"
     },
     {
+      "title": "고물가 신음하는 외식업계 숨통 틔운다…대구시, 식재료 공동구매 지원 10개 단체로 확대",
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1qMHR1c0VoTlg2QkdBaHpEUkVWNWdTTDFLdTE3eGRTdUVuRUZLX1N5c0o5cXJ4ek94VWhEbVAtMUNrVUR6dmJ0V2tRS3MyRnV5NTRQb0dOOGFzd9IBWEFVX3lxTE41c1lqc0NhbmgzTmZmMDNpX1hsa1VYSFJXby1hejdmV1JuX0xMaDVEWlZETVhfcW1CTFVVZi05UW9mRUxHMTRDaktXQWFrUTdib3R2Z3MwOVg?oc=5",
+      "source": "아주경제",
+      "published_at": "2026-11-19T09:27:56+00:00",
+      "original_url": "https://www.ajunews.com/view/20261119182250398"
+    },
+    {
       "title": "K-푸드, 美 주류시장 정착 가속…외식·급식 식자재 시장 본격 공략",
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1yTDRRbnZYMHY2SmdBSnR4TkJmTzFMRGZLTEhTZUF6QzBzcnJjOHJ4WmY3ZENlTWtJakN0b0E4S0FXc2FFbnZhVkFEMXY0QnJmV1lMeWdxbS1JTEhKdDZzY3dmMDdqb3pWYnhsVQ?oc=5",
       "source": "푸드아이콘",
       "published_at": "2026-11-19T08:40:57+00:00",
       "original_url": "https://www.foodicon.co.kr/news/articleView.html?idxno=36314"
-    },
-    {
-      "title": "외식 물가 부담 완화 나선 유통가…이마트, ‘두 줄 김밥’ 정식 편입하며 실속 델리 강화",
-      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9ZeGd2bmd5djlBZUwxcTJLWTVCNWR3MWVDaWtUNXFUR1U4QkdIdzgyWG9OWVE1SDdUZ3VpOEtxT3dIamhtYkNrN1hzdWoyNnJHNE55T1VJSnVJYmpsVURZUGFqQm9hWG51YU5qcnpsVXpJaEhu0gF0QVVfeXFMT1l4Z3ZuZ3l2OUFlTDFxMktZNUI1ZHcxZUNpa1Q1cVRHVThCR0h3ODJYb05ZUTVIN1RndWk4S3FPd0hqaG1iQ2s3WHN1ajI2ckc0TnlPVUlKdUliamxVRFlQYWpCb2FYbnVhTmpyemxVekloSG4?oc=5",
-      "source": "더페어",
-      "published_at": "2026-11-19T06:09:01+00:00",
-      "original_url": "https://www.thefairnews.co.kr/news/articleView.html?idxno=94837"
     }
   ],
   "history": [
@@ -930,6 +930,11 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5abF9ZZ2gwbzVLQkNIMjczNUZOeE4zS21fSVQ4dHNYZ0RFUHQ2enp6N3l6Njdmem5JcVBBVVR5V1pLZ3o3WkVQZkpmZm04N0ZIZFFGWVR4WWQyUWJvRmJNTjl3Z2VhNnRXc0hqVg?oc=5",
       "title": "한인마트 넘어 식당·급식까지…K-푸드, 미국 주류시장으로",
       "published_at": "2026-11-20T02:25:17+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1qMHR1c0VoTlg2QkdBaHpEUkVWNWdTTDFLdTE3eGRTdUVuRUZLX1N5c0o5cXJ4ek94VWhEbVAtMUNrVUR6dmJ0V2tRS3MyRnV5NTRQb0dOOGFzd9IBWEFVX3lxTE41c1lqc0NhbmgzTmZmMDNpX1hsa1VYSFJXby1hejdmV1JuX0xMaDVEWlZETVhfcW1CTFVVZi05UW9mRUxHMTRDaktXQWFrUTdib3R2Z3MwOVg?oc=5",
+      "title": "고물가 신음하는 외식업계 숨통 틔운다…대구시, 식재료 공동구매 지원 10개 단체로 확대",
+      "published_at": "2026-11-19T09:27:56+00:00"
     }
   ],
   "new_articles": 0
