@@ -1,7 +1,14 @@
 {
-  "updated_at": "2026-11-22T05:34:42.118633+00:00",
+  "updated_at": "2026-11-22T19:09:42.160653+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "[김해원 식도락법(41)] 미 외식업계 줄파산 속 프랜차이즈 열풍",
+      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9Pb09QSWgxNVExTjRkelVmNTJqOGkyTWVqR2ZCdXg1eHFtTEZsUnJYY0xqeHhka2tTbmxQWXdmZ0pWOUtyYlVtVnFkd3R4dlQwYzdCYTdIaE5JcHpfYmZmV3ZnVTlqSEhObnFTREFGSDJoVG51d0JPdjQyN2RQdw?oc=5",
+      "source": "KNEWSLA",
+      "published_at": "2026-11-22T10:37:38+00:00",
+      "original_url": "https://knewsla.com/%EC%8A%A4%EC%8B%9C%EB%89%B4%EC%8A%A43/20261121210321/"
+    },
     {
       "title": "수능 끝, 소비 특수 잡아라…금융·유통·외식업계 수험생 공략",
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9IRzhSSkFVZVhpVjFHNWVoZWwzalAwWmxRODJsS3JuTmFSR3lJdmdiZndtTjZVZjkzMDRjdFJIUXlQUFQtdE9oMmFHQ3R3bEl0ODZCTkRwempxanRzMmREOGw4QjZscEVsQ0E?oc=5",
@@ -36,13 +43,6 @@
       "source": "아주경제",
       "published_at": "2026-11-19T09:27:56+00:00",
       "original_url": "https://www.ajunews.com/view/20261119182250398"
-    },
-    {
-      "title": "K-푸드, 美 주류시장 정착 가속…외식·급식 식자재 시장 본격 공략",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1yTDRRbnZYMHY2SmdBSnR4TkJmTzFMRGZLTEhTZUF6QzBzcnJjOHJ4WmY3ZENlTWtJakN0b0E4S0FXc2FFbnZhVkFEMXY0QnJmV1lMeWdxbS1JTEhKdDZzY3dmMDdqb3pWYnhsVQ?oc=5",
-      "source": "푸드아이콘",
-      "published_at": "2026-11-19T08:40:57+00:00",
-      "original_url": "https://www.foodicon.co.kr/news/articleView.html?idxno=36314"
     }
   ],
   "history": [
@@ -935,6 +935,11 @@
       "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1qMHR1c0VoTlg2QkdBaHpEUkVWNWdTTDFLdTE3eGRTdUVuRUZLX1N5c0o5cXJ4ek94VWhEbVAtMUNrVUR6dmJ0V2tRS3MyRnV5NTRQb0dOOGFzd9IBWEFVX3lxTE41c1lqc0NhbmgzTmZmMDNpX1hsa1VYSFJXby1hejdmV1JuX0xMaDVEWlZETVhfcW1CTFVVZi05UW9mRUxHMTRDaktXQWFrUTdib3R2Z3MwOVg?oc=5",
       "title": "고물가 신음하는 외식업계 숨통 틔운다…대구시, 식재료 공동구매 지원 10개 단체로 확대",
       "published_at": "2026-11-19T09:27:56+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9Pb09QSWgxNVExTjRkelVmNTJqOGkyTWVqR2ZCdXg1eHFtTEZsUnJYY0xqeHhka2tTbmxQWXdmZ0pWOUtyYlVtVnFkd3R4dlQwYzdCYTdIaE5JcHpfYmZmV3ZnVTlqSEhObnFTREFGSDJoVG51d0JPdjQyN2RQdw?oc=5",
+      "title": "[김해원 식도락법(41)] 미 외식업계 줄파산 속 프랜차이즈 열풍",
+      "published_at": "2026-11-22T10:37:38+00:00"
     }
   ],
   "new_articles": 0
