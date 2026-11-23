@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-11-22T19:09:42.160653+00:00",
+  "updated_at": "2026-11-23T06:15:10.933450+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "[기획] 외식물가 상승세 지속…가격은 올리고 양은 줄이고",
+      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE02MUNKeUl2a0UwaHF2bzYyUHdjcGVhaFRKWGFnVHlQS2NIUndVeUdtTFdqWktlRXN2MWxvbVJSQW9paHA3bjV2MGJSeVBycEE2dEpzUmlkODVNS1pLYXNvbVQxRmM?oc=5",
+      "source": "매일일보",
+      "published_at": "2026-11-23T05:38:45+00:00",
+      "original_url": "https://www.m-i.kr/news/articleView.html?idxno=2022037"
+    },
+    {
+      "title": "장바구니 물가·외식비 이어 사룟값까지 … 로얄캐닌, 12월부터 가격 인상",
+      "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNY3BHNHYtRDVZOEdwNTl6TkVpT21vem1KZzlFN25lNWNDaHRGaDZZcmx3QXp2NGp0ZVVyeldPX2hLWFp3Nmt2VHJOZ1B3T1Z0ZzRwWVJCRG9ZRkpXMGpEb1hjN2hYam14WUVYOG5fZ0NESV9Dc1dIVE9HSG5RUS1ySdIBgAFBVV95cUxNY3BHNHYtRDVZOEdwNTl6TkVpT21vem1KZzlFN25lNWNDaHRGaDZZcmx3QXp2NGp0ZVVyeldPX2hLWFp3Nmt2VHJOZ1B3T1Z0ZzRwWVJCRG9ZRkpXMGpEb1hjN2hYam14WUVYOG5fZ0NESV9Dc1dIVE9HSG5RUS1ySQ?oc=5",
+      "source": "뉴데일리 경제",
+      "published_at": "2026-11-23T01:53:00+00:00",
+      "original_url": "https://biz.newdaily.co.kr/site/data/html/2026/11/23/2026112350093.amp.html"
+    },
     {
       "title": "[김해원 식도락법(41)] 미 외식업계 줄파산 속 프랜차이즈 열풍",
       "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9Pb09QSWgxNVExTjRkelVmNTJqOGkyTWVqR2ZCdXg1eHFtTEZsUnJYY0xqeHhka2tTbmxQWXdmZ0pWOUtyYlVtVnFkd3R4dlQwYzdCYTdIaE5JcHpfYmZmV3ZnVTlqSEhObnFTREFGSDJoVG51d0JPdjQyN2RQdw?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "한국농어민신문",
       "published_at": "2026-11-20T02:25:17+00:00",
       "original_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=409038"
-    },
-    {
-      "title": "bhc, 몽골 외식시장 도전…현지 유통망 업고 사업 확대",
-      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9JWjNId0x0N0xDaExqUmdXVjhMOGdtczRjZ0l0SkhBZW5felhjbzlrNlVpb24xZjNPSWhFV1J4cENTQmhTWHpMaVZ6VW5TUTJwT0FVM21VbzhHVnUwdFJsQ3ktczN0c0JWQkZDWGxhRQ?oc=5",
-      "source": "이코노미사이언스",
-      "published_at": "2026-11-20T01:42:38+00:00",
-      "original_url": "https://www.e-science.co.kr/news/articleView.html?idxno=140326"
-    },
-    {
-      "title": "고물가 신음하는 외식업계 숨통 틔운다…대구시, 식재료 공동구매 지원 10개 단체로 확대",
-      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1qMHR1c0VoTlg2QkdBaHpEUkVWNWdTTDFLdTE3eGRTdUVuRUZLX1N5c0o5cXJ4ek94VWhEbVAtMUNrVUR6dmJ0V2tRS3MyRnV5NTRQb0dOOGFzd9IBWEFVX3lxTE41c1lqc0NhbmgzTmZmMDNpX1hsa1VYSFJXby1hejdmV1JuX0xMaDVEWlZETVhfcW1CTFVVZi05UW9mRUxHMTRDaktXQWFrUTdib3R2Z3MwOVg?oc=5",
-      "source": "아주경제",
-      "published_at": "2026-11-19T09:27:56+00:00",
-      "original_url": "https://www.ajunews.com/view/20261119182250398"
     }
   ],
   "history": [
@@ -940,7 +940,17 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9Pb09QSWgxNVExTjRkelVmNTJqOGkyTWVqR2ZCdXg1eHFtTEZsUnJYY0xqeHhka2tTbmxQWXdmZ0pWOUtyYlVtVnFkd3R4dlQwYzdCYTdIaE5JcHpfYmZmV3ZnVTlqSEhObnFTREFGSDJoVG51d0JPdjQyN2RQdw?oc=5",
       "title": "[김해원 식도락법(41)] 미 외식업계 줄파산 속 프랜차이즈 열풍",
       "published_at": "2026-11-22T10:37:38+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNY3BHNHYtRDVZOEdwNTl6TkVpT21vem1KZzlFN25lNWNDaHRGaDZZcmx3QXp2NGp0ZVVyeldPX2hLWFp3Nmt2VHJOZ1B3T1Z0ZzRwWVJCRG9ZRkpXMGpEb1hjN2hYam14WUVYOG5fZ0NESV9Dc1dIVE9HSG5RUS1ySdIBgAFBVV95cUxNY3BHNHYtRDVZOEdwNTl6TkVpT21vem1KZzlFN25lNWNDaHRGaDZZcmx3QXp2NGp0ZVVyeldPX2hLWFp3Nmt2VHJOZ1B3T1Z0ZzRwWVJCRG9ZRkpXMGpEb1hjN2hYam14WUVYOG5fZ0NESV9Dc1dIVE9HSG5RUS1ySQ?oc=5",
+      "title": "장바구니 물가·외식비 이어 사룟값까지 … 로얄캐닌, 12월부터 가격 인상",
+      "published_at": "2026-11-23T01:53:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE02MUNKeUl2a0UwaHF2bzYyUHdjcGVhaFRKWGFnVHlQS2NIUndVeUdtTFdqWktlRXN2MWxvbVJSQW9paHA3bjV2MGJSeVBycEE2dEpzUmlkODVNS1pLYXNvbVQxRmM?oc=5",
+      "title": "[기획] 외식물가 상승세 지속…가격은 올리고 양은 줄이고",
+      "published_at": "2026-11-23T05:38:45+00:00"
     }
   ],
-  "new_articles": 0
+  "new_articles": 1
 };
