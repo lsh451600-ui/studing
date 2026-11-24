@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-11-23T23:31:12.600504+00:00",
+  "updated_at": "2026-11-24T08:51:32.723483+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "소비심리 두 달째 뒷걸음…연말 대목 앞둔 외식·식품업계 '먹구름'",
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9RSlBBZTlfS1NlYUZ3VFBfMWkwY04yN3FhUDc1V1dXQXdpTUhENm50NFJuRFNENW9oSjhoZllTMHlNNFlkZ3F6SEZfVWRSYzZhb2E3VXdxQzlIVEdaRnBlLQ?oc=5",
+      "source": "뉴스토마토",
+      "published_at": "2026-11-24T04:48:11+00:00",
+      "original_url": "https://www.newstomato.com/ReadNews.aspx?no=1321629"
+    },
+    {
+      "title": "영천시장 앞 백반집, 외식비 부담 낮추고 이웃 식사 지원도 준비",
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBaV244S3hOblFXcEpkTHpiMGMwSlFwa2c0UXIyOExlQVpLTld2QWgwaXhlZkdoU3phZ0hMdnd1ckJwTnN3V3JjcXF1MmZ0WjdsS1pCOVRucDQyOXJBd3lIMTlYcjA2dkUyTTVv?oc=5",
+      "source": "퍼블릭뉴스통신",
+      "published_at": "2026-11-24T04:40:40+00:00",
+      "original_url": "https://www.ttlnews.com/news/articleView.html?idxno=3165805"
+    },
     {
       "title": "[기획] 외식물가 상승세 지속…가격은 올리고 양은 줄이고",
       "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE02MUNKeUl2a0UwaHF2bzYyUHdjcGVhaFRKWGFnVHlQS2NIUndVeUdtTFdqWktlRXN2MWxvbVJSQW9paHA3bjV2MGJSeVBycEE2dEpzUmlkODVNS1pLYXNvbVQxRmM?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "https://www.moneystorm.kr/",
       "published_at": "2026-11-20T07:20:31+00:00",
       "original_url": "https://www.moneystorm.kr/news/articleView.html?idxno=8673"
-    },
-    {
-      "title": "유럽여행경비, 스위스보다 비싼 곳은? 숙박·외식 물가 상위 5개국",
-      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5WbHRzU3QtYTN4cjdXUWRCYkNqMVdUOERKa3lJNW9mTmtfTldYZVRISTdhZklnSjBDeWw4djlLQnFRTkpCcTRGMVg1SDNpSVludHBV0gFYQVVfeXFMT0RMVGNjTzA5bWpneFU4VWR5YlJqa3c1dnBtTFdPVnI4SGZMdHZQclg5Vzkwa1VLY19BaWN1NFhha2hzUnkwZ3hZYmluM0pFZjlzX3c1Zms5Rw?oc=5",
-      "source": "네이트뷰",
-      "published_at": "2026-11-20T04:03:00+00:00",
-      "original_url": "https://view.nate.com/travel/view/426036/"
-    },
-    {
-      "title": "한인마트 넘어 식당·급식까지…K-푸드, 미국 주류시장으로",
-      "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5abF9ZZ2gwbzVLQkNIMjczNUZOeE4zS21fSVQ4dHNYZ0RFUHQ2enp6N3l6Njdmem5JcVBBVVR5V1pLZ3o3WkVQZkpmZm04N0ZIZFFGWVR4WWQyUWJvRmJNTjl3Z2VhNnRXc0hqVg?oc=5",
-      "source": "한국농어민신문",
-      "published_at": "2026-11-20T02:25:17+00:00",
-      "original_url": "https://www.agrinet.co.kr/news/articleView.html?idxno=409038"
     }
   ],
   "history": [
@@ -950,6 +950,16 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE02MUNKeUl2a0UwaHF2bzYyUHdjcGVhaFRKWGFnVHlQS2NIUndVeUdtTFdqWktlRXN2MWxvbVJSQW9paHA3bjV2MGJSeVBycEE2dEpzUmlkODVNS1pLYXNvbVQxRmM?oc=5",
       "title": "[기획] 외식물가 상승세 지속…가격은 올리고 양은 줄이고",
       "published_at": "2026-11-23T05:38:45+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9RSlBBZTlfS1NlYUZ3VFBfMWkwY04yN3FhUDc1V1dXQXdpTUhENm50NFJuRFNENW9oSjhoZllTMHlNNFlkZ3F6SEZfVWRSYzZhb2E3VXdxQzlIVEdaRnBlLQ?oc=5",
+      "title": "소비심리 두 달째 뒷걸음…연말 대목 앞둔 외식·식품업계 '먹구름'",
+      "published_at": "2026-11-24T04:48:11+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTFBaV244S3hOblFXcEpkTHpiMGMwSlFwa2c0UXIyOExlQVpLTld2QWgwaXhlZkdoU3phZ0hMdnd1ckJwTnN3V3JjcXF1MmZ0WjdsS1pCOVRucDQyOXJBd3lIMTlYcjA2dkUyTTVv?oc=5",
+      "title": "영천시장 앞 백반집, 외식비 부담 낮추고 이웃 식사 지원도 준비",
+      "published_at": "2026-11-24T04:40:40+00:00"
     }
   ],
   "new_articles": 0
