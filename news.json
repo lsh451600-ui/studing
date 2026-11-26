@@ -1,7 +1,14 @@
 {
-  "updated_at": "2026-11-25T21:13:11.461269+00:00",
+  "updated_at": "2026-11-26T07:15:34.576270+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "CJ프레시웨이, 외식 브랜드 고객사에 성장 노하우 공유",
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE4wd3NTcjJfb1g5RWRGWDZVODI2ejd2TFlIMUU2a1pTWXUxdE5zWGgtT3ZUcnRGZ3dIWDl2dmE2Vk1JVG4xWXFSaTJ2WlVpUURsZnpPaHMyOTBreHVSS1VXWUpwZ3RzOUhyMVoxVXd0RUx0ZV83QUlr0gF3QVVfeXFMTjB3c1NyMl9vWDlFZEZYNlU4MjZ6N3ZMWUgxRTZrWlNZdTF0TnNYaC1PdlRydEZnd0hYOXZ2YTZWTUlUbjFZcVJpMnZaVWlRRGxmek9oczI5MGt4dVJLVVdZSnBndHM5SHIxWjFVd3RFTHRlXzdBSWs?oc=5",
+      "source": "핀포인트뉴스",
+      "published_at": "2026-11-26T04:18:59+00:00",
+      "original_url": "https://www.pinpointnews.co.kr/news/articleView.html?idxno=508361"
+    },
     {
       "title": "소비심리 두 달째 뒷걸음…연말 대목 앞둔 외식·식품업계 '먹구름'",
       "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9RSlBBZTlfS1NlYUZ3VFBfMWkwY04yN3FhUDc1V1dXQXdpTUhENm50NFJuRFNENW9oSjhoZllTMHlNNFlkZ3F6SEZfVWRSYzZhb2E3VXdxQzlIVEdaRnBlLQ?oc=5",
@@ -36,13 +43,6 @@
       "source": "매드클럽",
       "published_at": "2026-11-22T15:00:00+00:00",
       "original_url": "https://www.madclub.co.kr/news/articleView.html?idxno=16127"
-    },
-    {
-      "title": "[김해원 식도락법(41)] 미 외식업계 줄파산 속 프랜차이즈 열풍",
-      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9Pb09QSWgxNVExTjRkelVmNTJqOGkyTWVqR2ZCdXg1eHFtTEZsUnJYY0xqeHhka2tTbmxQWXdmZ0pWOUtyYlVtVnFkd3R4dlQwYzdCYTdIaE5JcHpfYmZmV3ZnVTlqSEhObnFTREFGSDJoVG51d0JPdjQyN2RQdw?oc=5",
-      "source": "KNEWSLA",
-      "published_at": "2026-11-22T10:37:38+00:00",
-      "original_url": "https://knewsla.com/%EC%8A%A4%EC%8B%9C%EB%89%B4%EC%8A%A43/20261121210321/"
     }
   ],
   "history": [
@@ -965,6 +965,11 @@
       "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1DdzVhd0dOY2libEdrSWQ5TGJnYUFaQklzWHNZcmlUMW00Z0hnMUh0MFhhOEdCNUJiSUZhdW9ZVE9DWElSQnlMSVM5RXFGNzRpbkEya1FWWkc5RW5TTTdOMmRJRklHZWRWSnfSAW5BVV95cUxNSVJrZDRzR3RfR3N1ZkZjbHRTOGdzV19SUXBJM1ZlMFh0QkxMcGV2Uk5LeUpoX3RuSHY3QU12aXJIRFVlM3RJZGJzeGNsQ3dMN2pOQ3ZJOGdMNkhNSE96NkhCUWNXbXNZQ2tFemNKdw?oc=5",
       "title": "옐프, 2027년 외식 트렌드는 ‘경험과 가성비’",
       "published_at": "2026-11-22T15:00:00+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE4wd3NTcjJfb1g5RWRGWDZVODI2ejd2TFlIMUU2a1pTWXUxdE5zWGgtT3ZUcnRGZ3dIWDl2dmE2Vk1JVG4xWXFSaTJ2WlVpUURsZnpPaHMyOTBreHVSS1VXWUpwZ3RzOUhyMVoxVXd0RUx0ZV83QUlr0gF3QVVfeXFMTjB3c1NyMl9vWDlFZEZYNlU4MjZ6N3ZMWUgxRTZrWlNZdTF0TnNYaC1PdlRydEZnd0hYOXZ2YTZWTUlUbjFZcVJpMnZaVWlRRGxmek9oczI5MGt4dVJLVVdZSnBndHM5SHIxWjFVd3RFTHRlXzdBSWs?oc=5",
+      "title": "CJ프레시웨이, 외식 브랜드 고객사에 성장 노하우 공유",
+      "published_at": "2026-11-26T04:18:59+00:00"
     }
   ],
   "new_articles": 0
