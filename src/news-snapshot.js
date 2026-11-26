@@ -1,7 +1,21 @@
 export const snapshot = {
-  "updated_at": "2026-11-26T07:15:34.576270+00:00",
+  "updated_at": "2026-11-26T21:02:19.433344+00:00",
   "source": "https://news.google.com/rss/search?q=%EC%99%B8%EC%8B%9D+%28%ED%8A%B8%EB%A0%8C%EB%93%9C+OR+%EC%86%8C%EB%B9%84+OR+%EA%B0%80%EC%84%B1%EB%B9%84+OR+%ED%98%BC%EB%B0%A5+OR+%EB%AC%BC%EA%B0%80+OR+%EC%8B%9C%EC%9E%A5%29+-%EC%95%84%EC%B9%B4%EB%8D%B0%EB%AF%B8+-%EA%B5%90%EC%9C%A1+-%EB%AA%A8%EC%A7%91+when%3A7d&hl=ko&gl=KR&ceid=KR%3Ako",
   "articles": [
+    {
+      "title": "CJ프레시웨이, 외식사업자 초청 '고메 인사이트 투어'…성장 노하우 공유",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE4xU2szU1lPdmNpbV92aThUZHgyVUh6dlFkVWN0QzItNy1KNnpDYWlqSDlKYVJWNmtjUThyTllPZVRZOEx3eEN6cUdjbWdqNkMyZ3FCaHVPR0NlUWFvVmdBNEcyYWxnVG5VcXg5RnJQONIBc0FVX3lxTFA0ejBsdDhyM2N2aWlvcUFoWTM5RXllOEphUWtYOEVZbkIzWnhreWpnVXFtV3RVaDVpdXZOSHAtYUxobVdfWDdCTHZibHE3UUpUdWxEdS1XSlJTeEh5M0FNY2hzTmdBaFYwT25nZThYRGVWMzQ?oc=5",
+      "source": "뉴스웍스",
+      "published_at": "2026-11-26T12:48:40+00:00",
+      "original_url": "https://www.newsworks.co.kr/news/articleView.html?idxno=904631"
+    },
+    {
+      "title": "\"외식부터 줄였다\"...한국인 4명 중 3명 '물가 부담'에 지갑 닫았다",
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE02ejgxYnVqN2d0eW9KWE95V19iSF9mNjVtVEV6a1RyQVdHS2FuSGZCWklsWUFOMENlQVBabTZnSW51TEY5RzF1SFZOMWwyZGFsVWlXeTFDN0J5RDQ1UlBFQVlKMXZVOS1CTFM1dldiYw?oc=5",
+      "source": "https://www.trend-korea.co.kr/",
+      "published_at": "2026-11-26T08:09:02+00:00",
+      "original_url": "https://www.trend-korea.co.kr/news/articleView.html?idxno=2447"
+    },
     {
       "title": "CJ프레시웨이, 외식 브랜드 고객사에 성장 노하우 공유",
       "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE4wd3NTcjJfb1g5RWRGWDZVODI2ejd2TFlIMUU2a1pTWXUxdE5zWGgtT3ZUcnRGZ3dIWDl2dmE2Vk1JVG4xWXFSaTJ2WlVpUURsZnpPaHMyOTBreHVSS1VXWUpwZ3RzOUhyMVoxVXd0RUx0ZV83QUlr0gF3QVVfeXFMTjB3c1NyMl9vWDlFZEZYNlU4MjZ6N3ZMWUgxRTZrWlNZdTF0TnNYaC1PdlRydEZnd0hYOXZ2YTZWTUlUbjFZcVJpMnZaVWlRRGxmek9oczI5MGt4dVJLVVdZSnBndHM5SHIxWjFVd3RFTHRlXzdBSWs?oc=5",
@@ -29,20 +43,6 @@ export const snapshot = {
       "source": "매일일보",
       "published_at": "2026-11-23T05:38:45+00:00",
       "original_url": "https://www.m-i.kr/news/articleView.html?idxno=2022037"
-    },
-    {
-      "title": "장바구니 물가·외식비 이어 사룟값까지 … 로얄캐닌, 12월부터 가격 인상",
-      "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNY3BHNHYtRDVZOEdwNTl6TkVpT21vem1KZzlFN25lNWNDaHRGaDZZcmx3QXp2NGp0ZVVyeldPX2hLWFp3Nmt2VHJOZ1B3T1Z0ZzRwWVJCRG9ZRkpXMGpEb1hjN2hYam14WUVYOG5fZ0NESV9Dc1dIVE9HSG5RUS1ySdIBgAFBVV95cUxNY3BHNHYtRDVZOEdwNTl6TkVpT21vem1KZzlFN25lNWNDaHRGaDZZcmx3QXp2NGp0ZVVyeldPX2hLWFp3Nmt2VHJOZ1B3T1Z0ZzRwWVJCRG9ZRkpXMGpEb1hjN2hYam14WUVYOG5fZ0NESV9Dc1dIVE9HSG5RUS1ySQ?oc=5",
-      "source": "뉴데일리 경제",
-      "published_at": "2026-11-23T01:53:00+00:00",
-      "original_url": "https://biz.newdaily.co.kr/site/data/html/2026/11/23/2026112350093.amp.html"
-    },
-    {
-      "title": "옐프, 2027년 외식 트렌드는 ‘경험과 가성비’",
-      "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1DdzVhd0dOY2libEdrSWQ5TGJnYUFaQklzWHNZcmlUMW00Z0hnMUh0MFhhOEdCNUJiSUZhdW9ZVE9DWElSQnlMSVM5RXFGNzRpbkEya1FWWkc5RW5TTTdOMmRJRklHZWRWSnfSAW5BVV95cUxNSVJrZDRzR3RfR3N1ZkZjbHRTOGdzV19SUXBJM1ZlMFh0QkxMcGV2Uk5LeUpoX3RuSHY3QU12aXJIRFVlM3RJZGJzeGNsQ3dMN2pOQ3ZJOGdMNkhNSE96NkhCUWNXbXNZQ2tFemNKdw?oc=5",
-      "source": "매드클럽",
-      "published_at": "2026-11-22T15:00:00+00:00",
-      "original_url": "https://www.madclub.co.kr/news/articleView.html?idxno=16127"
     }
   ],
   "history": [
@@ -970,6 +970,16 @@ export const snapshot = {
       "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE4wd3NTcjJfb1g5RWRGWDZVODI2ejd2TFlIMUU2a1pTWXUxdE5zWGgtT3ZUcnRGZ3dIWDl2dmE2Vk1JVG4xWXFSaTJ2WlVpUURsZnpPaHMyOTBreHVSS1VXWUpwZ3RzOUhyMVoxVXd0RUx0ZV83QUlr0gF3QVVfeXFMTjB3c1NyMl9vWDlFZEZYNlU4MjZ6N3ZMWUgxRTZrWlNZdTF0TnNYaC1PdlRydEZnd0hYOXZ2YTZWTUlUbjFZcVJpMnZaVWlRRGxmek9oczI5MGt4dVJLVVdZSnBndHM5SHIxWjFVd3RFTHRlXzdBSWs?oc=5",
       "title": "CJ프레시웨이, 외식 브랜드 고객사에 성장 노하우 공유",
       "published_at": "2026-11-26T04:18:59+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE4xU2szU1lPdmNpbV92aThUZHgyVUh6dlFkVWN0QzItNy1KNnpDYWlqSDlKYVJWNmtjUThyTllPZVRZOEx3eEN6cUdjbWdqNkMyZ3FCaHVPR0NlUWFvVmdBNEcyYWxnVG5VcXg5RnJQONIBc0FVX3lxTFA0ejBsdDhyM2N2aWlvcUFoWTM5RXllOEphUWtYOEVZbkIzWnhreWpnVXFtV3RVaDVpdXZOSHAtYUxobVdfWDdCTHZibHE3UUpUdWxEdS1XSlJTeEh5M0FNY2hzTmdBaFYwT25nZThYRGVWMzQ?oc=5",
+      "title": "CJ프레시웨이, 외식사업자 초청 '고메 인사이트 투어'…성장 노하우 공유",
+      "published_at": "2026-11-26T12:48:40+00:00"
+    },
+    {
+      "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE02ejgxYnVqN2d0eW9KWE95V19iSF9mNjVtVEV6a1RyQVdHS2FuSGZCWklsWUFOMENlQVBabTZnSW51TEY5RzF1SFZOMWwyZGFsVWlXeTFDN0J5RDQ1UlBFQVlKMXZVOS1CTFM1dldiYw?oc=5",
+      "title": "\"외식부터 줄였다\"...한국인 4명 중 3명 '물가 부담'에 지갑 닫았다",
+      "published_at": "2026-11-26T08:09:02+00:00"
     }
   ],
   "new_articles": 0
